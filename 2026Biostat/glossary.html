@@ -1,0 +1,719 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>基礎用語解説｜統計実験室</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;500;600;700&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+:root{
+  color-scheme: light;
+  --page:#f9f9f6;
+  --surface:#fcfcfa;
+  --surface-2:#f1efe6;
+  --ink:#141311;
+  --ink-2:#54514a;
+  --muted:#8b8880;
+  --grid-line:#e3e0d5;
+  --axis:#c7c3b4;
+  --border:rgba(20,19,17,0.11);
+  --accent:#2a78d6;
+  --accent-soft:#cde2fb;
+  --accent-2:#eb6834;
+  --accent-2-soft:#fbe0d1;
+  --shadow: 0 1px 2px rgba(20,19,17,0.06), 0 8px 24px -12px rgba(20,19,17,0.18);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme: dark;
+    --page:#0e0e0c;
+    --surface:#1a1a17;
+    --surface-2:#221f19;
+    --ink:#f5f3ee;
+    --ink-2:#c7c3b4;
+    --muted:#918d83;
+    --grid-line:#2d2c27;
+    --axis:#3c3a33;
+    --border:rgba(245,243,238,0.12);
+    --accent:#5b9bee;
+    --accent-soft:#1e3350;
+    --accent-2:#e8784a;
+    --accent-2-soft:#3d2519;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px -12px rgba(0,0,0,0.5);
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme: dark;
+  --page:#0e0e0c;
+  --surface:#1a1a17;
+  --surface-2:#221f19;
+  --ink:#f5f3ee;
+  --ink-2:#c7c3b4;
+  --muted:#918d83;
+  --grid-line:#2d2c27;
+  --axis:#3c3a33;
+  --border:rgba(245,243,238,0.12);
+  --accent:#5b9bee;
+  --accent-soft:#1e3350;
+  --accent-2:#e8784a;
+  --accent-2-soft:#3d2519;
+  --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px -12px rgba(0,0,0,0.5);
+}
+
+*{box-sizing:border-box;}
+body{
+  margin:0;
+  background:
+    linear-gradient(var(--grid-line) 1px, transparent 1px) 0 0/100% 28px,
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px) 0 0/28px 100%,
+    var(--page);
+  background-attachment: local, local, scroll;
+  color:var(--ink);
+  font-family:'Zen Kaku Gothic New','Hiragino Sans',sans-serif;
+  padding-inline:20px;
+  line-height:1.75;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]) body{ background-image:none; } }
+:root[data-theme="dark"] body{ background-image:none; }
+@media (prefers-reduced-motion: no-preference){ html{ scroll-behavior:smooth; } }
+
+h1,h2,h3{ font-family:'Shippori Mincho','Hiragino Mincho ProN',serif; font-weight:600; letter-spacing:.01em; text-wrap:balance; margin:0; }
+.mono{ font-family:'IBM Plex Mono',ui-monospace,monospace; font-variant-numeric:tabular-nums; }
+a{ color:inherit; }
+a:focus-visible, button:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
+button{ font-family:inherit; }
+sub,sup{ font-size:.75em; line-height:0; }
+.xb{ display:inline-block; position:relative; font-style:normal; line-height:1; }
+.xb::before{ content:""; position:absolute; left:.06em; right:.06em; top:.17em; border-top:1.2px solid currentColor; }
+
+.app{ max-width:980px; margin:0 auto; }
+
+.topbar{
+  position:sticky; top:env(safe-area-inset-top,0px); z-index:20;
+  display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;
+  padding-block:14px;
+  background:color-mix(in srgb, var(--page) 88%, transparent);
+  backdrop-filter:blur(6px);
+  border-bottom:1px solid var(--border);
+  margin-bottom:8px;
+}
+.brand{ display:flex; align-items:baseline; gap:8px; text-decoration:none; white-space:nowrap; }
+.brand .mark{ font-family:'Shippori Mincho',serif; font-size:1.05rem; font-weight:700; }
+.brand .mark small{ font-family:'IBM Plex Mono',monospace; font-weight:400; font-size:.62rem; letter-spacing:.12em; color:var(--muted); display:block; margin-top:2px; }
+.crumbs{ display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end; }
+.crumb{ font-size:.72rem; letter-spacing:.03em; padding:5px 10px; border-radius:100px; border:1px solid var(--border); color:var(--ink-2); text-decoration:none; white-space:nowrap; }
+.crumb[aria-current="page"]{ background:var(--ink); color:var(--page); border-color:var(--ink); }
+
+.page-head{ padding-block:28px 8px; }
+.back-link{ display:inline-block; font-size:.82rem; color:var(--ink-2); text-decoration:none; margin-bottom:18px; }
+.back-link:hover{ color:var(--accent); }
+.kicker{ font-family:'IBM Plex Mono',monospace; font-size:.72rem; letter-spacing:.14em; color:var(--accent); text-transform:uppercase; display:block; margin-bottom:10px; }
+.page-head h1{ font-size:clamp(1.6rem,4vw,2.2rem); }
+.page-lede{ margin-top:12px; max-width:64ch; color:var(--ink-2); }
+
+.panel{ background:var(--surface); border:1px solid var(--border); border-radius:12px; box-shadow:var(--shadow); }
+section.block{ margin-top:40px; }
+section.block > h2{ font-size:1.2rem; margin-bottom:6px; }
+section.block > .sub{ margin:0 0 16px; color:var(--ink-2); font-size:.9rem; max-width:68ch; }
+
+/* relation flow */
+.flow{ display:flex; align-items:stretch; flex-wrap:nowrap; gap:0; padding:18px; }
+.fbox{ flex:1 1 0; min-width:0; border:1px solid var(--border); background:var(--surface-2); border-radius:10px; padding:12px 14px; }
+.fbox h3{ font-size:1rem; margin-bottom:4px; }
+.fbox p{ margin:0; font-size:.8rem; color:var(--ink-2); line-height:1.6; }
+.fbox .fs{ font-family:'IBM Plex Mono',monospace; font-size:.8rem; color:var(--ink); }
+.farrow{ flex:0 0 78px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; font-size:.68rem; color:var(--muted); text-align:center; padding-inline:4px; }
+.farrow::after{ content:"→"; font-size:1.2rem; color:var(--accent); }
+.flow-note{ margin:0; padding:0 18px 16px; font-size:.84rem; color:var(--ink-2); }
+@media (max-width:820px){
+  .flow{ flex-direction:column; }
+  .farrow{ flex:0 0 auto; flex-direction:row; gap:8px; padding-block:6px; }
+  .farrow::after{ content:"↓"; }
+}
+
+/* index */
+.index{ display:flex; flex-wrap:wrap; gap:6px; padding:16px 18px; }
+.index a{ font-size:.78rem; padding:4px 10px; border-radius:100px; border:1px solid var(--border); background:var(--surface-2); color:var(--ink-2); text-decoration:none; }
+.index a:hover{ border-color:var(--accent); color:var(--accent); }
+
+/* terms */
+.terms{ padding:0 22px; }
+.term{ display:grid; grid-template-columns:190px 1fr; gap:6px 28px; padding:20px 0; scroll-margin-top:120px; }
+.term + .term{ border-top:1px solid var(--border); }
+.term h3{ font-size:1.08rem; }
+.term .en{ display:block; font-family:'IBM Plex Mono',monospace; font-size:.68rem; color:var(--muted); letter-spacing:.03em; margin-top:2px; }
+.term .sym{ display:inline-block; font-family:'IBM Plex Mono',monospace; font-size:.78rem; background:var(--surface-2); border:1px solid var(--border); border-radius:6px; padding:1px 7px; margin:6px 4px 0 0; color:var(--ink-2); }
+.term .body p{ margin:0 0 8px; font-size:.92rem; color:var(--ink-2); }
+.term .body p.def{ color:var(--ink); font-size:.98rem; }
+.term .body p:last-child{ margin-bottom:0; }
+.formula{ font-family:'IBM Plex Mono',monospace; background:var(--surface-2); border:1px solid var(--border); border-radius:8px; padding:10px 14px; margin:8px 0; font-size:.86rem; overflow-x:auto; color:var(--ink); }
+.lbl{ display:inline-block; font-size:.68rem; font-weight:700; padding:0 8px; border-radius:100px; margin-right:8px; background:var(--surface-2); border:1px solid var(--border); color:var(--ink-2); }
+.lbl.warn{ background:var(--accent-2-soft); border-color:var(--accent-2); color:var(--ink); }
+.tl{ color:var(--accent); text-decoration:none; border-bottom:1px dotted var(--accent); }
+@media (max-width:700px){
+  .terms{ padding:0 16px; }
+  .term{ grid-template-columns:1fr; gap:8px; }
+}
+
+/* tables */
+.tablewrap{ overflow-x:auto; }
+table{ width:100%; border-collapse:collapse; font-size:.86rem; }
+th, td{ text-align:left; padding:10px 14px; border-bottom:1px solid var(--border); vertical-align:top; }
+th{ font-size:.72rem; color:var(--muted); font-weight:700; letter-spacing:.03em; }
+tr:last-child td{ border-bottom:0; }
+td.n, th.n{ font-family:'IBM Plex Mono',monospace; font-variant-numeric:tabular-nums; white-space:nowrap; }
+
+/* demo */
+.demo{ padding:18px; display:flex; flex-direction:column; gap:16px; }
+.demo-controls{ display:flex; flex-wrap:wrap; gap:18px 28px; align-items:flex-end; }
+.field{ display:flex; flex-direction:column; gap:8px; min-width:200px; }
+.field > label{ font-size:.78rem; font-weight:700; color:var(--ink-2); display:flex; justify-content:space-between; gap:12px; }
+.field .val{ font-family:'IBM Plex Mono',monospace; color:var(--accent); }
+input[type=range]{ -webkit-appearance:none; appearance:none; width:100%; height:4px; border-radius:4px; background:var(--grid-line); outline:none; }
+input[type=range]::-webkit-slider-thumb{ -webkit-appearance:none; width:16px; height:16px; border-radius:50%; background:var(--accent); border:2px solid var(--surface); box-shadow:0 0 0 1px var(--accent); cursor:pointer; }
+input[type=range]::-moz-range-thumb{ width:16px; height:16px; border-radius:50%; background:var(--accent); border:2px solid var(--surface); box-shadow:0 0 0 1px var(--accent); cursor:pointer; }
+.seg{ display:flex; gap:6px; }
+.seg button{ padding:8px 12px; font-size:.8rem; border-radius:8px; border:1px solid var(--border); background:var(--surface-2); color:var(--ink-2); cursor:pointer; white-space:nowrap; }
+.seg button[aria-pressed="true"]{ background:var(--ink); color:var(--page); border-color:var(--ink); font-weight:700; }
+.btn{ appearance:none; border:1px solid var(--accent); background:var(--accent); color:#fff; padding:9px 14px; border-radius:8px; font-size:.82rem; font-weight:700; cursor:pointer; }
+.chip{ display:inline-block; font-size:.66rem; font-weight:700; padding:1px 8px; border-radius:100px; margin-top:4px; border:1px solid var(--border); background:var(--surface-2); color:var(--ink); }
+.chip.ok{ background:var(--accent-soft); border-color:var(--accent); }
+.chip.warn{ background:var(--accent-2-soft); border-color:var(--accent-2); }
+.ratio{ display:flex; align-items:center; gap:10px; min-width:200px; }
+.track{ position:relative; flex:1; height:10px; background:var(--surface-2); border:1px solid var(--border); border-radius:5px; }
+.fill{ position:absolute; left:0; top:0; bottom:0; border-radius:5px; background:var(--accent); }
+.fill.biased{ background:var(--accent-2); }
+.mark1{ position:absolute; top:-4px; bottom:-4px; width:2px; background:var(--ink); }
+.demo-note{ margin:0; font-size:.82rem; color:var(--ink-2); }
+.calc-title{ font-size:1rem; margin:6px 0 -6px; }
+td.f{ font-family:'IBM Plex Mono',monospace; font-size:.8rem; }
+.readlist{ margin:0; padding-left:1.2em; font-size:.88rem; color:var(--ink-2); }
+.readlist li{ margin-bottom:4px; }
+
+.related{ display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:12px; }
+.related a{ display:block; padding:14px 16px; text-decoration:none; }
+.related a:hover{ border-color:var(--accent); }
+.related b{ display:block; font-family:'Shippori Mincho',serif; font-size:1rem; margin-bottom:4px; }
+.related span{ font-size:.82rem; color:var(--ink-2); }
+footer.site{ margin-top:48px; padding-block:24px 40px; border-top:1px solid var(--border); color:var(--muted); font-size:.78rem; }
+</style>
+</head>
+<body>
+<div class="app">
+<header class="topbar">
+  <a class="brand" href="index.html#/"><span class="mark">統計実験室<small>STATISTICS LAB</small></span></a>
+  <nav class="crumbs">
+    <a class="crumb" href="index.html#/">目次</a>
+    <a class="crumb" href="glossary.html" aria-current="page">00 基礎用語</a>
+    <a class="crumb" href="index.html#/lln">01 大数の法則</a>
+    <a class="crumb" href="index.html#/clt">02 中心極限定理</a>
+    <a class="crumb" href="index.html#/ttest">03 t検定</a>
+    <a class="crumb" href="natural-wine.html">04 ランダム化と交絡</a>
+    <a class="crumb" href="time_randomization_wine_exercise.html">05 実験順序のランダム化</a>
+  </nav>
+</header>
+
+<main>
+<div class="page-head">
+  <a class="back-link" href="index.html#/">← 目次に戻る</a>
+  <span class="kicker">00 · Basic Terms</span>
+  <h1>基礎用語解説</h1>
+  <p class="page-lede">確率、母集団、標本、標本サイズ、標本数、標本分散、不偏分散、標準偏差、標準誤差、不偏性。他の教材で何度も出てくる用語を、定義・式・例・混同しやすい点の順に整理しました。最初に関係図で全体をつかみ、気になる用語から読んでください。</p>
+</div>
+
+<section class="block">
+  <h2>用語の関係</h2>
+  <p class="sub">母集団から標本を取り出し、標本から統計量を計算し、標本を取り直したときの統計量のばらつきを見る。この流れの中で各用語の位置が決まります。</p>
+  <div class="panel">
+    <div class="flow">
+      <div class="fbox"><h3>母集団</h3><p>知りたい対象の全体(確率分布)</p><p class="fs">母数: μ, σ²</p><p>未知の定数</p></div>
+      <div class="farrow"><span>無作為抽出</span></div>
+      <div class="fbox"><h3>標本</h3><p class="fs">x<sub>1</sub>, x<sub>2</sub>, …, x<sub>n</sub></p><p>観測値の個数 = 標本サイズ n</p></div>
+      <div class="farrow"><span>計算</span></div>
+      <div class="fbox"><h3>統計量</h3><p class="fs"><i class="xb">x</i>, S², s², s</p><p>標本ごとに値が変わる</p></div>
+      <div class="farrow"><span>標本を r 回取り直す</span></div>
+      <div class="fbox"><h3>標本分布</h3><p>統計量の値の分布</p><p>そのばらつき = 標準誤差</p></div>
+    </div>
+    <p class="flow-note">推定とは、標本から計算した統計量(推定量)で母数を推測すること。不偏性は「推定量の平均が母数に一致する」という性質で、標本分布の中心がどこにあるかの話です。</p>
+  </div>
+</section>
+
+<section class="block">
+  <h2>用語索引</h2>
+  <div class="panel index">
+    <a href="#t-prob">確率</a><a href="#t-rv">確率変数</a><a href="#t-dist">確率分布</a>
+    <a href="#t-pop">母集団</a><a href="#t-param">母数</a><a href="#t-sample">標本</a><a href="#t-random">無作為抽出</a><a href="#t-iid">独立同分布</a><a href="#t-n">標本サイズ</a><a href="#t-r">標本数</a>
+    <a href="#t-exp">期待値・母平均</a><a href="#t-dev">偏差</a><a href="#t-var">分散</a><a href="#t-sd">標準偏差</a>
+    <a href="#t-stat">統計量</a><a href="#t-xbar">標本平均</a><a href="#t-S2">標本分散</a><a href="#t-s2">不偏分散</a><a href="#t-df">自由度</a><a href="#t-s">標本標準偏差</a>
+    <a href="#t-sampdist">標本分布</a><a href="#t-se">標準誤差</a><a href="#t-est">推定量・推定値</a><a href="#t-bias">バイアス</a><a href="#t-unbiased">不偏性</a><a href="#t-consist">一致性</a>
+  </div>
+</section>
+
+<section class="block">
+  <h2>確率の基礎</h2>
+  <p class="sub">ランダムに起こることを数で扱うための最小限の用語です。</p>
+  <div class="panel terms">
+
+    <article class="term" id="t-prob">
+      <div><h3>確率</h3><span class="en">probability</span><span class="sym">P(A)</span></div>
+      <div class="body">
+        <p class="def"><strong>ある事象が起こることの起こりやすさを、0以上1以下の数で表したもの。</strong>0は「決して起こらない」、1は「必ず起こる」を表す。事象とは「偶数の目が出る」のような、試行の結果として起こりうる出来事のこと。</p>
+        <p><span class="lbl">例</span>公正なサイコロで1の目が出る確率は 1/6。</p>
+        <p><span class="lbl">補足</span>同じ試行を繰り返すと、その事象が起こった割合(相対度数)は繰り返しが増えるほど確率に近づく。この性質が<a class="tl" href="index.html#/lln">大数の法則(01)</a>。確率は「次の1回の結果を当てる」ものではなく、「長い目で見た割合」を表す。</p>
+      </div>
+    </article>
+
+    <article class="term" id="t-rv">
+      <div><h3>確率変数</h3><span class="en">random variable</span><span class="sym">X</span><span class="sym">x</span></div>
+      <div class="body">
+        <p class="def"><strong>試行の結果によって値が決まる変数。</strong>試行の前は値が定まっておらず、試行の後に1つの値(実現値)が決まる。</p>
+        <p><span class="lbl">表記</span>確率変数は大文字 X、実際に得られた値(実現値)は小文字 x で書く。</p>
+        <p><span class="lbl">例</span>サイコロを1回振って出る目を X とする。実際に3が出たなら x = 3。</p>
+      </div>
+    </article>
+
+    <article class="term" id="t-dist">
+      <div><h3>確率分布</h3><span class="en">probability distribution</span></div>
+      <div class="body">
+        <p class="def"><strong>確率変数がどの値をどれくらいの確率でとるかを表したもの。</strong>すべての確率の合計(連続なら曲線の下の面積)は1になる。</p>
+        <p>とびとびの値をとる場合(サイコロなど)は、各値の確率を並べる。連続した値をとる場合(体重や濃度など)は密度の曲線で表し、ある区間の確率は、その区間で曲線の下にできる面積になる。</p>
+        <p><span class="lbl">例</span>サイコロは「1〜6の目がそれぞれ 1/6」。<a class="tl" href="index.html#/clt">02 中心極限定理</a>で使う一様分布・指数分布・二峰性分布もすべて確率分布。</p>
+      </div>
+    </article>
+  </div>
+</section>
+
+<section class="block">
+  <h2>母集団と標本</h2>
+  <p class="sub">「知りたい全体」と「実際に手元にある一部」を区別するのが、統計の出発点です。</p>
+  <div class="panel terms">
+
+    <article class="term" id="t-pop">
+      <div><h3>母集団</h3><span class="en">population</span></div>
+      <div class="body">
+        <p class="def"><strong>知りたい対象の全体。</strong></p>
+        <p><span class="lbl">例</span>「ある地域の全成人の血圧」「このワイナリーで将来醸造されうるすべてのバッチの品質」。現実には全体を調べられないことが多く、「同じ試行を無限に繰り返せるとしたときの結果」を母集団とみなすこともある。</p>
+        <p>この教材のシミュレーションでは、母集団をサイコロや一様分布などの<a class="tl" href="#t-dist">確率分布</a>として与え、そこから乱数で標本を取り出している。</p>
+      </div>
+    </article>
+
+    <article class="term" id="t-param">
+      <div><h3>母数</h3><span class="en">parameter</span><span class="sym">μ</span><span class="sym">σ²</span></div>
+      <div class="body">
+        <p class="def"><strong>母集団の特徴を表す定数。</strong>母平均 μ、母分散 σ²、母標準偏差 σ など。</p>
+        <p>現実の研究では母数は未知で、標本から推測する対象になる。母数はギリシャ文字、標本から計算する値はラテン文字で書く慣習がある。</p>
+        <p><span class="lbl">補足</span>シミュレーションでは私たちが母集団を設定するので、母数の真の値がわかる。推定の良し悪しを確かめられるのは、そのため。</p>
+      </div>
+    </article>
+
+    <article class="term" id="t-sample">
+      <div><h3>標本</h3><span class="en">sample</span><span class="sym">x<sub>1</sub>, …, x<sub>n</sub></span></div>
+      <div class="body">
+        <p class="def"><strong>母集団から取り出した観測値の集まり。</strong></p>
+        <p>標本から母集団の性質を推測することを統計的推測という。標本が母集団を代表するには、取り出し方に偏りがないことが必要で、そのための方法が<a class="tl" href="#t-random">無作為抽出</a>。</p>
+      </div>
+    </article>
+
+    <article class="term" id="t-random">
+      <div><h3>無作為抽出</h3><span class="en">random sampling</span></div>
+      <div class="body">
+        <p class="def"><strong>母集団のどの要素も等しい確率で選ばれるように、でたらめに取り出すこと。</strong>取り出す側の都合や好みが入らないようにして、標本の偏りを避ける。</p>
+        <p><span class="lbl warn">注意</span>「無作為抽出」(母集団から標本を選ぶ)と「無作為割り付け」(集めた対象を処理群や実験順序に振り分ける)は別の操作。<a class="tl" href="natural-wine.html">04</a>・<a class="tl" href="time_randomization_wine_exercise.html">05</a>のランダム化は後者。</p>
+      </div>
+    </article>
+
+    <article class="term" id="t-iid">
+      <div><h3>独立同分布</h3><span class="en">i.i.d.</span></div>
+      <div class="body">
+        <p class="def"><strong>標本の各観測値が、(1)互いに独立で(ある値が他の値に影響しない)、(2)同じ確率分布に従うこと。</strong>independent and identically distributed の頭文字。</p>
+        <p>この教材のシミュレーションで作る標本は、すべてこの前提(同じ分布から、毎回独立に引く)を満たしている。<a class="tl" href="#t-se">標準誤差</a>の公式 σ/√n も、この前提のもとで成り立つ。</p>
+      </div>
+    </article>
+
+    <article class="term" id="t-n">
+      <div><h3>標本サイズ</h3><span class="en">sample size</span><span class="sym">n</span></div>
+      <div class="body">
+        <p class="def"><strong>1つの標本に含まれる観測値の個数。</strong>「サンプルサイズ」ともいう。</p>
+        <p><span class="lbl">例</span>12人の血圧を測ったなら n = 12。<a class="tl" href="index.html#/clt">02</a>の n スライダー、<a class="tl" href="index.html#/ttest">03</a>の各群の n がこれにあたる。</p>
+        <p><span class="lbl">補足</span>n を増やすと、標本平均のばらつき(<a class="tl" href="#t-se">標準誤差</a>)は小さくなる。</p>
+      </div>
+    </article>
+
+    <article class="term" id="t-r">
+      <div><h3>標本数</h3><span class="en">number of samples</span><span class="sym">r</span></div>
+      <div class="body">
+        <p class="def"><strong>標本を取った回数(標本の個数)。</strong></p>
+        <p><span class="lbl">例</span>n = 5 の標本を2000回取ったなら、標本サイズは 5、標本数は 2000。<a class="tl" href="index.html#/clt">02</a>の「繰り返し回数 r」がこれ。</p>
+        <p><span class="lbl warn">注意</span>標本数は標本サイズ n とはまったく別のもの。文献によっては「標本数」を標本サイズの意味で使うことがあるため、この教材では「標本サイズ = 観測値の個数」「標本数 = 標本を取った回数」と使い分ける。</p>
+        <p>現実の研究では、標本は通常1つだけ(標本数 = 1)。標本を何度も取り直すのは、シミュレーションや理論上の思考実験。</p>
+      </div>
+    </article>
+  </div>
+</section>
+
+<section class="block">
+  <h2>分布の平均とばらつき</h2>
+  <p class="sub">母集団(確率分布)の側の量です。分布が決まれば値も決まる定数で、標本から計算する量とは区別します。</p>
+  <div class="panel terms">
+
+    <article class="term" id="t-exp">
+      <div><h3>期待値・母平均</h3><span class="en">expected value / population mean</span><span class="sym">E[X]</span><span class="sym">μ</span></div>
+      <div class="body">
+        <p class="def"><strong>確率分布の「平均」。同じ試行を非常に多く繰り返したときの平均が近づく値。</strong>確率変数 X の期待値を E[X]、母集団の平均を母平均 μ と書く。</p>
+        <div class="formula">E[X] = Σ x · P(X = x)　(とびとびの値の場合)</div>
+        <p><span class="lbl">例</span>サイコロなら (1+2+3+4+5+6)/6 = 3.5。<a class="tl" href="index.html#/lln">01</a>のオレンジの破線が μ。</p>
+        <p><span class="lbl warn">注意</span>母平均は分布が決める定数。標本から計算する<a class="tl" href="#t-xbar">標本平均</a>とは別のもの。</p>
+      </div>
+    </article>
+
+    <article class="term" id="t-dev">
+      <div><h3>偏差</h3><span class="en">deviation</span></div>
+      <div class="body">
+        <p class="def"><strong>観測値と平均との差。</strong>標本なら x<sub>i</sub> − <i class="xb">x</i>、母集団なら X − μ。</p>
+        <p>偏差をそのまま足すと正負が打ち消し合って、標本では必ず 0 になる。そのため、ばらつきを測るには偏差を二乗して使う(→<a class="tl" href="#t-var">分散</a>)。</p>
+      </div>
+    </article>
+
+    <article class="term" id="t-var">
+      <div><h3>分散</h3><span class="en">variance</span><span class="sym">Var(X)</span><span class="sym">σ²</span></div>
+      <div class="body">
+        <p class="def"><strong>ばらつきの大きさを表す指標。偏差を二乗した値の期待値。</strong>母集団の分散を母分散 σ² と書く。</p>
+        <div class="formula">σ² = E[(X − μ)²]</div>
+        <p><span class="lbl">例</span>サイコロの分散は 35/12 ≈ 2.92。</p>
+        <p><span class="lbl">補足</span>単位が元の値の2乗になる(mg なら mg²)。そのままでは解釈しにくいので、平方根をとった標準偏差がよく使われる。</p>
+      </div>
+    </article>
+
+    <article class="term" id="t-sd">
+      <div><h3>標準偏差</h3><span class="en">standard deviation</span><span class="sym">σ</span><span class="sym">SD</span></div>
+      <div class="body">
+        <p class="def"><strong>分散の平方根。</strong>元の値と同じ単位で、個々の観測値が平均からどれくらい離れているかの典型的な大きさを表す。</p>
+        <div class="formula">σ = √σ²</div>
+        <p><span class="lbl">例</span>サイコロの標準偏差は √2.92 ≈ 1.71。</p>
+        <p><span class="lbl warn">注意</span>ここで扱うのは母集団の標準偏差 σ。標本から計算するものは<a class="tl" href="#t-s">標本標準偏差</a> s と呼んで区別する。また、平均のばらつきを表す<a class="tl" href="#t-se">標準誤差</a>とは別のもの。</p>
+      </div>
+    </article>
+  </div>
+</section>
+
+<section class="block">
+  <h2>標本から計算する量</h2>
+  <p class="sub">標本を取るたびに値が変わる量です。母数を推測するための材料になります。</p>
+  <div class="panel terms">
+
+    <article class="term" id="t-stat">
+      <div><h3>統計量</h3><span class="en">statistic</span></div>
+      <div class="body">
+        <p class="def"><strong>標本から計算される値。</strong>標本平均、標本分散、中央値、t値など。</p>
+        <p><span class="lbl warn">注意</span>標本が変わると統計量の値も変わる(確率変数)。一方、母数は標本が変わっても動かない定数。「変わる量」と「変わらない量」の区別が、以降の用語を理解する軸になる。</p>
+      </div>
+    </article>
+
+    <article class="term" id="t-xbar">
+      <div><h3>標本平均</h3><span class="en">sample mean</span><span class="sym"><i class="xb">x</i></span></div>
+      <div class="body">
+        <p class="def"><strong>標本の観測値の合計を、標本サイズで割った値。</strong>母平均 μ の推定に使う。</p>
+        <div class="formula"><i class="xb">x</i> = (x<sub>1</sub> + x<sub>2</sub> + … + x<sub>n</sub>) / n</div>
+        <p>標本を取り直すたびに値が変わる。その変わり方の分布が<a class="tl" href="#t-sampdist">標本分布</a>。</p>
+      </div>
+    </article>
+
+    <article class="term" id="t-S2">
+      <div><h3>標本分散</h3><span class="en">sample variance (÷n)</span><span class="sym">S²</span></div>
+      <div class="body">
+        <p class="def"><strong>標本の観測値が標本平均からどれくらい散らばっているかを、偏差の二乗の平均で表した値。</strong>標本そのもののばらつきを記述する。</p>
+        <div class="formula">S² = { (x<sub>1</sub> − <i class="xb">x</i>)² + (x<sub>2</sub> − <i class="xb">x</i>)² + … + (x<sub>n</sub> − <i class="xb">x</i>)² } / n</div>
+        <p><span class="lbl warn">注意</span>母分散 σ² の推定値として使うと、平均的に小さめになる(→<a class="tl" href="#t-unbiased">不偏性</a>)。標本平均 <i class="xb">x</i> は標本の値に合わせて決まるので、μ からの偏差の二乗和より <i class="xb">x</i> からの偏差の二乗和の方が必ず小さくなるため。</p>
+        <p><span class="lbl warn">注意</span>教科書によっては、n−1 で割る方を「標本分散」と呼ぶ。この教材では、n で割るものを「標本分散」、n−1 で割るものを「不偏分散」と呼び分ける。記号も本によって違うので、式の分母を必ず確認する。</p>
+      </div>
+    </article>
+
+    <article class="term" id="t-s2">
+      <div><h3>不偏分散</h3><span class="en">unbiased variance (÷n−1)</span><span class="sym">s²</span><span class="sym">u²</span></div>
+      <div class="body">
+        <p class="def"><strong>母分散 σ² を推定するために、偏差の二乗和を n ではなく n−1 で割った値。</strong>期待値が σ² と一致する(不偏性をもつ)。</p>
+        <div class="formula">s² = { (x<sub>1</sub> − <i class="xb">x</i>)² + (x<sub>2</sub> − <i class="xb">x</i>)² + … + (x<sub>n</sub> − <i class="xb">x</i>)² } / (n − 1)</div>
+        <p><span class="lbl">実務</span>Excel の VAR.S、R の var()、pandas の .var() は n−1 で割る(不偏分散)。Excel の VAR.P は n で割り、NumPy の np.var() は既定で n で割る(ddof=1 を指定すると n−1)。</p>
+        <p><span class="lbl">補足</span>n = 1 のときは n−1 = 0 で計算できない。観測値が1個ではばらつきを推定できない、ということでもある。</p>
+      </div>
+    </article>
+
+    <article class="term" id="t-df">
+      <div><h3>自由度</h3><span class="en">degrees of freedom</span><span class="sym">df</span></div>
+      <div class="body">
+        <p class="def"><strong>標本の中で自由に値を決められる、独立な情報の数。</strong></p>
+        <p>偏差 x<sub>i</sub> − <i class="xb">x</i> をすべて足すと必ず 0。したがって、n個のうち n−1個が決まると最後の1個は自動的に決まる。偏差についての自由度は n−1 で、<a class="tl" href="#t-s2">不偏分散</a>の分母の n−1 はこの自由度。</p>
+        <p><a class="tl" href="index.html#/ttest">03 t検定</a>で使う t 分布の自由度も、標本サイズから決まる同じ種類の量。</p>
+      </div>
+    </article>
+
+    <article class="term" id="t-s">
+      <div><h3>標本標準偏差</h3><span class="en">sample standard deviation</span><span class="sym">s</span></div>
+      <div class="body">
+        <p class="def"><strong>不偏分散の平方根。</strong>元の単位で標本のばらつきを表し、母標準偏差 σ の推定値として使う。</p>
+        <div class="formula">s = √s²</div>
+        <p><span class="lbl warn">注意</span>不偏分散 s² は σ² の不偏推定量だが、その平方根 s は σ の不偏推定量ではない。s は平均的に σ よりわずかに小さくなる(n が大きいほど差は小さい)。下の体験で確かめられる。</p>
+      </div>
+    </article>
+  </div>
+</section>
+
+<section class="block">
+  <h2>ばらつきと推定</h2>
+  <p class="sub">標本を取り直したときの統計量のふるまいと、推定量の良し悪しを表す用語です。</p>
+  <div class="panel terms">
+
+    <article class="term" id="t-sampdist">
+      <div><h3>標本分布</h3><span class="en">sampling distribution</span></div>
+      <div class="body">
+        <p class="def"><strong>統計量が、標本ごとにとる値の確率分布。</strong>同じ母集団から標本を何度も取り直すと、標本平均 <i class="xb">x</i> は毎回違う値になる。その <i class="xb">x</i> の分布が「標本平均の標本分布」。</p>
+        <p><span class="lbl">例</span><a class="tl" href="index.html#/clt">02</a>の下段のヒストグラムがこれ。標本平均の標本分布の中心は母平均 μ、ばらつきの大きさが<a class="tl" href="#t-se">標準誤差</a>。</p>
+        <p><span class="lbl warn">注意</span>「標本の分布」(1つの標本の中で観測値がどう散らばっているか)とは別のもの。標本分布は、標本を取り直したときの統計量の分布。</p>
+      </div>
+    </article>
+
+    <article class="term" id="t-se">
+      <div><h3>標準誤差</h3><span class="en">standard error</span><span class="sym">SE</span></div>
+      <div class="body">
+        <p class="def"><strong>統計量の標本分布の標準偏差。</strong>その統計量が、標本ごとにどれくらいばらつくか(推定の精度)を表す。標本平均の標準誤差は次の式になる。</p>
+        <div class="formula">SE(<i class="xb">x</i>) = σ / √n　　σ が未知のときは s で置き換えて　SE ≈ s / √n</div>
+        <p><span class="lbl">例</span>σ = 10 のとき、n = 25 なら SE = 2、n = 100 なら SE = 1。n を4倍にすると SE は半分になる。</p>
+        <p><span class="lbl warn">注意</span>標準偏差は「観測値のばらつき」で、n を増やしても(母集団の σ は)変わらない。標準誤差は「平均のばらつき」で、n を増やすと √n に反比例して小さくなる。<a class="tl" href="index.html#/clt">02</a>の「理論 SE」と「実測 SD(標本平均)」は、この2つを比べている。</p>
+      </div>
+    </article>
+
+    <article class="term" id="t-est">
+      <div><h3>推定量・推定値</h3><span class="en">estimator / estimate</span><span class="sym">θ̂</span></div>
+      <div class="body">
+        <p class="def"><strong>母数 θ を推測するために標本から計算する統計量(計算方法)を推定量、実際のデータで計算した具体的な数値を推定値という。</strong>母数の記号にハット(^)を付けて θ̂ と書く。</p>
+        <p><span class="lbl">例</span>母平均 μ の推定量は標本平均 <i class="xb">x</i>。12人のデータから計算した <i class="xb">x</i> = 126.8 mmHg が推定値。</p>
+        <p>推定量は標本ごとに変わる確率変数、推定値はそのうちの1つの実現値。</p>
+      </div>
+    </article>
+
+    <article class="term" id="t-bias">
+      <div><h3>バイアス</h3><span class="en">bias</span></div>
+      <div class="body">
+        <p class="def"><strong>推定量の期待値と、真の母数との差。</strong>0でないとき「偏りがある」という。</p>
+        <div class="formula">バイアス = E[θ̂] − θ</div>
+        <p><span class="lbl">例</span>n で割る標本分散 S² のバイアスは −σ²/n(平均的に σ²/n だけ小さい)。</p>
+      </div>
+    </article>
+
+    <article class="term" id="t-unbiased">
+      <div><h3>不偏性</h3><span class="en">unbiasedness</span></div>
+      <div class="body">
+        <p class="def"><strong>推定量の期待値が、真の母数に一致すること。</strong>バイアスが 0 であること。「標本を取り直して何度も推定したとき、その平均が真の値に一致する」ということ。</p>
+        <div class="formula">E[θ̂] = θ</div>
+        <p><span class="lbl">例</span>標本平均 <i class="xb">x</i> は μ の不偏推定量(E[<i class="xb">x</i>] = μ)。不偏分散 s² は σ² の不偏推定量(E[s²] = σ²)。n で割る標本分散 S² は不偏ではなく、E[S²] = (n−1)/n × σ²。</p>
+        <p><span class="lbl warn">注意</span>不偏性は「平均的に当たる」ことであり、1回の推定値が真の値に近いことの保証ではない。1回ごとの近さは<a class="tl" href="#t-se">標準誤差</a>(ばらつきの小ささ)で決まる。</p>
+      </div>
+    </article>
+
+    <article class="term" id="t-consist">
+      <div><h3>一致性</h3><span class="en">consistency</span></div>
+      <div class="body">
+        <p class="def"><strong>標本サイズ n を大きくすると、推定量が真の母数に近づいていくこと。</strong></p>
+        <p><span class="lbl">例</span>標本平均 <i class="xb">x</i> は n が大きくなると μ に近づく。これが<a class="tl" href="index.html#/lln">大数の法則(01)</a>。</p>
+        <p><span class="lbl">補足</span>不偏性は「平均的に当たる」、一致性は「n が大きいと当たる」という別の性質。n で割る標本分散 S² は不偏ではないが、バイアス σ²/n は n とともに小さくなるので一致性はある。</p>
+      </div>
+    </article>
+  </div>
+</section>
+
+<section class="block">
+  <h2>記号一覧</h2>
+  <div class="panel tablewrap">
+    <table>
+      <thead><tr><th>記号</th><th>読み</th><th>意味</th><th>分類</th></tr></thead>
+      <tbody>
+        <tr><td class="n">μ</td><td>ミュー</td><td>母平均(期待値)</td><td>母数(定数)</td></tr>
+        <tr><td class="n">σ², σ</td><td>シグマ二乗, シグマ</td><td>母分散, 母標準偏差</td><td>母数(定数)</td></tr>
+        <tr><td class="n">n</td><td>エヌ</td><td>標本サイズ(1つの標本の観測値の個数)</td><td>標本</td></tr>
+        <tr><td class="n">r</td><td>アール</td><td>標本数(標本を取った回数)</td><td>標本</td></tr>
+        <tr><td class="n">x<sub>1</sub>, …, x<sub>n</sub></td><td>エックス</td><td>観測値</td><td>標本</td></tr>
+        <tr><td class="n"><i class="xb">x</i></td><td>エックスバー</td><td>標本平均</td><td>統計量(標本ごとに変わる)</td></tr>
+        <tr><td class="n">S²</td><td>エスに乗</td><td>標本分散(n で割る)</td><td>統計量</td></tr>
+        <tr><td class="n">s², u²</td><td>エスに乗, ユーに乗</td><td>不偏分散(n−1 で割る)</td><td>統計量</td></tr>
+        <tr><td class="n">s</td><td>エス</td><td>標本標準偏差(不偏分散の平方根)</td><td>統計量</td></tr>
+        <tr><td class="n">SE</td><td>エスイー</td><td>標準誤差(統計量の標本分布の標準偏差)</td><td>標本分布の量</td></tr>
+        <tr><td class="n">θ, θ̂</td><td>シータ, シータハット</td><td>母数の一般記号, その推定量</td><td>母数 / 統計量</td></tr>
+        <tr><td class="n">E[·]</td><td>イー</td><td>期待値</td><td>演算</td></tr>
+        <tr><td class="n">df</td><td>ディーエフ</td><td>自由度</td><td>—</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="block">
+  <h2>混同しやすい用語</h2>
+  <div class="panel tablewrap">
+    <table>
+      <thead><tr><th>比べる用語</th><th>一方</th><th>もう一方</th></tr></thead>
+      <tbody>
+        <tr><td>標本サイズ と 標本数</td><td>1つの標本の観測値の個数(n)</td><td>標本を取った回数(r)</td></tr>
+        <tr><td>標準偏差 と 標準誤差</td><td>観測値のばらつき。n を増やしても母集団の σ は変わらない</td><td>統計量(平均など)のばらつき。n を増やすと小さくなる</td></tr>
+        <tr><td>標本分散 と 不偏分散</td><td>偏差の二乗和を n で割る。母分散を小さめに見積もる</td><td>偏差の二乗和を n−1 で割る。母分散を平均的に正しく見積もる</td></tr>
+        <tr><td>母平均 と 標本平均</td><td>分布が決める定数(通常は未知)</td><td>標本ごとに変わる統計量</td></tr>
+        <tr><td>標本の分布 と 標本分布</td><td>1つの標本の中での観測値の散らばり</td><td>標本を取り直したときの統計量の分布</td></tr>
+        <tr><td>無作為抽出 と 無作為割り付け</td><td>母集団から標本を選ぶ操作</td><td>集めた対象を処理群や順序に振り分ける操作</td></tr>
+        <tr><td>不偏性 と 一致性</td><td>平均的に真の値に一致する</td><td>n を大きくすると真の値に近づく</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="block" id="demo">
+  <h2>体験:不偏性と標準誤差を確かめる</h2>
+  <p class="sub">母集団を正規分布 N(母平均 μ = 50, 母標準偏差 σ = 10)、つまり母分散 σ² = 100 として、標本サイズ n の標本を r 回取ります。各標本から <i class="xb">x</i>、S²、s²、s を計算し、r 個の平均を真の値と比べます。</p>
+  <div class="panel demo">
+    <div class="demo-controls">
+      <div class="field">
+        <label for="d-n">標本サイズ n<span class="val" id="d-n-val">5</span></label>
+        <input type="range" id="d-n" min="2" max="50" step="1" value="5">
+      </div>
+      <div class="field">
+        <label>標本数 r</label>
+        <div class="seg" id="d-r-seg"></div>
+      </div>
+      <button class="btn" id="d-run" type="button">標本を取り直す</button>
+    </div>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>統計量</th><th class="n">実測(r 個から集計)</th><th class="n">理論上の平均</th><th>比べる真の値</th><th>実測 ÷ 真の値</th></tr></thead>
+        <tbody id="d-body"></tbody>
+      </table>
+    </div>
+    <p class="demo-note">棒の長さは「実測 ÷ 真の値」(右端は 1.20)。縦線が 1.00(真の値と一致)。オレンジの棒は偏りのある統計量。</p>
+    <h3 class="calc-title">各行の計算(現在の n と r で計算)</h3>
+    <p class="demo-note">標本を r 回取り、標本 k(k = 1〜r)ごとに、標本平均 <i class="xb">x</i><sub>k</sub> = (x<sub>1</sub> + … + x<sub>n</sub>) / n と、偏差の二乗和 SS<sub>k</sub> = (x<sub>1</sub> − <i class="xb">x</i><sub>k</sub>)² + … + (x<sub>n</sub> − <i class="xb">x</i><sub>k</sub>)² を求めます。上の表の「実測」は、これを r 個分まとめた値です。「実測 ÷ 真の値」は実測を真の値で割った比で、1.00 なら一致を表します。</p>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>統計量</th><th>実測の計算</th><th>比べる真の値</th><th>理論上の平均と、理論上の比</th></tr></thead>
+        <tbody id="d-explain"></tbody>
+      </table>
+    </div>
+    <ul class="readlist">
+      <li>n で割る標本分散 S² は、真の値より小さくなる。比は (n−1)/n に近づく(n = 5 なら 0.80)。n−1 で割る不偏分散 s² は 1.00 付近になる。</li>
+      <li>s は s² の平方根だが、1.00 より少し小さい。不偏分散が不偏でも、その平方根は不偏にならない。</li>
+      <li>標本平均の標準偏差(標準誤差)は σ/√n に一致する。n を 4 倍にすると半分になる。</li>
+      <li>r を 100 にすると実測値が揺れる。不偏性は「r を十分大きくしたとき平均が近づく」ことを意味している。</li>
+    </ul>
+  </div>
+</section>
+
+<section class="block">
+  <h2>これらの用語を使う教材</h2>
+  <div class="related">
+    <a class="panel" href="index.html#/lln"><b>01 大数の法則</b><span>確率、期待値(母平均)、標本平均、一致性</span></a>
+    <a class="panel" href="index.html#/clt"><b>02 中心極限定理</b><span>標本サイズ、標本数、標本分布、標準誤差</span></a>
+    <a class="panel" href="index.html#/ttest"><b>03 t検定</b><span>標本平均、不偏分散、標準誤差、自由度</span></a>
+    <a class="panel" href="natural-wine.html"><b>04 ランダム化と交絡</b><span>無作為割り付けと無作為抽出の違い</span></a>
+  </div>
+</section>
+
+<footer class="site">講義補助教材として作成 · 記号や用語は教科書によって異なる場合があります</footer>
+</main>
+</div>
+
+<script>
+'use strict';
+function randn(){
+  const u = 1 - Math.random(), v = Math.random();
+  return Math.sqrt(-2*Math.log(u)) * Math.cos(2*Math.PI*v);
+}
+function lgamma(x){
+  const c=[0.99999999999980993,676.5203681218851,-1259.1392167224028,771.32342877765313,
+           -176.61502916214059,12.507343278686905,-0.13857109526572012,9.9843695780195716e-6,1.5056327351493116e-7];
+  if(x<0.5) return Math.log(Math.PI/Math.sin(Math.PI*x)) - lgamma(1-x);
+  x-=1;
+  let a=c[0];
+  const t=x+7.5;
+  for(let i=1;i<9;i++) a+=c[i]/(x+i);
+  return 0.5*Math.log(2*Math.PI) + (x+0.5)*Math.log(t) - t + Math.log(a);
+}
+function c4(n){ return Math.sqrt(2/(n-1)) * Math.exp(lgamma(n/2) - lgamma((n-1)/2)); }
+function f2(x){ return x.toFixed(2); }
+
+const D = { n:5, r:10000, mu:50, sigma:10 };
+
+function runDemo(){
+  const {n,r,mu,sigma} = D;
+  let sMean=0, sMean2=0, sS2n=0, sS2=0, sS=0;
+  const xs = new Array(n);
+  for(let k=0;k<r;k++){
+    let sum=0;
+    for(let i=0;i<n;i++){ const x = mu + sigma*randn(); xs[i]=x; sum+=x; }
+    const m = sum/n;
+    let ss=0;
+    for(let i=0;i<n;i++){ const d=xs[i]-m; ss+=d*d; }
+    const u2 = ss/(n-1);
+    sMean+=m; sMean2+=m*m; sS2n+=ss/n; sS2+=u2; sS+=Math.sqrt(u2);
+  }
+  const meanOfMeans = sMean/r;
+  const sdOfMeans = Math.sqrt(Math.max(0,(sMean2 - r*meanOfMeans*meanOfMeans)/(r-1)));
+  const v2 = sigma*sigma;
+  const se = sigma/Math.sqrt(n);
+  const rows = [
+    {label:'標本平均 <i class="xb">x</i>', obs:meanOfMeans, theory:mu, truth:mu, tname:'母平均 μ', chip:'不偏', cls:'ok', biased:false},
+    {label:'標本分散 S²(n で割る)', obs:sS2n/r, theory:(n-1)/n*v2, truth:v2, tname:'母分散 σ²', chip:'偏りあり', cls:'warn', biased:true},
+    {label:'不偏分散 s²(n−1 で割る)', obs:sS2/r, theory:v2, truth:v2, tname:'母分散 σ²', chip:'不偏', cls:'ok', biased:false},
+    {label:'標本標準偏差 s', obs:sS/r, theory:c4(n)*sigma, truth:sigma, tname:'母標準偏差 σ', chip:'偏りあり', cls:'warn', biased:true},
+    {label:'<i class="xb">x</i> の標準偏差', obs:sdOfMeans, theory:se, truth:se, tname:'標準誤差 σ/√n', chip:'標準誤差', cls:'', biased:false}
+  ];
+  const X = '<i class="xb">x</i>';
+  const info = [
+    {calc:`(${X}<sub>1</sub> + ${X}<sub>2</sub> + … + ${X}<sub>r</sub>) / r`, truthf:'母平均 μ', theoryf:`E[${X}] = μ`},
+    {calc:'(SS<sub>1</sub>/n + SS<sub>2</sub>/n + … + SS<sub>r</sub>/n) / r', truthf:'母分散 σ²', theoryf:'E[S²] = (n−1)/n × σ²'},
+    {calc:'(SS<sub>1</sub>/(n−1) + SS<sub>2</sub>/(n−1) + … + SS<sub>r</sub>/(n−1)) / r', truthf:'母分散 σ²', theoryf:'E[s²] = σ²'},
+    {calc:'(√(SS<sub>1</sub>/(n−1)) + … + √(SS<sub>r</sub>/(n−1))) / r', truthf:'母標準偏差 σ', theoryf:'E[s] = c<sub>4</sub>(n) × σ　c<sub>4</sub>(n) = √(2/(n−1)) · Γ(n/2) / Γ((n−1)/2)'},
+    {calc:`r 個の ${X}<sub>k</sub> の標準偏差 = √( Σ(${X}<sub>k</sub> − 平均)² / (r−1) )　※平均ではなく標準偏差`, truthf:'標準誤差 σ/√n', theoryf:'SE = σ/√n'}
+  ];
+  document.getElementById('d-explain').innerHTML = rows.map((row,i)=>`<tr>
+      <td>${row.label}</td>
+      <td class="f">${info[i].calc}</td>
+      <td>${info[i].truthf} = <span class="mono">${f2(row.truth)}</span></td>
+      <td class="f">${info[i].theoryf}<br>= ${f2(row.theory)}<br>理論上の比 = ${f2(row.theory)} ÷ ${f2(row.truth)} = <b>${f2(row.theory/row.truth)}</b></td>
+    </tr>`).join('');
+  const max = 1.2;
+  document.getElementById('d-body').innerHTML = rows.map(row=>{
+    const ratio = row.obs/row.truth;
+    const w = Math.min(ratio/max,1)*100;
+    const mark = (1/max)*100;
+    return `<tr>
+      <td>${row.label}<br><span class="chip ${row.cls}">${row.chip}</span></td>
+      <td class="n">${f2(row.obs)}</td>
+      <td class="n">${f2(row.theory)}</td>
+      <td class="n">${f2(row.truth)}<br><span style="font-family:'Zen Kaku Gothic New',sans-serif;color:var(--muted);font-size:.72rem">${row.tname}</span></td>
+      <td><div class="ratio"><div class="track"><span class="fill ${row.biased?'biased':''}" style="width:${w.toFixed(1)}%"></span><span class="mark1" style="left:${mark.toFixed(2)}%"></span></div><span class="mono">${f2(ratio)}</span></div></td>
+    </tr>`;
+  }).join('');
+}
+
+function initDemo(){
+  const nInput = document.getElementById('d-n');
+  nInput.addEventListener('input', ()=>{
+    D.n = parseInt(nInput.value,10);
+    document.getElementById('d-n-val').textContent = D.n;
+    runDemo();
+  });
+  const seg = document.getElementById('d-r-seg');
+  [100,1000,10000].forEach(v=>{
+    const b = document.createElement('button');
+    b.type='button'; b.textContent = v.toLocaleString('en-US');
+    b.setAttribute('aria-pressed', String(v===D.r));
+    b.addEventListener('click', ()=>{
+      [...seg.children].forEach(c=>c.setAttribute('aria-pressed','false'));
+      b.setAttribute('aria-pressed','true');
+      D.r = v; runDemo();
+    });
+    seg.appendChild(b);
+  });
+  document.getElementById('d-run').addEventListener('click', runDemo);
+  runDemo();
+}
+initDemo();
+</script>
+</body>
+</html>

@@ -1,0 +1,1368 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>統計実験室</title>
+<style>
+/* ============ Fonts ============ */
+@import url('https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;500;600;700&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+/* ============ Tokens ============ */
+:root{
+  color-scheme: light;
+  --page:#f9f9f6;
+  --surface:#fcfcfa;
+  --surface-2:#f1efe6;
+  --ink:#141311;
+  --ink-2:#54514a;
+  --muted:#8b8880;
+  --grid-line:#e3e0d5;
+  --axis:#c7c3b4;
+  --border:rgba(20,19,17,0.11);
+  --accent:#2a78d6;
+  --accent-soft:#cde2fb;
+  --accent-2:#eb6834;
+  --accent-2-soft:#fbe0d1;
+  --accent-3:#1baf7a;
+  --accent-4:#eda100;
+  --accent-7:#4a3aa7;
+  --accent-7-soft:#e3ddf9;
+  --good:#0ca30c;
+  --critical:#d03b3b;
+  --warning:#c98500;
+  --wine:#7b3045;
+  --vine:#657250;
+  --shadow: 0 1px 2px rgba(20,19,17,0.06), 0 8px 24px -12px rgba(20,19,17,0.18);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme: dark;
+    --page:#0e0e0c;
+    --surface:#1a1a17;
+    --surface-2:#221f19;
+    --ink:#f5f3ee;
+    --ink-2:#c7c3b4;
+    --muted:#918d83;
+    --grid-line:#2d2c27;
+    --axis:#3c3a33;
+    --border:rgba(245,243,238,0.12);
+    --accent:#5b9bee;
+    --accent-2:#e8784a;
+    --accent-2-soft:#3d2519;
+    --accent-3:#2fc48c;
+    --accent-4:#d6a53a;
+    --accent-7:#a89af0;
+    --accent-7-soft:#2c2650;
+    --good:#3fc23f;
+    --critical:#f08080;
+    --warning:#d6a53a;
+    --wine:#dd7f97;
+    --vine:#92a06f;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px -12px rgba(0,0,0,0.5);
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme: dark;
+  --page:#0e0e0c;
+  --surface:#1a1a17;
+  --surface-2:#221f19;
+  --ink:#f5f3ee;
+  --ink-2:#c7c3b4;
+  --muted:#918d83;
+  --grid-line:#2d2c27;
+  --axis:#3c3a33;
+  --border:rgba(245,243,238,0.12);
+  --accent:#5b9bee;
+  --accent-2:#e8784a;
+  --accent-2-soft:#3d2519;
+  --accent-3:#2fc48c;
+  --accent-4:#d6a53a;
+  --accent-7:#a89af0;
+  --accent-7-soft:#2c2650;
+  --good:#3fc23f;
+  --critical:#f08080;
+  --warning:#d6a53a;
+  --wine:#dd7f97;
+  --vine:#92a06f;
+  --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px -12px rgba(0,0,0,0.5);
+}
+
+*{box-sizing:border-box;}
+body{
+  margin:0;
+  background:
+    linear-gradient(var(--grid-line) 1px, transparent 1px) 0 0/100% 28px,
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px) 0 0/28px 100%,
+    var(--page);
+  background-attachment: local, local, scroll;
+  color:var(--ink);
+  font-family:'Zen Kaku Gothic New', 'Hiragino Sans', sans-serif;
+  padding-inline:20px;
+  line-height:1.7;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]) body{ background-image:none; } }
+:root[data-theme="dark"] body{ background-image:none; }
+
+h1,h2,h3{ font-family:'Shippori Mincho', 'Hiragino Mincho ProN', serif; font-weight:600; letter-spacing:.01em; text-wrap:balance; margin:0; }
+.mono{ font-family:'IBM Plex Mono', ui-monospace, monospace; font-variant-numeric: tabular-nums; }
+a{ color:inherit; }
+button{ font-family:inherit; }
+
+.app{ max-width:980px; margin:0 auto; }
+
+/* ============ Topbar ============ */
+.topbar{
+  position:sticky; top:env(safe-area-inset-top,0px);
+  z-index:20;
+  display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;
+  padding-block:14px;
+  background:color-mix(in srgb, var(--page) 88%, transparent);
+  backdrop-filter: blur(6px);
+  border-bottom:1px solid var(--border);
+  margin-bottom:8px;
+}
+.brand{ display:flex; align-items:baseline; gap:8px; text-decoration:none; white-space:nowrap; }
+.brand .mark{ font-family:'Shippori Mincho',serif; font-size:1.05rem; font-weight:700; }
+.brand .mark small{ font-family:'IBM Plex Mono',monospace; font-weight:400; font-size:.62rem; letter-spacing:.12em; color:var(--muted); display:block; margin-top:2px; }
+.crumbs{ display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end; }
+.crumb{
+  font-size:.72rem; letter-spacing:.03em; padding:5px 10px; border-radius:100px;
+  border:1px solid var(--border); color:var(--ink-2); text-decoration:none; white-space:nowrap;
+}
+.crumb[aria-current="page"]{ background:var(--ink); color:var(--page); border-color:var(--ink); }
+.crumb.disabled{ opacity:.45; pointer-events:none; }
+
+/* ============ Home ============ */
+.hero{ padding-block:40px 28px; }
+.hero .eyebrow{ font-family:'IBM Plex Mono',monospace; font-size:.72rem; letter-spacing:.16em; color:var(--accent); text-transform:uppercase; margin-bottom:14px; display:block; }
+.hero h1{ font-size:clamp(2rem,5vw,2.9rem); line-height:1.25; }
+.hero p.lede{ margin-top:18px; max-width:56ch; color:var(--ink-2); font-size:1.02rem; }
+.hero .purpose{
+  margin-top:28px; padding:18px 20px; border-radius:10px;
+  background:var(--surface); border:1px solid var(--border); box-shadow:var(--shadow);
+  max-width:64ch; color:var(--ink-2); font-size:.92rem;
+}
+.hero .purpose b{ color:var(--ink); font-weight:700; }
+
+.catalog-head{ display:flex; align-items:baseline; justify-content:space-between; gap:12px; margin:40px 0 16px; padding-top:14px; border-top:1px solid var(--border); }
+.catalog-head h2{ font-size:1.05rem; }
+.catalog-head .count{ font-family:'IBM Plex Mono',monospace; font-size:.72rem; color:var(--muted); }
+
+.cards{ display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:16px; margin-bottom:48px; }
+.card{
+  position:relative; display:flex; flex-direction:column; gap:12px;
+  background:var(--surface); border:1px solid var(--border); border-radius:12px;
+  padding:20px; text-decoration:none; color:inherit; box-shadow:var(--shadow);
+  transition: transform .15s ease, border-color .15s ease;
+}
+.card:hover{ transform:translateY(-3px); border-color:var(--accent); }
+.card:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
+.card .num{ font-family:'Shippori Mincho',serif; font-size:1.6rem; color:var(--accent); font-weight:600; }
+.card .icon{ height:56px; display:flex; align-items:center; }
+.card h3{ font-size:1.15rem; }
+.card .tag{ font-family:'IBM Plex Mono',monospace; font-size:.66rem; letter-spacing:.1em; color:var(--muted); text-transform:uppercase; }
+.card p{ color:var(--ink-2); font-size:.88rem; margin:0; }
+.card .go{ margin-top:auto; font-size:.8rem; font-weight:700; color:var(--accent); }
+.card.soon{ opacity:.6; border-style:dashed; cursor:default; }
+.card.soon:hover{ transform:none; border-color:var(--border); }
+.card.soon .num{ color:var(--muted); }
+
+footer.site{ padding-block:24px 40px; border-top:1px solid var(--border); color:var(--muted); font-size:.78rem; display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; }
+
+/* ============ Concept page shared ============ */
+.page-head{ padding-block:28px 8px; }
+.back-link{ display:inline-flex; align-items:center; gap:6px; font-size:.82rem; color:var(--ink-2); text-decoration:none; margin-bottom:18px; }
+.back-link:hover{ color:var(--accent); }
+.kicker{ font-family:'IBM Plex Mono',monospace; font-size:.72rem; letter-spacing:.14em; color:var(--accent); text-transform:uppercase; display:block; margin-bottom:10px; }
+.page-head h1{ font-size:clamp(1.6rem,4vw,2.2rem); }
+.page-lede{ margin-top:12px; max-width:64ch; color:var(--ink-2); }
+
+.lab-grid{ display:grid; grid-template-columns:280px 1fr; gap:18px; margin-top:24px; align-items:start; }
+@media (max-width:760px){ .lab-grid{ grid-template-columns:1fr; } }
+
+.panel{ background:var(--surface); border:1px solid var(--border); border-radius:12px; box-shadow:var(--shadow); }
+.controls{ padding:18px; display:flex; flex-direction:column; gap:18px; position:sticky; top:calc(64px + env(safe-area-inset-top,0px)); }
+@media (max-width:760px){ .controls{ position:static; } }
+
+.field{ display:flex; flex-direction:column; gap:8px; }
+.field label{ font-size:.78rem; font-weight:700; color:var(--ink-2); display:flex; justify-content:space-between; }
+.field label .val{ font-family:'IBM Plex Mono',monospace; color:var(--accent); }
+.field .hint{ font-size:.72rem; color:var(--muted); margin-top:-2px; }
+
+.seg{ display:flex; flex-wrap:wrap; gap:6px; }
+.seg button{
+  flex:1 1 auto; padding:8px 10px; font-size:.8rem; border-radius:8px; border:1px solid var(--border);
+  background:var(--surface-2); color:var(--ink-2); cursor:pointer; white-space:nowrap;
+}
+.seg button[aria-pressed="true"]{ background:var(--ink); color:var(--page); border-color:var(--ink); font-weight:700; }
+
+input[type=range]{
+  -webkit-appearance:none; appearance:none; width:100%; height:4px; border-radius:4px;
+  background:var(--grid-line); outline:none;
+}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none; width:16px; height:16px; border-radius:50%;
+  background:var(--accent); border:2px solid var(--surface); box-shadow:0 0 0 1px var(--accent); cursor:pointer;
+}
+input[type=range]::-moz-range-thumb{
+  width:16px; height:16px; border-radius:50%; background:var(--accent); border:2px solid var(--surface); box-shadow:0 0 0 1px var(--accent); cursor:pointer;
+}
+
+.btnrow{ display:flex; flex-wrap:wrap; gap:8px; }
+.btn{
+  appearance:none; border:1px solid var(--border); background:var(--surface-2); color:var(--ink);
+  padding:9px 14px; border-radius:8px; font-size:.82rem; font-weight:700; cursor:pointer;
+  display:inline-flex; align-items:center; gap:6px;
+}
+.btn:hover{ border-color:var(--accent); }
+.btn:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
+.btn.primary{ background:var(--accent); border-color:var(--accent); color:#fff; }
+.btn.ghost{ background:transparent; }
+.btn[aria-pressed="true"]{ background:var(--accent-2); border-color:var(--accent-2); color:#fff; }
+.btn:disabled{ opacity:.5; cursor:not-allowed; }
+
+.stat-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:8px; }
+.stat{ background:var(--surface-2); border-radius:8px; padding:10px 12px; border:1px solid var(--border); }
+.stat .k{ font-size:.68rem; color:var(--muted); }
+.stat .v{ font-family:'IBM Plex Mono',monospace; font-size:1.05rem; font-weight:600; font-variant-numeric:tabular-nums; }
+.stat .v.good{ color:var(--good); }
+.stat .v.critical{ color:var(--critical); }
+
+.display{ padding:18px; display:flex; flex-direction:column; gap:16px; }
+.chart-block{ display:flex; flex-direction:column; gap:6px; }
+.chart-block .title{ font-size:.82rem; font-weight:700; display:flex; justify-content:space-between; align-items:baseline; gap:8px; flex-wrap:wrap; }
+.chart-block .title .sub{ font-weight:400; color:var(--muted); font-size:.74rem; }
+canvas{ width:100%; display:block; border-radius:8px; background:var(--surface); }
+.canvas-wrap{ position:relative; width:100%; height:220px; }
+.canvas-wrap.tall{ height:260px; }
+.canvas-wrap canvas{ position:absolute; inset:0; height:100%; }
+
+.legend{ display:flex; gap:14px; flex-wrap:wrap; font-size:.74rem; color:var(--ink-2); }
+.legend .sw{ display:inline-flex; align-items:center; gap:6px; }
+.legend .dot{ width:10px; height:10px; border-radius:3px; display:inline-block; }
+
+.verdict{ display:flex; align-items:center; gap:10px; padding:12px 14px; border-radius:10px; border:1px solid var(--border); font-size:.86rem; }
+.verdict .chip{ font-family:'IBM Plex Mono',monospace; font-weight:700; font-size:.72rem; padding:4px 9px; border-radius:100px; letter-spacing:.03em; white-space:nowrap; flex-shrink:0; }
+.verdict.sig .chip{ background:var(--critical); color:#fff; }
+.verdict.notsig .chip{ background:var(--good); color:#fff; }
+
+.explainer{ margin-top:22px; padding:20px 22px; background:var(--surface-2); border:1px solid var(--border); border-radius:12px; }
+.explainer h2{ font-size:1rem; margin-bottom:10px; }
+.explainer p{ color:var(--ink-2); font-size:.9rem; margin:0 0 10px; }
+.explainer p:last-child{ margin-bottom:0; }
+.explainer ul{ margin:0 0 10px; padding-left:1.2em; color:var(--ink-2); font-size:.9rem; }
+
+.sim-extra{ margin-top:16px; padding-top:16px; border-top:1px dashed var(--border); display:flex; flex-direction:column; gap:12px; }
+
+[hidden]{ display:none !important; }
+@media (prefers-reduced-motion: reduce){ *{ animation-duration:0.001ms !important; transition-duration:0.001ms !important; } }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <header class="topbar">
+    <a class="brand" href="#/">
+      <span class="mark">統計実験室<small>STATISTICS LAB</small></span>
+    </a>
+    <nav class="crumbs" id="crumbs">
+      <a class="crumb" data-route="/" href="#/">目次</a>
+      <a class="crumb" href="glossary.html">00 基礎用語</a>
+      <a class="crumb" data-route="/lln" href="#/lln">01 大数の法則</a>
+      <a class="crumb" data-route="/clt" href="#/clt">02 中心極限定理</a>
+      <a class="crumb" data-route="/ttest" href="#/ttest">03 t検定</a>
+      <a class="crumb" href="natural-wine.html">04 ランダム化と交絡</a>
+      <a class="crumb" href="time_randomization_wine_exercise.html">05 実験順序のランダム化</a>
+    </nav>
+  </header>
+
+  <main>
+    <!-- ============ HOME ============ -->
+    <section id="page-home">
+      <div class="hero">
+        <span class="eyebrow">生物統計学 補助教材</span>
+        <h1>手を動かして、<br>統計の「感覚」をつかむ実験室。</h1>
+        <p class="lede">教科書の数式やスライドだけでは実感しにくい統計概念を、シミュレーションを自分で動かしながら確かめるための小さな教材集です。試行回数を増やす、母集団の形を変える、サンプルを引き直す——そのたびにグラフが動き、数字が更新されます。</p>
+        <div class="purpose">
+          <b>この教材の趣旨。</b> 統計的な直感は「知識として読む」だけでは身につきにくく、「何度もランダムな結果を見て、そのばらつきと規則性を自分の目で確かめる」ことで初めて腑に落ちます。ここではスライダーやボタンを操作するたびに乱数シミュレーションが走り、理論値と実際の挙動を並べて確認できます。
+        </div>
+      </div>
+
+      <div class="catalog-head">
+        <h2>実験カタログ</h2>
+        <span class="count mono" id="catalog-count">3 topics</span>
+      </div>
+      <div class="cards" id="cards"></div>
+
+      <footer class="site">
+        <span>講義補助教材として作成 · 今後も実験項目を追加予定</span>
+        <span class="mono">v1.0</span>
+      </footer>
+    </section>
+
+    <!-- ============ 01 LLN ============ -->
+    <section id="page-lln" hidden>
+      <div class="page-head">
+        <a class="back-link" href="#/">← 目次に戻る</a>
+        <span class="kicker">01 · Law of Large Numbers</span>
+        <h1>大数の法則</h1>
+        <p class="page-lede">1回1回の結果はランダムでばらつくのに、試行を重ねた「平均」はなぜか一定の値に落ち着いていきます。試行回数を増やしながら、標本平均が母平均に収束していく様子を観察してみましょう。</p>
+      </div>
+
+      <div class="lab-grid">
+        <aside class="panel controls">
+          <div class="field">
+            <label>母集団</label>
+            <div class="seg" id="lln-pop-seg"></div>
+            <p class="hint" id="lln-pop-hint"></p>
+          </div>
+
+          <div class="field" id="lln-p-field">
+            <label>コインの表が出る確率 p<span class="val mono" id="lln-p-val">0.50</span></label>
+            <input type="range" id="lln-p" min="0.05" max="0.95" step="0.01" value="0.5">
+          </div>
+
+          <div class="field">
+            <label>自動実行の速さ<span class="val mono" id="lln-speed-val"></span></label>
+            <input type="range" id="lln-speed" min="1" max="200" step="1" value="30">
+          </div>
+
+          <div class="btnrow">
+            <button class="btn" id="lln-add1">+1回</button>
+            <button class="btn" id="lln-add10">+10回</button>
+            <button class="btn" id="lln-add100">+100回</button>
+          </div>
+          <div class="btnrow">
+            <button class="btn primary" id="lln-play">▶ 自動実行</button>
+            <button class="btn ghost" id="lln-reset">リセット</button>
+          </div>
+
+          <div class="stat-grid">
+            <div class="stat"><div class="k">試行回数 n</div><div class="v mono" id="lln-n">0</div></div>
+            <div class="stat"><div class="k">母平均 μ</div><div class="v mono" id="lln-truemean">—</div></div>
+            <div class="stat"><div class="k">標本平均</div><div class="v mono" id="lln-mean">—</div></div>
+            <div class="stat"><div class="k">|標本平均 − μ|</div><div class="v mono" id="lln-dev">—</div></div>
+          </div>
+        </aside>
+
+        <div class="panel display">
+          <div class="chart-block">
+            <div class="title"><span>標本平均の推移</span><span class="sub">横軸: 試行回数 n / 縦軸: そこまでの平均</span></div>
+            <div class="canvas-wrap tall"><canvas id="lln-canvas"></canvas></div>
+            <div class="legend">
+              <span class="sw"><span class="dot" style="background:var(--muted)"></span>個々の試行結果</span>
+              <span class="sw"><span class="dot" style="background:var(--accent)"></span>ここまでの標本平均</span>
+              <span class="sw"><span class="dot" style="background:var(--accent-2);border-radius:0;height:2px;width:10px;align-self:center"></span>母平均 μ(理論値)</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="explainer">
+        <h2>この画面の見方</h2>
+        <p>薄い点1つ1つが「1回引いた結果」です。1回だけ見るとバラバラで予測できません。一方、濃い線は「1回目からn回目までの平均」を表しており、nが大きくなるにつれてオレンジの破線(母平均 μ)に近づいていくのがわかります。</p>
+        <ul>
+          <li>個々の試行結果(薄い点)は、nが増えても散らばったままです。大数の法則は「1回の結果が当てやすくなる」ことを意味しません。</li>
+          <li>収束するのはあくまで「平均」であり、しかも収束の速さは √n に比例して遅くなっていきます(最初の数十回は大きく動き、その後は徐々に安定します)。</li>
+          <li>母集団(サイコロ・コイン・一様分布)を切り替えても、同じ現象が起きることを確認してみてください。</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ============ 02 CLT ============ -->
+    <section id="page-clt" hidden>
+      <div class="page-head">
+        <a class="back-link" href="#/">← 目次に戻る</a>
+        <span class="kicker">02 · Central Limit Theorem</span>
+        <h1>中心極限定理</h1>
+        <p class="page-lede">母集団の分布がどんな形(一様・偏った形・二峰性)であっても、そこから取り出した標本の「平均」を何度も計算して集めると、その分布はサンプルサイズ n が大きくなるにつれて正規分布に近づいていきます。</p>
+      </div>
+
+      <div class="lab-grid">
+        <aside class="panel controls">
+          <div class="field">
+            <label>母集団の形</label>
+            <div class="seg" id="clt-pop-seg"></div>
+          </div>
+
+          <div class="field">
+            <label>標本サイズ n<span class="val mono" id="clt-n-val">5</span></label>
+            <input type="range" id="clt-n" min="1" max="50" step="1" value="5">
+            <p class="hint">1つの標本に含める観測値の個数</p>
+          </div>
+
+          <div class="btnrow">
+            <button class="btn primary" id="clt-run">▶ 2000回サンプリング</button>
+            <button class="btn ghost" id="clt-reset">リセット</button>
+          </div>
+          <div class="btnrow">
+            <button class="btn" id="clt-more">+2000回追加</button>
+          </div>
+
+          <div class="stat-grid">
+            <div class="stat"><div class="k">繰り返し回数 r</div><div class="v mono" id="clt-r">0</div></div>
+            <div class="stat"><div class="k">母平均 μ</div><div class="v mono" id="clt-mu">—</div></div>
+            <div class="stat"><div class="k">理論 SE (σ/√n)</div><div class="v mono" id="clt-se-theory">—</div></div>
+            <div class="stat"><div class="k">実測 SD(標本平均)</div><div class="v mono" id="clt-se-obs">—</div></div>
+          </div>
+        </aside>
+
+        <div class="panel display">
+          <div class="chart-block">
+            <div class="title"><span>母集団の分布</span><span class="sub" id="clt-pop-sub"></span></div>
+            <div class="canvas-wrap"><canvas id="clt-pop-canvas"></canvas></div>
+          </div>
+          <div class="chart-block">
+            <div class="title"><span>標本平均の分布(サンプリング分布)</span><span class="sub">n=<span id="clt-n-echo">5</span> の標本平均を集めたヒストグラム</span></div>
+            <div class="canvas-wrap tall"><canvas id="clt-means-canvas"></canvas></div>
+            <div class="legend">
+              <span class="sw"><span class="dot" style="background:var(--accent)"></span>標本平均のヒストグラム</span>
+              <span class="sw"><span class="dot" style="background:var(--accent-2);border-radius:0;height:2px;width:10px;align-self:center"></span>理論上の正規分布 N(μ, σ/√n)</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="explainer">
+        <h2>この画面の見方</h2>
+        <p>上のグラフは母集団そのものの形です。下のグラフは「そこからn個ずつ取り出して平均する」を何千回も繰り返して得られた、標本平均の分布です。</p>
+        <ul>
+          <li>n=1のときは、標本平均の分布は母集団の形そのものになります(平均していないので)。</li>
+          <li>nを5, 10, 30…と大きくしていくと、母集団がどんなに歪んだ形・二峰性の形であっても、標本平均の分布は徐々にオレンジの正規分布曲線に近づいていきます。</li>
+          <li>ばらつきの幅(標準誤差 SE)は σ/√n で決まるため、nが大きいほどヒストグラムは細く尖っていきます。</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ============ 03 t-test ============ -->
+    <section id="page-ttest" hidden>
+      <div class="page-head">
+        <a class="back-link" href="#/">← 目次に戻る</a>
+        <span class="kicker">03 · Two-sample t-test</span>
+        <h1>t検定</h1>
+        <p class="page-lede">2つのグループの平均に差があるように見えても、それが「本当の差」なのか「たまたまのばらつき」なのかは、サンプルサイズやばらつきの大きさを考慮しないと判断できません。t検定はその判断を数値化する道具です。</p>
+      </div>
+
+      <div class="lab-grid">
+        <aside class="panel controls">
+          <div class="field">
+            <label>群Aの母平均 μA<span class="val mono" id="tt-muA-val">10.0</span></label>
+            <input type="range" id="tt-muA" min="-5" max="20" step="0.5" value="10">
+          </div>
+          <div class="field">
+            <label>群Bの母平均 μB<span class="val mono" id="tt-muB-val">12.0</span></label>
+            <input type="range" id="tt-muB" min="-5" max="20" step="0.5" value="12">
+          </div>
+          <div class="field">
+            <label>母集団の標準偏差 σ<span class="val mono" id="tt-sd-val">4.0</span></label>
+            <input type="range" id="tt-sd" min="0.5" max="10" step="0.5" value="4">
+          </div>
+          <div class="field">
+            <label>各群のサンプルサイズ n<span class="val mono" id="tt-n-val">15</span></label>
+            <input type="range" id="tt-n" min="3" max="100" step="1" value="15">
+          </div>
+          <div class="field">
+            <label>有意水準 α</label>
+            <div class="seg" id="tt-alpha-seg"></div>
+          </div>
+
+          <div class="btnrow">
+            <button class="btn primary" id="tt-draw">↻ サンプルを取り直す</button>
+          </div>
+
+          <div class="stat-grid">
+            <div class="stat"><div class="k">平均 A</div><div class="v mono" id="tt-meanA">—</div></div>
+            <div class="stat"><div class="k">平均 B</div><div class="v mono" id="tt-meanB">—</div></div>
+            <div class="stat"><div class="k">t 値</div><div class="v mono" id="tt-tval">—</div></div>
+            <div class="stat"><div class="k">自由度 (Welch)</div><div class="v mono" id="tt-df">—</div></div>
+            <div class="stat"><div class="k">p 値(両側)</div><div class="v mono" id="tt-pval">—</div></div>
+          </div>
+
+          <div class="verdict" id="tt-verdict">
+            <span class="chip">—</span>
+            <span id="tt-verdict-text">サンプルを取り直すと判定が表示されます。</span>
+          </div>
+        </aside>
+
+        <div class="panel display">
+          <div class="chart-block">
+            <div class="title"><span>2群のサンプル分布</span><span class="sub">点 = 1個の観測値 / 太い縦線 = 群の平均</span></div>
+            <div class="canvas-wrap"><canvas id="tt-dots-canvas"></canvas></div>
+            <div class="legend">
+              <span class="sw"><span class="dot" style="background:var(--accent)"></span>群 A</span>
+              <span class="sw"><span class="dot" style="background:var(--accent-7)"></span>群 B</span>
+            </div>
+          </div>
+          <div class="chart-block">
+            <div class="title"><span>t分布と検定結果</span><span class="sub">自由度に応じた t分布</span></div>
+            <div class="canvas-wrap tall"><canvas id="tt-dist-canvas"></canvas></div>
+            <div class="legend">
+              <span class="sw"><span class="dot" style="background:var(--accent-2)"></span>棄却域(|t| がここを超えると有意)</span>
+              <span class="sw"><span class="dot" style="background:var(--accent-7)"></span>観測された t 値</span>
+            </div>
+          </div>
+
+          <div class="sim-extra">
+            <div class="chart-block">
+              <div class="title"><span>「本当は差がない」場合を1000回検定してみる</span><span class="sub">p値の分布と、誤って「有意」と判定される割合</span></div>
+              <p style="color:var(--ink-2);font-size:.86rem;margin:0">μA = μB (つまり本当の差はゼロ)という状況で、現在の n・σ・α のまま検定を1000回繰り返すと何が起きるかを試します。</p>
+              <div class="btnrow"><button class="btn" id="tt-null-sim">帰無仮説どおり1000回シミュレーション</button></div>
+              <div class="canvas-wrap" id="tt-null-wrap" hidden><canvas id="tt-null-canvas"></canvas></div>
+              <p class="mono" id="tt-null-result" style="font-size:.86rem;color:var(--ink-2)"></p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="explainer">
+        <h2>この画面の見方</h2>
+        <p>上の散布図は実際に引いたサンプルそのもの、下の曲線は「もし本当は差がなかったとしたら、t値はこのように散らばるはずだ」という理論分布(t分布)です。</p>
+        <ul>
+          <li>観測されたt値(紫の縦線)がオレンジの棄却域に入っていれば、有意水準αのもとで「差がある」と判定されます。</li>
+          <li>n(サンプルサイズ)を大きくすると、同じ平均差でもt値は大きくなりやすく、検出力が上がります。σ(ばらつき)を大きくすると逆に差を検出しにくくなります。</li>
+          <li>下部のシミュレーションは、μA=μBに固定して1000回検定を行うことで「本当は差がないのに有意と判定されてしまう確率」が、ほぼ設定したα(例:5%)どおりになることを示します。p値そのものが一様分布に近い形になる点にも注目してください。</li>
+        </ul>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+'use strict';
+/* =========================================================================
+   How to add a new topic later:
+   1. Add a <section id="page-<id>" hidden> block above, following the
+      page-head / lab-grid / explainer pattern used by the existing pages.
+   2. Add {id, num, title, tag, desc, icon} to the TOPICS array below.
+   3. Add a matching <a class="crumb" data-route="/<id>"> entry in #crumbs.
+   4. Write an init<Id>() function and call it from initAll().
+   ========================================================================= */
+
+/* ---------------- math / rng helpers ---------------- */
+function randUniform(a,b){ return a + Math.random()*(b-a); }
+function randNormal(m,sd){
+  const u = 1 - Math.random(), v = Math.random();
+  return m + sd * Math.sqrt(-2*Math.log(u)) * Math.cos(2*Math.PI*v);
+}
+function randExp(rate){ return -Math.log(1-Math.random())/rate; }
+function mean(a){ return a.reduce((s,x)=>s+x,0)/a.length; }
+function variance(a){ const m=mean(a); return a.reduce((s,x)=>s+(x-m)*(x-m),0)/(a.length-1); }
+function sd(a){ return Math.sqrt(variance(a)); }
+function normalPDF(x,m,s){ return Math.exp(-0.5*((x-m)/s)**2) / (s*Math.sqrt(2*Math.PI)); }
+function fmt(x,d=2){ return (x===undefined||x===null||Number.isNaN(x)) ? '—' : x.toFixed(d); }
+
+function lgamma(x){
+  const g=7;
+  const c=[0.99999999999980993,676.5203681218851,-1259.1392167224028,771.32342877765313,
+           -176.61502916214059,12.507343278686905,-0.13857109526572012,9.9843695780195716e-6,1.5056327351493116e-7];
+  if(x<0.5) return Math.log(Math.PI/Math.sin(Math.PI*x)) - lgamma(1-x);
+  x-=1;
+  let a=c[0];
+  const t=x+g+0.5;
+  for(let i=1;i<g+2;i++) a+=c[i]/(x+i);
+  return 0.5*Math.log(2*Math.PI) + (x+0.5)*Math.log(t) - t + Math.log(a);
+}
+function betacf(x,a,b){
+  const MAXIT=200, EPS=3e-14, FPMIN=1e-300;
+  const qab=a+b, qap=a+1, qam=a-1;
+  let c=1, d=1-qab*x/qap;
+  if(Math.abs(d)<FPMIN) d=FPMIN;
+  d=1/d; let h=d;
+  for(let m=1;m<=MAXIT;m++){
+    const m2=2*m;
+    let aa=m*(b-m)*x/((qam+m2)*(a+m2));
+    d=1+aa*d; if(Math.abs(d)<FPMIN)d=FPMIN;
+    c=1+aa/c; if(Math.abs(c)<FPMIN)c=FPMIN;
+    d=1/d; h*=d*c;
+    aa=-(a+m)*(qab+m)*x/((a+m2)*(qap+m2));
+    d=1+aa*d; if(Math.abs(d)<FPMIN)d=FPMIN;
+    c=1+aa/c; if(Math.abs(c)<FPMIN)c=FPMIN;
+    d=1/d; const del=d*c; h*=del;
+    if(Math.abs(del-1)<EPS) break;
+  }
+  return h;
+}
+function betai(a,b,x){
+  if(x<=0) return 0; if(x>=1) return 1;
+  const bt=Math.exp(lgamma(a+b)-lgamma(a)-lgamma(b)+a*Math.log(x)+b*Math.log(1-x));
+  if(x < (a+1)/(a+b+2)) return bt*betacf(x,a,b)/a;
+  return 1-bt*betacf(1-x,b,a)/b;
+}
+function tCDF(t,df){
+  const x=df/(df+t*t);
+  const p=0.5*betai(df/2,0.5,x);
+  return t>0 ? 1-p : p;
+}
+function tTwoTailedP(t,df){ return Math.min(1, 2*(1-tCDF(Math.abs(t),df))); }
+function tPDF(x,df){
+  const lp = lgamma((df+1)/2) - lgamma(df/2) - 0.5*Math.log(df*Math.PI) - ((df+1)/2)*Math.log(1+x*x/df);
+  return Math.exp(lp);
+}
+function tQuantileTwoTailed(alpha, df){
+  let lo=0, hi=60;
+  const target = 1-alpha/2;
+  for(let i=0;i<80;i++){
+    const mid=(lo+hi)/2;
+    if(tCDF(mid,df) < target) lo=mid; else hi=mid;
+  }
+  return (lo+hi)/2;
+}
+
+/* ---------------- canvas helpers ---------------- */
+function cssVar(name){ return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+function ctxFor(canvas){
+  const rect = canvas.getBoundingClientRect();
+  const dpr = window.devicePixelRatio||1;
+  const w = Math.max(1, Math.round(rect.width));
+  const h = Math.max(1, Math.round(rect.height));
+  canvas.width = Math.max(1, Math.round(w*dpr));
+  canvas.height = Math.max(1, Math.round(h*dpr));
+  const ctx = canvas.getContext('2d');
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  ctx.clearRect(0,0,w,h);
+  return {ctx,w,h};
+}
+function makePlot(canvas, pad){
+  pad = Object.assign({l:46,r:14,t:12,b:26}, pad||{});
+  const {ctx,w,h} = ctxFor(canvas);
+  const plotW = Math.max(1,w-pad.l-pad.r), plotH = Math.max(1,h-pad.t-pad.b);
+  return {
+    ctx, w, h, pad, plotW, plotH,
+    x(domain,v){ return pad.l + (v-domain[0])/(domain[1]-domain[0])*plotW; },
+    y(domain,v){ return pad.t + (1-(v-domain[0])/(domain[1]-domain[0]))*plotH; },
+  };
+}
+function drawFrame(p, xDomain, yDomain, xTicks, yTicks, xFmt, yFmt){
+  const ctx=p.ctx;
+  ctx.save();
+  ctx.strokeStyle=cssVar('--grid-line'); ctx.lineWidth=1;
+  ctx.fillStyle=cssVar('--muted'); ctx.font='11px "IBM Plex Mono", monospace';
+  ctx.textAlign='right'; ctx.textBaseline='middle';
+  (yTicks||[]).forEach(v=>{
+    const y=p.y(yDomain,v);
+    ctx.beginPath(); ctx.moveTo(p.pad.l,y); ctx.lineTo(p.pad.l+p.plotW,y); ctx.stroke();
+    ctx.fillText(yFmt?yFmt(v):v, p.pad.l-8, y);
+  });
+  ctx.strokeStyle=cssVar('--axis');
+  ctx.beginPath(); ctx.moveTo(p.pad.l,p.pad.t); ctx.lineTo(p.pad.l,p.pad.t+p.plotH); ctx.lineTo(p.pad.l+p.plotW,p.pad.t+p.plotH); ctx.stroke();
+  ctx.textAlign='center'; ctx.textBaseline='top';
+  (xTicks||[]).forEach(v=>{
+    const x=p.x(xDomain,v);
+    ctx.fillText(xFmt?xFmt(v):v, x, p.pad.t+p.plotH+8);
+  });
+  ctx.restore();
+}
+function niceTicks(min,max,count){
+  const span=max-min || 1;
+  const step0=span/count;
+  const mag=Math.pow(10,Math.floor(Math.log10(step0)));
+  const norm=step0/mag;
+  let step;
+  if(norm<1.5) step=1*mag; else if(norm<3) step=2*mag; else if(norm<7) step=5*mag; else step=10*mag;
+  const start=Math.ceil(min/step)*step;
+  const out=[];
+  for(let v=start; v<=max+1e-9; v+=step) out.push(Math.round(v/step)*step);
+  return out;
+}
+
+/* ---------------- shared UI helpers ---------------- */
+function seg(container, options, activeId, onChange){
+  container.innerHTML='';
+  options.forEach(opt=>{
+    const b=document.createElement('button');
+    b.type='button'; b.textContent=opt.label;
+    b.setAttribute('aria-pressed', String(opt.id===activeId));
+    b.addEventListener('click', ()=>{
+      [...container.children].forEach(c=>c.setAttribute('aria-pressed','false'));
+      b.setAttribute('aria-pressed','true');
+      onChange(opt.id);
+    });
+    container.appendChild(b);
+  });
+}
+
+/* =========================================================================
+   HOME
+   ========================================================================= */
+const TOPICS = [
+  {id:'glossary', num:'00', tag:'BASIC TERMS', title:'基礎用語解説',
+   desc:'確率・母集団・標本・標本サイズ・不偏分散・標準誤差・不偏性など、他の教材で使う用語の定義と、混同しやすい点を整理する。',
+   href:'glossary.html',
+   icon:`<svg viewBox="0 0 220 56" width="100%" height="56" fill="none">
+      <rect x="10" y="6" width="38" height="24" rx="6" stroke="var(--accent)" stroke-width="1.8"/>
+      <rect x="64" y="6" width="38" height="24" rx="6" stroke="var(--accent)" stroke-width="1.8"/>
+      <rect x="118" y="6" width="38" height="24" rx="6" stroke="var(--accent)" stroke-width="1.8"/>
+      <rect x="172" y="6" width="38" height="24" rx="6" stroke="var(--accent)" stroke-width="1.8"/>
+      <g font-family="Shippori Mincho, serif" font-size="15" fill="var(--accent)" text-anchor="middle">
+        <text x="29" y="23">μ</text><text x="83" y="23">σ²</text><text x="137" y="23">n</text><text x="191" y="23">s²</text>
+      </g>
+      <line x1="10" y1="42" x2="210" y2="42" stroke="var(--muted)" stroke-width="2" opacity=".5"/>
+      <line x1="10" y1="50" x2="150" y2="50" stroke="var(--muted)" stroke-width="2" opacity=".5"/>
+    </svg>`},
+  {id:'lln', num:'01', tag:'LAW OF LARGE NUMBERS', title:'大数の法則',
+   desc:'試行を重ねるほど、標本平均が母平均へ収束していく様子をライブで観察する。',
+   icon:`<svg viewBox="0 0 220 56" width="100%" height="56" fill="none">
+      <line x1="6" y1="10" x2="214" y2="10" stroke="var(--accent-2)" stroke-width="2" stroke-dasharray="3 4"/>
+      <circle cx="18" cy="40" r="2.4" fill="var(--muted)"/><circle cx="34" cy="14" r="2.4" fill="var(--muted)"/>
+      <circle cx="50" cy="46" r="2.4" fill="var(--muted)"/><circle cx="66" cy="20" r="2.4" fill="var(--muted)"/>
+      <circle cx="82" cy="38" r="2.4" fill="var(--muted)"/><circle cx="98" cy="16" r="2.4" fill="var(--muted)"/>
+      <circle cx="114" cy="34" r="2.4" fill="var(--muted)"/><circle cx="130" cy="22" r="2.4" fill="var(--muted)"/>
+      <circle cx="146" cy="28" r="2.4" fill="var(--muted)"/><circle cx="162" cy="18" r="2.4" fill="var(--muted)"/>
+      <circle cx="178" cy="24" r="2.4" fill="var(--muted)"/><circle cx="194" cy="14" r="2.4" fill="var(--muted)"/>
+      <path d="M18 44 C 60 30, 100 14, 210 11" stroke="var(--accent)" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    </svg>`},
+  {id:'clt', num:'02', tag:'CENTRAL LIMIT THEOREM', title:'中心極限定理',
+   desc:'どんな形の母集団でも、標本平均の分布はサンプルサイズを増やすと正規分布に近づく。',
+   icon:`<svg viewBox="0 0 220 56" width="100%" height="56" fill="none">
+      <rect x="10" y="34" width="16" height="14" fill="var(--muted)" opacity=".5"/>
+      <rect x="30" y="20" width="16" height="28" fill="var(--muted)" opacity=".5"/>
+      <rect x="50" y="30" width="16" height="18" fill="var(--muted)" opacity=".5"/>
+      <path d="M96 48 C 100 48, 104 8, 132 8 C 160 8, 164 48, 210 48" stroke="var(--accent)" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    </svg>`},
+  {id:'ttest', num:'03', tag:'TWO-SAMPLE T-TEST', title:'t検定',
+   desc:'2群の平均差が偶然のばらつきでは説明しにくいかどうかを、t分布を使って判定する。',
+   icon:`<svg viewBox="0 0 220 56" width="100%" height="56" fill="none">
+      <circle cx="20" cy="20" r="2.2" fill="var(--accent)"/><circle cx="34" cy="30" r="2.2" fill="var(--accent)"/>
+      <circle cx="16" cy="38" r="2.2" fill="var(--accent)"/><circle cx="42" cy="16" r="2.2" fill="var(--accent)"/>
+      <circle cx="28" cy="44" r="2.2" fill="var(--accent)"/>
+      <line x1="28" y1="6" x2="28" y2="50" stroke="var(--accent)" stroke-width="2"/>
+      <circle cx="150" cy="18" r="2.2" fill="var(--accent-7)"/><circle cx="168" cy="30" r="2.2" fill="var(--accent-7)"/>
+      <circle cx="182" cy="22" r="2.2" fill="var(--accent-7)"/><circle cx="160" cy="42" r="2.2" fill="var(--accent-7)"/>
+      <circle cx="192" cy="38" r="2.2" fill="var(--accent-7)"/>
+      <line x1="170" y1="6" x2="170" y2="50" stroke="var(--accent-7)" stroke-width="2"/>
+      <path d="M60 46 L96 46" stroke="var(--muted)" stroke-width="1.5" stroke-dasharray="2 3"/>
+      <path d="M100 46 L146 46" stroke="var(--muted)" stroke-width="1.5" stroke-dasharray="2 3"/>
+    </svg>`},
+  {id:'doe', num:'04', tag:'RANDOMIZATION & CONFOUNDING', title:'ランダム化と交絡',
+   desc:'ナチュラルワインの試験醸造を舞台に、条件を揃えたつもりでも紛れ込む「交絡因子」と、ランダム化がなぜそれを防ぐのかを物語形式で体験する。',
+   href:'natural-wine.html',
+   icon:`<svg viewBox="0 0 220 56" width="100%" height="56" fill="none">
+      <circle cx="30" cy="18" r="2.6" fill="var(--wine)"/><circle cx="20" cy="28" r="2.6" fill="var(--wine)"/>
+      <circle cx="40" cy="28" r="2.6" fill="var(--wine)"/><circle cx="14" cy="40" r="2.6" fill="var(--wine)"/>
+      <circle cx="30" cy="40" r="2.6" fill="var(--wine)"/><circle cx="46" cy="40" r="2.6" fill="var(--wine)"/>
+      <path d="M92 22 A 18 18 0 0 1 128 18" stroke="var(--muted)" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <path d="M124 14 L128 18 L123 22" stroke="var(--muted)" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M128 38 A 18 18 0 0 1 92 34" stroke="var(--muted)" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <path d="M96 42 L92 38 L97 34" stroke="var(--muted)" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="190" cy="18" r="2.6" fill="var(--vine)"/><circle cx="180" cy="28" r="2.6" fill="var(--vine)"/>
+      <circle cx="200" cy="28" r="2.6" fill="var(--vine)"/><circle cx="174" cy="40" r="2.6" fill="var(--vine)"/>
+      <circle cx="190" cy="40" r="2.6" fill="var(--vine)"/><circle cx="206" cy="40" r="2.6" fill="var(--vine)"/>
+    </svg>`},
+  {id:'timeorder', num:'05', tag:'TIME-ORDER CONFOUNDING', title:'実験順序のランダム化',
+   desc:'12バッチの実験順序を自分で組み立てながら、時間とともに変化する未知の要因が結果を歪める様子と、順序をランダム化する意味を体験する。',
+   href:'time_randomization_wine_exercise.html',
+   icon:`<svg viewBox="0 0 220 56" width="100%" height="56" fill="none">
+      <rect x="10" y="8" width="26" height="26" rx="5" fill="var(--wine)"/>
+      <rect x="42" y="8" width="26" height="26" rx="5" fill="var(--vine)"/>
+      <rect x="74" y="8" width="26" height="26" rx="5" fill="var(--vine)"/>
+      <rect x="106" y="8" width="26" height="26" rx="5" fill="var(--wine)"/>
+      <rect x="138" y="8" width="26" height="26" rx="5" fill="var(--wine)"/>
+      <rect x="170" y="8" width="26" height="26" rx="5" fill="var(--vine)"/>
+      <line x1="8" y1="46" x2="204" y2="46" stroke="var(--muted)" stroke-width="1.5"/>
+      <path d="M198 41 L204 46 L198 51" stroke="var(--muted)" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>`},
+];
+
+function renderHome(){
+  const cards=document.getElementById('cards');
+  cards.innerHTML='';
+  TOPICS.forEach(t=>{
+    const a=document.createElement('a');
+    a.className='card'; a.href = t.href || ('#/'+t.id);
+    a.innerHTML=`
+      <span class="num mono">${t.num}</span>
+      <div class="icon">${t.icon}</div>
+      <span class="tag">${t.tag}</span>
+      <h3>${t.title}</h3>
+      <p>${t.desc}</p>
+      <span class="go">体験する →</span>`;
+    cards.appendChild(a);
+  });
+  const soon=document.createElement('div');
+  soon.className='card soon';
+  soon.innerHTML=`
+    <span class="num mono">06</span>
+    <div class="icon"></div>
+    <span class="tag">COMING SOON</span>
+    <h3>次の実験を準備中</h3>
+    <p>回帰分析・分散分析など、今後も概念を追加していく予定です。</p>`;
+  cards.appendChild(soon);
+  document.getElementById('catalog-count').textContent = TOPICS.length + ' topics';
+}
+
+/* =========================================================================
+   01 LLN
+   ========================================================================= */
+const LLN_POPS = {
+  dice:   {label:'サイコロの目', hint:'1〜6の目が等確率で出る(母平均=3.5)', domain:[0.5,6.5], trueMean:3.5, sample:()=> 1+Math.floor(Math.random()*6)},
+  coin:   {label:'コイン(表=1)', hint:'表が出る確率 p のベルヌーイ試行', domain:[-0.08,1.08], trueMean:0.5, sample:(p)=> Math.random()<p ? 1 : 0},
+  uniform:{label:'一様分布 U(0,10)', hint:'0〜10の間で一様にランダムな値', domain:[0,10], trueMean:5, sample:()=> randUniform(0,10)},
+};
+const lln = { popId:'dice', p:0.5, draws:[], sums:0, running:false, raf:null, acc:0, speed:30 };
+
+function lln_currentPop(){ return LLN_POPS[lln.popId]; }
+function lln_trueMean(){ return lln.popId==='coin' ? lln.p : lln_currentPop().trueMean; }
+function lln_draw(){
+  const pop=lln_currentPop();
+  const x = lln.popId==='coin' ? pop.sample(lln.p) : pop.sample();
+  lln.draws.push(x); lln.sums += x;
+}
+function lln_addN(n){
+  for(let i=0;i<n && lln.draws.length<8000;i++) lln_draw();
+  lln_update();
+}
+function lln_reset(){
+  lln.draws=[]; lln.sums=0; lln_update();
+}
+function lln_update(){
+  const n=lln.draws.length;
+  const m = n? lln.sums/n : NaN;
+  const tm = lln_trueMean();
+  document.getElementById('lln-n').textContent = n;
+  document.getElementById('lln-truemean').textContent = fmt(tm, lln.popId==='dice'?1:2);
+  document.getElementById('lln-mean').textContent = n? fmt(m, lln.popId==='dice'?3:3) : '—';
+  document.getElementById('lln-dev').textContent = n? fmt(Math.abs(m-tm),3) : '—';
+  lln_draw_chart();
+}
+function lln_draw_chart(){
+  const canvas=document.getElementById('lln-canvas');
+  if(!canvas.offsetParent) return;
+  const pop=lln_currentPop();
+  const n=lln.draws.length;
+  const xMax=Math.max(20,n);
+  const p=makePlot(canvas,{l:44,r:14,t:12,b:26});
+  const xDomain=[0,xMax], yDomain=pop.domain;
+  const xTicks = niceTicks(0,xMax,5).filter(v=>v>=0);
+  const yTicks = niceTicks(yDomain[0],yDomain[1],5);
+  drawFrame(p, xDomain, yDomain, xTicks, yTicks, v=>String(Math.round(v)), v=>fmt(v,1));
+
+  const ctx=p.ctx;
+  // reference true mean line
+  const tm=lln_trueMean();
+  ctx.save();
+  ctx.strokeStyle=cssVar('--accent-2'); ctx.setLineDash([4,4]); ctx.lineWidth=1.5;
+  const ty=p.y(yDomain,tm);
+  ctx.beginPath(); ctx.moveTo(p.pad.l,ty); ctx.lineTo(p.pad.l+p.plotW,ty); ctx.stroke();
+  ctx.restore();
+
+  if(n>0){
+    // scatter (subsampled)
+    ctx.save();
+    ctx.fillStyle=cssVar('--muted'); ctx.globalAlpha=0.45;
+    const step=Math.max(1,Math.floor(n/600));
+    for(let i=0;i<n;i+=step){
+      const x=p.x(xDomain,i+1), y=p.y(yDomain,lln.draws[i]);
+      ctx.beginPath(); ctx.arc(x,y,2,0,Math.PI*2); ctx.fill();
+    }
+    ctx.restore();
+
+    // running mean line
+    ctx.save();
+    ctx.strokeStyle=cssVar('--accent'); ctx.lineWidth=2.2; ctx.lineJoin='round';
+    ctx.beginPath();
+    let running=0;
+    const lstep=Math.max(1,Math.floor(n/1500));
+    for(let i=0;i<n;i++){
+      running+=lln.draws[i];
+      if(i%lstep===0 || i===n-1){
+        const x=p.x(xDomain,i+1), y=p.y(yDomain,running/(i+1));
+        if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+      }
+    }
+    ctx.stroke();
+    ctx.restore();
+  }
+}
+function lln_stopPlay(){
+  lln.running=false;
+  document.getElementById('lln-play').textContent='▶ 自動実行';
+  document.getElementById('lln-play').setAttribute('aria-pressed','false');
+  if(lln.raf) cancelAnimationFrame(lln.raf);
+}
+function lln_playLoop(ts){
+  if(!lln.running) return;
+  if(!lln.lastTs) lln.lastTs=ts;
+  const dt=(ts-lln.lastTs)/1000; lln.lastTs=ts;
+  lln.acc += dt*lln.speed;
+  const toAdd=Math.floor(lln.acc);
+  if(toAdd>0){ lln.acc-=toAdd; lln_addN(toAdd); }
+  if(lln.draws.length>=8000) { lln_stopPlay(); return; }
+  lln.raf=requestAnimationFrame(lln_playLoop);
+}
+function initLLN(){
+  const segEl=document.getElementById('lln-pop-seg');
+  seg(segEl, Object.keys(LLN_POPS).map(id=>({id,label:LLN_POPS[id].label})), lln.popId, id=>{
+    lln.popId=id;
+    document.getElementById('lln-p-field').style.display = id==='coin' ? '' : 'none';
+    document.getElementById('lln-pop-hint').textContent = LLN_POPS[id].hint;
+    lln_reset();
+  });
+  document.getElementById('lln-p-field').style.display = lln.popId==='coin' ? '' : 'none';
+  document.getElementById('lln-pop-hint').textContent = LLN_POPS[lln.popId].hint;
+
+  const pInput=document.getElementById('lln-p');
+  pInput.addEventListener('input', ()=>{
+    lln.p=parseFloat(pInput.value);
+    document.getElementById('lln-p-val').textContent=fmt(lln.p,2);
+    if(lln.popId==='coin') lln_update();
+  });
+  document.getElementById('lln-p-val').textContent=fmt(lln.p,2);
+
+  const speedInput=document.getElementById('lln-speed');
+  const speedLabel=()=> document.getElementById('lln-speed-val').textContent = speedInput.value+' 回/秒';
+  speedInput.addEventListener('input', ()=>{ lln.speed=parseFloat(speedInput.value); speedLabel(); });
+  speedLabel();
+
+  document.getElementById('lln-add1').addEventListener('click', ()=>lln_addN(1));
+  document.getElementById('lln-add10').addEventListener('click', ()=>lln_addN(10));
+  document.getElementById('lln-add100').addEventListener('click', ()=>lln_addN(100));
+  document.getElementById('lln-reset').addEventListener('click', ()=>{ lln_stopPlay(); lln_reset(); });
+  document.getElementById('lln-play').addEventListener('click', (e)=>{
+    if(lln.running){ lln_stopPlay(); }
+    else{
+      lln.running=true; lln.lastTs=null;
+      e.target.textContent='⏸ 停止'; e.target.setAttribute('aria-pressed','true');
+      lln.raf=requestAnimationFrame(lln_playLoop);
+    }
+  });
+
+  lln_addN(30);
+}
+
+/* =========================================================================
+   02 CLT
+   ========================================================================= */
+const CLT_POPS = {
+  uniform:{ label:'一様分布', domain:[0,10],
+    mean:5, sdv:10/Math.sqrt(12),
+    pdf:x=> (x>=0&&x<=10)?0.1:0,
+    sample:()=> randUniform(0,10) },
+  exp:{ label:'指数分布(右に歪み)', domain:[0,14],
+    mean:2, sdv:2,
+    pdf:x=> x<0?0:0.5*Math.exp(-0.5*x),
+    sample:()=> randExp(0.5) },
+  bimodal:{ label:'二峰性分布', domain:[-2,12],
+    mean:5, sdv:Math.sqrt(0.5*(0.6*0.6+9)+0.5*(0.6*0.6+9)),
+    pdf:x=> 0.5*normalPDF(x,2,0.6)+0.5*normalPDF(x,8,0.6),
+    sample:()=> Math.random()<0.5 ? randNormal(2,0.6) : randNormal(8,0.6) },
+};
+const clt = { popId:'uniform', n:5, means:[], running:false, raf:null, target:0 };
+
+function clt_pop(){ return CLT_POPS[clt.popId]; }
+function clt_reset(){ clt.means=[]; clt.target=0; clt_update(); }
+function clt_drawOneSampleMean(){
+  const pop=clt_pop();
+  let s=0;
+  for(let i=0;i<clt.n;i++) s+=pop.sample();
+  clt.means.push(s/clt.n);
+}
+function clt_stepBatch(batch){
+  let added=0;
+  while(clt.means.length<clt.target && added<batch){ clt_drawOneSampleMean(); added++; }
+}
+function clt_loop(){
+  if(!clt.running) return;
+  clt_stepBatch(60);
+  clt_update();
+  if(clt.means.length>=clt.target){ clt.running=false; document.getElementById('clt-run').disabled=false; document.getElementById('clt-more').disabled=false; return; }
+  clt.raf=requestAnimationFrame(clt_loop);
+}
+function clt_run(addCount){
+  clt.target += addCount;
+  if(clt.target>20000) clt.target=20000;
+  if(!clt.running){
+    clt.running=true;
+    document.getElementById('clt-run').disabled=true;
+    document.getElementById('clt-more').disabled=true;
+    clt.raf=requestAnimationFrame(clt_loop);
+  }
+}
+function clt_update(){
+  const pop=clt_pop();
+  const r=clt.means.length;
+  const se_theory = pop.sdv/Math.sqrt(clt.n);
+  document.getElementById('clt-r').textContent=r;
+  document.getElementById('clt-mu').textContent=fmt(pop.mean,2);
+  document.getElementById('clt-se-theory').textContent=fmt(se_theory,3);
+  document.getElementById('clt-se-obs').textContent = r>1 ? fmt(sd(clt.means),3) : '—';
+  document.getElementById('clt-n-echo').textContent = clt.n;
+  document.getElementById('clt-pop-sub').textContent = `μ=${fmt(pop.mean,2)}, σ=${fmt(pop.sdv,2)}`;
+  clt_draw_pop_chart();
+  clt_draw_means_chart();
+}
+function clt_draw_pop_chart(){
+  const canvas=document.getElementById('clt-pop-canvas');
+  if(!canvas.offsetParent) return;
+  const pop=clt_pop();
+  const p=makePlot(canvas,{l:44,r:14,t:10,b:24});
+  const xDomain=pop.domain;
+  let ymax=0;
+  const N=200;
+  for(let i=0;i<=N;i++){ const x=xDomain[0]+(xDomain[1]-xDomain[0])*i/N; ymax=Math.max(ymax,pop.pdf(x)); }
+  ymax*=1.15;
+  const yDomain=[0,ymax];
+  drawFrame(p,xDomain,yDomain, niceTicks(xDomain[0],xDomain[1],6), niceTicks(0,ymax,3), v=>fmt(v,0), v=>fmt(v,2));
+  const ctx=p.ctx;
+  ctx.save();
+  ctx.beginPath();
+  for(let i=0;i<=N;i++){
+    const x=xDomain[0]+(xDomain[1]-xDomain[0])*i/N;
+    const y=pop.pdf(x);
+    const px=p.x(xDomain,x), py=p.y(yDomain,y);
+    if(i===0) ctx.moveTo(px,py); else ctx.lineTo(px,py);
+  }
+  ctx.lineTo(p.x(xDomain,xDomain[1]), p.y(yDomain,0));
+  ctx.lineTo(p.x(xDomain,xDomain[0]), p.y(yDomain,0));
+  ctx.closePath();
+  ctx.fillStyle=cssVar('--accent-soft'); ctx.globalAlpha=0.7; ctx.fill();
+  ctx.globalAlpha=1;
+  ctx.strokeStyle=cssVar('--accent'); ctx.lineWidth=2;
+  ctx.beginPath();
+  for(let i=0;i<=N;i++){
+    const x=xDomain[0]+(xDomain[1]-xDomain[0])*i/N;
+    const y=pop.pdf(x);
+    const px=p.x(xDomain,x), py=p.y(yDomain,y);
+    if(i===0) ctx.moveTo(px,py); else ctx.lineTo(px,py);
+  }
+  ctx.stroke();
+  ctx.setLineDash([4,4]); ctx.strokeStyle=cssVar('--accent-2');
+  const mx=p.x(xDomain,pop.mean);
+  ctx.beginPath(); ctx.moveTo(mx,p.pad.t); ctx.lineTo(mx,p.pad.t+p.plotH); ctx.stroke();
+  ctx.restore();
+}
+function clt_draw_means_chart(){
+  const canvas=document.getElementById('clt-means-canvas');
+  if(!canvas.offsetParent) return;
+  const pop=clt_pop();
+  const se = pop.sdv/Math.sqrt(clt.n);
+  const half = Math.max(se*4.5, 0.6);
+  const xDomain=[pop.mean-half, pop.mean+half];
+  const p=makePlot(canvas,{l:44,r:14,t:12,b:26});
+
+  const bins=40;
+  const w=(xDomain[1]-xDomain[0])/bins;
+  const counts=new Array(bins).fill(0);
+  const r=clt.means.length;
+  for(const m of clt.means){
+    let idx=Math.floor((m-xDomain[0])/w);
+    if(idx<0) idx=0; if(idx>=bins) idx=bins-1;
+    counts[idx]++;
+  }
+  const density = counts.map(c=> r? c/(r*w) : 0);
+  let ymaxHist=Math.max(...density,0);
+  const theoryPeak = 1/(se*Math.sqrt(2*Math.PI));
+  const ymax=Math.max(ymaxHist, theoryPeak)*1.15 || 1;
+  const yDomain=[0,ymax];
+  drawFrame(p,xDomain,yDomain, niceTicks(xDomain[0],xDomain[1],5), niceTicks(0,ymax,3), v=>fmt(v,1), v=>fmt(v,2));
+  const ctx=p.ctx;
+
+  ctx.save();
+  ctx.fillStyle=cssVar('--accent');
+  for(let i=0;i<bins;i++){
+    if(density[i]<=0) continue;
+    const x0=p.x(xDomain, xDomain[0]+i*w);
+    const x1=p.x(xDomain, xDomain[0]+(i+1)*w);
+    const y0=p.y(yDomain,0), y1=p.y(yDomain,density[i]);
+    ctx.fillRect(Math.min(x0,x1)+0.5, y1, Math.max(1,Math.abs(x1-x0)-1), y0-y1);
+  }
+  ctx.restore();
+
+  if(r>0){
+    ctx.save();
+    ctx.strokeStyle=cssVar('--accent-2'); ctx.lineWidth=2.2;
+    ctx.beginPath();
+    const N=160;
+    for(let i=0;i<=N;i++){
+      const x=xDomain[0]+(xDomain[1]-xDomain[0])*i/N;
+      const y=normalPDF(x,pop.mean,se);
+      const px=p.x(xDomain,x), py=p.y(yDomain,y);
+      if(i===0) ctx.moveTo(px,py); else ctx.lineTo(px,py);
+    }
+    ctx.stroke();
+    ctx.restore();
+  }
+}
+function initCLT(){
+  const segEl=document.getElementById('clt-pop-seg');
+  seg(segEl, Object.keys(CLT_POPS).map(id=>({id,label:CLT_POPS[id].label})), clt.popId, id=>{
+    clt.popId=id; clt.running=false; if(clt.raf) cancelAnimationFrame(clt.raf);
+    document.getElementById('clt-run').disabled=false; document.getElementById('clt-more').disabled=false;
+    clt_reset();
+    clt_run(2000);
+  });
+
+  const nInput=document.getElementById('clt-n');
+  nInput.addEventListener('input', ()=>{
+    clt.n=parseInt(nInput.value,10);
+    document.getElementById('clt-n-val').textContent=clt.n;
+    clt.running=false; if(clt.raf) cancelAnimationFrame(clt.raf);
+    document.getElementById('clt-run').disabled=false; document.getElementById('clt-more').disabled=false;
+    clt_reset();
+    clt_run(2000);
+  });
+
+  document.getElementById('clt-run').addEventListener('click', ()=>{ clt_reset(); clt_run(2000); });
+  document.getElementById('clt-more').addEventListener('click', ()=> clt_run(2000));
+  document.getElementById('clt-reset').addEventListener('click', ()=>{
+    clt.running=false; if(clt.raf) cancelAnimationFrame(clt.raf);
+    document.getElementById('clt-run').disabled=false; document.getElementById('clt-more').disabled=false;
+    clt_reset();
+  });
+
+  clt_run(2000);
+}
+
+/* =========================================================================
+   03 t-test
+   ========================================================================= */
+const tt = { muA:10, muB:12, sd:4, n:15, alpha:0.05, A:[], B:[], lastResult:null };
+
+function tt_draw(){
+  tt.A=[]; tt.B=[];
+  for(let i=0;i<tt.n;i++) tt.A.push(randNormal(tt.muA,tt.sd));
+  for(let i=0;i<tt.n;i++) tt.B.push(randNormal(tt.muB,tt.sd));
+  tt_compute();
+  tt_render();
+}
+function tt_compute(A,B){
+  A=A||tt.A; B=B||tt.B;
+  const mA=mean(A), mB=mean(B), vA=variance(A), vB=variance(B);
+  const nA=A.length, nB=B.length;
+  const se2 = vA/nA + vB/nB;
+  const t = (mA-mB)/Math.sqrt(se2);
+  const df = (se2*se2) / ( (vA/nA)**2/(nA-1) + (vB/nB)**2/(nB-1) );
+  const p = tTwoTailedP(t, df);
+  return {mA,mB,vA,vB,t,df,p};
+}
+function tt_render(){
+  const res = tt_compute();
+  tt.lastResult = res;
+  document.getElementById('tt-meanA').textContent = fmt(res.mA,2);
+  document.getElementById('tt-meanB').textContent = fmt(res.mB,2);
+  document.getElementById('tt-tval').textContent = fmt(res.t,3);
+  document.getElementById('tt-df').textContent = fmt(res.df,1);
+  document.getElementById('tt-pval').textContent = res.p<0.001 ? '< 0.001' : fmt(res.p,3);
+
+  const verdict=document.getElementById('tt-verdict');
+  const sig = res.p < tt.alpha;
+  verdict.className = 'verdict ' + (sig?'sig':'notsig');
+  verdict.querySelector('.chip').textContent = sig? '有意':'有意でない';
+  document.getElementById('tt-verdict-text').textContent = sig
+    ? `p = ${fmt(res.p,3)} < α = ${tt.alpha} なので、差は偶然のばらつきでは説明しにくいと判断します。`
+    : `p = ${fmt(res.p,3)} ≥ α = ${tt.alpha} なので、この差は偶然のばらつきの範囲内と判断します。`;
+
+  tt_draw_dots(res);
+  tt_draw_dist(res);
+}
+function tt_draw_dots(res){
+  const canvas=document.getElementById('tt-dots-canvas');
+  if(!canvas.offsetParent) return;
+  const all=tt.A.concat(tt.B);
+  const lo=Math.min(...all), hi=Math.max(...all);
+  const padv=(hi-lo)*0.12 || 1;
+  const xDomain=[lo-padv,hi+padv];
+  const p=makePlot(canvas,{l:44,r:14,t:10,b:24});
+  const yDomain=[0,1];
+  drawFrame(p, xDomain, [0,1], niceTicks(xDomain[0],xDomain[1],6), [], v=>fmt(v,1), v=>'');
+  const ctx=p.ctx;
+  function row(data, yBase, color, m){
+    ctx.save();
+    ctx.fillStyle=color; ctx.globalAlpha=0.6;
+    data.forEach(v=>{
+      const jitter=(Math.random()-0.5)*0.22;
+      const x=p.x(xDomain,v), y=p.y(yDomain, yBase+jitter);
+      ctx.beginPath(); ctx.arc(x,y,3,0,Math.PI*2); ctx.fill();
+    });
+    ctx.globalAlpha=1;
+    ctx.strokeStyle=color; ctx.lineWidth=2.5;
+    const mx=p.x(xDomain,m);
+    ctx.beginPath(); ctx.moveTo(mx,p.y(yDomain,yBase-0.3)); ctx.lineTo(mx,p.y(yDomain,yBase+0.3)); ctx.stroke();
+    ctx.restore();
+  }
+  row(tt.A, 0.72, cssVar('--accent'), res.mA);
+  row(tt.B, 0.28, cssVar('--accent-7'), res.mB);
+
+  ctx.save();
+  ctx.fillStyle=cssVar('--ink-2'); ctx.font='11px "Zen Kaku Gothic New", sans-serif'; ctx.textAlign='left'; ctx.textBaseline='middle';
+  ctx.fillText('A', p.pad.l+4, p.y(yDomain,0.94));
+  ctx.fillText('B', p.pad.l+4, p.y(yDomain,0.50));
+  ctx.restore();
+}
+function tt_draw_dist(res){
+  const canvas=document.getElementById('tt-dist-canvas');
+  if(!canvas.offsetParent) return;
+  const df=res.df;
+  const crit=tQuantileTwoTailed(tt.alpha, df);
+  const xr=Math.max(4.5, Math.abs(res.t)*1.25, crit*1.25);
+  const xDomain=[-xr,xr];
+  let ymax=tPDF(0,df)*1.15;
+  const yDomain=[0,ymax];
+  const p=makePlot(canvas,{l:44,r:14,t:12,b:26});
+  drawFrame(p,xDomain,yDomain, niceTicks(xDomain[0],xDomain[1],6), niceTicks(0,ymax,3), v=>fmt(v,1), v=>fmt(v,2));
+  const ctx=p.ctx;
+  const N=240;
+
+  function fillRegion(xmin,xmax,color){
+    ctx.save();
+    ctx.beginPath();
+    let started=false;
+    for(let i=0;i<=N;i++){
+      const x=xDomain[0]+(xDomain[1]-xDomain[0])*i/N;
+      if(x<xmin || x>xmax) continue;
+      const px=p.x(xDomain,x), py=p.y(yDomain,tPDF(x,df));
+      if(!started){ ctx.moveTo(p.x(xDomain,xmin),p.y(yDomain,0)); ctx.lineTo(px,py); started=true; }
+      else ctx.lineTo(px,py);
+    }
+    ctx.lineTo(p.x(xDomain,xmax),p.y(yDomain,0));
+    ctx.closePath();
+    ctx.fillStyle=color; ctx.fill();
+    ctx.restore();
+  }
+  fillRegion(-xr, -crit, cssVar('--accent-2-soft'));
+  fillRegion(crit, xr, cssVar('--accent-2-soft'));
+
+  ctx.save();
+  ctx.strokeStyle=cssVar('--ink'); ctx.lineWidth=2;
+  ctx.beginPath();
+  for(let i=0;i<=N;i++){
+    const x=xDomain[0]+(xDomain[1]-xDomain[0])*i/N;
+    const px=p.x(xDomain,x), py=p.y(yDomain,tPDF(x,df));
+    if(i===0) ctx.moveTo(px,py); else ctx.lineTo(px,py);
+  }
+  ctx.stroke();
+  ctx.restore();
+
+  ctx.save();
+  ctx.strokeStyle=cssVar('--accent-2'); ctx.setLineDash([3,3]); ctx.lineWidth=1.5;
+  [-crit,crit].forEach(v=>{
+    const x=p.x(xDomain,v);
+    ctx.beginPath(); ctx.moveTo(x,p.pad.t); ctx.lineTo(x,p.pad.t+p.plotH); ctx.stroke();
+  });
+  ctx.restore();
+
+  ctx.save();
+  ctx.strokeStyle=cssVar('--accent-7'); ctx.lineWidth=2.4;
+  const tx=p.x(xDomain,res.t);
+  ctx.beginPath(); ctx.moveTo(tx,p.pad.t); ctx.lineTo(tx,p.pad.t+p.plotH); ctx.stroke();
+  ctx.restore();
+}
+function tt_null_sim(){
+  const R=1000;
+  const ps=[];
+  let rejects=0;
+  const commonMu=tt.muA;
+  for(let i=0;i<R;i++){
+    const A=[],B=[];
+    for(let j=0;j<tt.n;j++) A.push(randNormal(commonMu,tt.sd));
+    for(let j=0;j<tt.n;j++) B.push(randNormal(commonMu,tt.sd));
+    const r=tt_compute(A,B);
+    ps.push(r.p);
+    if(r.p<tt.alpha) rejects++;
+  }
+  document.getElementById('tt-null-result').textContent =
+    `1000回中 ${rejects}回 (${fmt(100*rejects/R,1)}%) が「有意」と判定されました(設定した α=${tt.alpha} に近い値になるはずです)。`;
+  const wrap=document.getElementById('tt-null-wrap');
+  wrap.hidden=false;
+  requestAnimationFrame(()=> tt_draw_null_hist(ps));
+}
+function tt_draw_null_hist(ps){
+  const canvas=document.getElementById('tt-null-canvas');
+  const xDomain=[0,1];
+  const bins=20;
+  const w=1/bins;
+  const counts=new Array(bins).fill(0);
+  ps.forEach(v=>{ let idx=Math.floor(v/w); if(idx>=bins) idx=bins-1; if(idx<0) idx=0; counts[idx]++; });
+  const density=counts.map(c=>c/(ps.length*w));
+  const ymax=Math.max(...density,1.4)*1.15;
+  const p=makePlot(canvas,{l:44,r:14,t:12,b:26});
+  const yDomain=[0,ymax];
+  drawFrame(p,xDomain,yDomain, niceTicks(0,1,5), niceTicks(0,ymax,3), v=>fmt(v,1), v=>fmt(v,2));
+  const ctx=p.ctx;
+  ctx.save();
+  for(let i=0;i<bins;i++){
+    const x0=p.x(xDomain,i*w), x1=p.x(xDomain,(i+1)*w);
+    const y0=p.y(yDomain,0), y1=p.y(yDomain,density[i]);
+    const binCenter=(i+0.5)*w;
+    ctx.fillStyle = binCenter<tt.alpha ? cssVar('--critical') : cssVar('--accent');
+    ctx.fillRect(Math.min(x0,x1)+0.5,y1,Math.max(1,Math.abs(x1-x0)-1),y0-y1);
+  }
+  ctx.restore();
+  ctx.save();
+  ctx.strokeStyle=cssVar('--ink-2'); ctx.setLineDash([3,3]); ctx.lineWidth=1.5;
+  const ax=p.x(xDomain,tt.alpha);
+  ctx.beginPath(); ctx.moveTo(ax,p.pad.t); ctx.lineTo(ax,p.pad.t+p.plotH); ctx.stroke();
+  ctx.restore();
+}
+function initTtest(){
+  const bind=(id,prop,fmtd)=>{
+    const el=document.getElementById(id);
+    el.addEventListener('input', ()=>{
+      tt[prop]=parseFloat(el.value);
+      document.getElementById(id+'-val').textContent = fmtd(tt[prop]);
+      tt_render();
+    });
+    document.getElementById(id+'-val').textContent = fmtd(tt[prop]);
+  };
+  bind('tt-muA','muA', v=>fmt(v,1));
+  bind('tt-muB','muB', v=>fmt(v,1));
+  bind('tt-sd','sd', v=>fmt(v,1));
+  bind('tt-n','n', v=>String(v));
+
+  const alphaSeg=document.getElementById('tt-alpha-seg');
+  seg(alphaSeg, [{id:'0.10',label:'0.10'},{id:'0.05',label:'0.05'},{id:'0.01',label:'0.01'}], '0.05', id=>{
+    tt.alpha=parseFloat(id); tt_render();
+  });
+
+  document.getElementById('tt-draw').addEventListener('click', tt_draw);
+  document.getElementById('tt-null-sim').addEventListener('click', tt_null_sim);
+
+  tt_draw();
+}
+
+/* =========================================================================
+   Router
+   ========================================================================= */
+const ROUTES = ['home','lln','clt','ttest'];
+function currentRouteId(){
+  const h=(location.hash||'#/').slice(1);
+  const id=h.replace(/^\//,'') || 'home';
+  return ROUTES.includes(id) ? id : 'home';
+}
+function showRoute(){
+  const id=currentRouteId();
+  ROUTES.forEach(r=>{
+    document.getElementById('page-'+r).hidden = (r!==id);
+  });
+  document.querySelectorAll('.crumb').forEach(c=>{
+    const route=c.getAttribute('data-route');
+    const match = (route==='/' && id==='home') || route==='/'+id;
+    if(match) c.setAttribute('aria-current','page'); else c.removeAttribute('aria-current');
+  });
+  window.scrollTo(0,0);
+  requestAnimationFrame(()=>{
+    if(id==='lln') lln_draw_chart();
+    if(id==='clt'){ clt_draw_pop_chart(); clt_draw_means_chart(); }
+    if(id==='ttest' && tt.lastResult){ tt_draw_dots(tt.lastResult); tt_draw_dist(tt.lastResult); }
+  });
+}
+window.addEventListener('hashchange', showRoute);
+window.addEventListener('resize', ()=>{
+  const id=currentRouteId();
+  if(id==='lln') lln_draw_chart();
+  if(id==='clt'){ clt_draw_pop_chart(); clt_draw_means_chart(); }
+  if(id==='ttest' && tt.lastResult){ tt_draw_dots(tt.lastResult); tt_draw_dist(tt.lastResult); }
+});
+
+function initAll(){
+  renderHome();
+  initLLN();
+  initCLT();
+  initTtest();
+  showRoute();
+}
+if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', initAll);
+else initAll();
+</script>
+</body>
+</html>
