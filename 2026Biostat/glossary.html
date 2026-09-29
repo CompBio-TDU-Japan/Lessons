@@ -211,6 +211,7 @@ footer.site{ margin-top:48px; padding-block:24px 40px; border-top:1px solid var(
     <a class="crumb" href="index.html#/ttest">03 t検定</a>
     <a class="crumb" href="natural-wine.html">04 ランダム化と交絡</a>
     <a class="crumb" href="time_randomization_wine_exercise.html">05 実験順序のランダム化</a>
+    <a class="crumb" href="optional_stopping.html">06 有意になるまで繰り返す罠</a>
   </nav>
 </header>
 
@@ -247,6 +248,7 @@ footer.site{ margin-top:48px; padding-block:24px 40px; border-top:1px solid var(
     <a href="#t-exp">期待値・母平均</a><a href="#t-dev">偏差</a><a href="#t-var">分散</a><a href="#t-sd">標準偏差</a>
     <a href="#t-stat">統計量</a><a href="#t-xbar">標本平均</a><a href="#t-S2">標本分散</a><a href="#t-s2">不偏分散</a><a href="#t-df">自由度</a><a href="#t-s">標本標準偏差</a>
     <a href="#t-sampdist">標本分布</a><a href="#t-se">標準誤差</a><a href="#t-est">推定量・推定値</a><a href="#t-bias">バイアス</a><a href="#t-unbiased">不偏性</a><a href="#t-consist">一致性</a>
+    <a href="#t-multiplicity">多重性の調整</a><a href="#t-interim">中間解析</a><a href="#t-gsd">群逐次デザイン</a><a href="#t-alphaspend">αスペンディング</a>
   </div>
 </section>
 
@@ -523,6 +525,47 @@ footer.site{ margin-top:48px; padding-block:24px 40px; border-top:1px solid var(
 </section>
 
 <section class="block">
+  <h2>検定を繰り返すときの対処</h2>
+  <p class="sub">同じデータや似た仮説に対して検定を何度も行うと、誤って「有意」と判定してしまう確率は有意水準より大きくなります。<a class="tl" href="optional_stopping.html">06</a>で見た問題に、実際の研究がどう対処するかの用語です。</p>
+  <div class="panel terms">
+
+    <article class="term" id="t-multiplicity">
+      <div><h3>多重性の調整</h3><span class="en">multiplicity adjustment</span></div>
+      <div class="body">
+        <p class="def"><strong>複数回の検定を行うとき、少なくとも1つが偶然「有意」になってしまう確率が有意水準より膨らむ現象を抑えるため、個々の検定の判定基準を厳しくすること。</strong>「多重比較の補正」ともいう。</p>
+        <p><span class="lbl">例</span>最も単純な方法はBonferroni補正で、検定回数 m で有意水準を割り(α/m)、各検定はその基準で判定する。個人的にはStorey法による補正を推奨する。詳細は<a href="https://www.jstage.jst.go.jp/article/jjb/29/2/29_2_125/_pdf">解説書</a>を参考にされたい。</p>
+        <p><span class="lbl warn">注意</span><a class="tl" href="optional_stopping.html">06</a>の「1000人でシミュレーション」は、多重性を調整せずに検定を繰り返した場合、誤判定の確率がどれだけ膨らむかを示したもの。<a class="tl" href="#t-gsd">群逐次デザイン</a>の<a class="tl" href="#t-alphaspend">αスペンディング</a>も、多重性調整の一種。</p>
+      </div>
+    </article>
+
+    <article class="term" id="t-interim">
+      <div><h3>中間解析</h3><span class="en">interim analysis</span></div>
+      <div class="body">
+        <p class="def"><strong>臨床試験などで、データ収集が完了する前に、あらかじめ計画された時点でデータを解析すること。</strong>安全性の確認や、早期に有効性が明らかな場合の試験終了のために行う。</p>
+        <p><span class="lbl warn">注意</span>「結果を見ながら、確認するたびに検定してしまう」のとは異なる。中間解析は、いつ・何回行うかを事前に決め、<a class="tl" href="#t-gsd">群逐次デザイン</a>のような統計的な補正とセットで行う。</p>
+      </div>
+    </article>
+
+    <article class="term" id="t-gsd">
+      <div><h3>群逐次デザイン</h3><span class="en">group sequential design</span></div>
+      <div class="body">
+        <p class="def"><strong>データを一度に集めてから検定するのではなく、あらかじめ決めた複数の<a class="tl" href="#t-interim">中間解析</a>の時点ごとに検定を行い、有意になった時点で試験を終了できるようにした実験計画。</strong>各回の判定基準を、試験全体の有意水準が設定どおりに保たれるよう調整しておく。</p>
+        <p><span class="lbl">補足</span><a class="tl" href="optional_stopping.html">06</a>の「有意になるまで繰り返す」手順と結果だけ見ると似ているが、決定的に異なるのは、確認する回数と各回の判定基準を実験前に決めておく点。行き当たりばったりに繰り返すことはない。</p>
+      </div>
+    </article>
+
+    <article class="term" id="t-alphaspend">
+      <div><h3>αスペンディング</h3><span class="en">alpha spending function</span></div>
+      <div class="body">
+        <p class="def"><strong><a class="tl" href="#t-gsd">群逐次デザイン</a>において、試験全体の有意水準(例: 0.05)を、複数回の<a class="tl" href="#t-interim">中間解析</a>にどう配分するかを決める関数。</strong>「αスペンディング関数」ともいう。試験の進み具合に応じて、それまでに使ってよい有意水準の累計を定める。</p>
+        <p><span class="lbl">例</span>2回の中間解析を行うとしても、各回の判定基準は0.05よりずっと厳しい値(代表的な方法ではおよそ0.005〜0.03程度)に抑えることで、2回検定しても試験全体の誤判定確率は5%に保たれる。</p>
+        <p><span class="lbl">補足</span>序盤の基準を特に厳しくする方式(O'Brien-Fleming型)や、各回にほぼ均等に配分する方式(Pocock型)など、複数の配分の仕方が知られている。</p>
+      </div>
+    </article>
+  </div>
+</section>
+
+<section class="block">
   <h2>記号一覧</h2>
   <div class="panel tablewrap">
     <table>
@@ -610,6 +653,8 @@ footer.site{ margin-top:48px; padding-block:24px 40px; border-top:1px solid var(
     <a class="panel" href="index.html#/clt"><b>02 中心極限定理</b><span>標本サイズ、標本数、標本分布、標準誤差</span></a>
     <a class="panel" href="index.html#/ttest"><b>03 t検定</b><span>標本平均、不偏分散、標準誤差、自由度</span></a>
     <a class="panel" href="natural-wine.html"><b>04 ランダム化と交絡</b><span>無作為割り付けと無作為抽出の違い</span></a>
+    <a class="panel" href="time_randomization_wine_exercise.html"><b>05 実験順序のランダム化</b><span>無作為割り付け、交絡</span></a>
+    <a class="panel" href="optional_stopping.html"><b>06 有意になるまで繰り返す罠</b><span>多重性の調整、中間解析、群逐次デザイン、αスペンディング</span></a>
   </div>
 </section>
 

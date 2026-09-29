@@ -1,0 +1,543 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>そのp&lt;0.05は、本物だろうか？｜化合物Xの実験でみる「有意になるまで繰り返す」の罠</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;500;600;700&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+:root{
+  color-scheme: light;
+  --ink:#211d17;--muted:#6b6558;--paper:#faf8f3;--card:#fff;
+  --accent:#a15c0a;--accent-ink:#93540a;--accent-soft:#f6e6cf;
+  --teal:#136c5e;--teal-ink:#136c5e;--teal-soft:#dcefeb;
+  --line:#e1dbcb;--soft:#f2ede1;
+  --shadow: 0 1px 2px rgba(33,29,23,0.06), 0 10px 30px -12px rgba(33,29,23,0.18);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme: dark;
+    --ink:#f3efe6;--muted:#a89f8d;--paper:#16130e;--card:#211c15;
+    --accent:#a15c0a;--accent-ink:#e3a24a;--accent-soft:#3a2a15;
+    --teal:#229482;--teal-ink:#55c2ae;--teal-soft:#183430;
+    --line:#392f22;--soft:#241f17;
+    --shadow: 0 1px 2px rgba(0,0,0,0.35), 0 10px 30px -12px rgba(0,0,0,0.55);
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme: dark;
+  --ink:#f3efe6;--muted:#a89f8d;--paper:#16130e;--card:#211c15;
+  --accent:#a15c0a;--accent-ink:#e3a24a;--accent-soft:#3a2a15;
+  --teal:#229482;--teal-ink:#55c2ae;--teal-soft:#183430;
+  --line:#392f22;--soft:#241f17;
+  --shadow: 0 1px 2px rgba(0,0,0,0.35), 0 10px 30px -12px rgba(0,0,0,0.55);
+}
+
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:'Zen Kaku Gothic New','Hiragino Sans',sans-serif;line-height:1.75}
+h1,h2,h3{font-family:'Shippori Mincho','Hiragino Mincho ProN',serif;margin:0}
+a{color:inherit}
+button{font-family:inherit}
+
+main{max-width:900px;margin:auto;padding:32px 18px 72px}
+.top{margin-bottom:34px}
+.eyebrow{font-family:'IBM Plex Mono',monospace;color:var(--accent-ink);font-weight:700;letter-spacing:.14em;font-size:.72rem;text-transform:uppercase}
+h1{font-size:clamp(2rem,6vw,3.3rem);line-height:1.2;margin:.3em 0}
+.lead{font-size:1.08rem;max-width:700px;color:var(--muted)}
+.progress{display:flex;gap:7px;margin:28px 0}
+.progress span{height:5px;flex:1;background:var(--line);border-radius:5px}
+.progress span.on{background:var(--accent)}
+
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:clamp(22px,5vw,38px);margin:20px 0;box-shadow:var(--shadow)}
+.step{display:none}
+.step.active{display:block}
+.num{font-family:'IBM Plex Mono',monospace;font-size:.72rem;color:var(--accent-ink);font-weight:700;letter-spacing:.1em;text-transform:uppercase}
+h2{font-size:1.45rem;margin:.3em 0 .7em}
+.question{font-size:1.14rem;font-weight:700;margin:22px 0}
+.small{font-size:.9rem;color:var(--muted)}
+.tl{color:var(--teal-ink);text-decoration:underline dotted;text-underline-offset:2px}
+
+.btn{border:0;border-radius:10px;padding:12px 20px;font-weight:700;font-size:1rem;cursor:pointer;background:var(--accent);color:#fff}
+.btn.teal{background:var(--teal)}
+.btn.secondary{background:var(--soft);color:var(--ink)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}
+
+.note{background:var(--soft);padding:16px 18px;border-radius:12px;margin:20px 0}
+.reveal{border-left:5px solid var(--accent);padding:2px 0 2px 18px;margin:24px 0}
+.reveal.teal{border-color:var(--teal)}
+.bigline{font-family:'Shippori Mincho','Hiragino Mincho ProN',serif;font-size:1.3rem;font-weight:700}
+.formula{font-family:'IBM Plex Mono',monospace;background:var(--soft);border-radius:10px;padding:14px 16px;margin:14px 0;font-size:.92rem;overflow-x:auto}
+
+/* round timeline */
+.rounds{display:flex;flex-direction:column;gap:8px;margin:18px 0}
+.roundcard{display:grid;grid-template-columns:64px 1fr auto;align-items:center;gap:14px;padding:12px 14px;border:1px solid var(--line);border-radius:10px;background:var(--card)}
+.roundcard .rn{font-family:'IBM Plex Mono',monospace;font-weight:700;color:var(--muted);text-align:center}
+.roundcard .rtext{font-size:.92rem}
+.roundcard .rtext b{font-family:'IBM Plex Mono',monospace}
+.roundcard .badge{font-size:.72rem;font-weight:700;padding:4px 10px;border-radius:999px;white-space:nowrap}
+.badge.ns{background:var(--soft);color:var(--muted)}
+.badge.sig{background:var(--accent);color:#fff}
+.roundcard.sig{border-color:var(--accent);background:var(--accent-soft)}
+
+.sparkwrap{margin:18px 0;padding:14px 16px;border:1px solid var(--line);border-radius:12px;background:var(--card)}
+.sparkwrap .cap{font-size:.74rem;color:var(--muted);margin-bottom:6px}
+svg.spark{width:100%;height:140px;display:block}
+
+/* sim controls */
+.simgrid{display:flex;flex-wrap:wrap;gap:20px 32px;align-items:flex-end;margin-bottom:16px}
+.field{display:flex;flex-direction:column;gap:8px;min-width:220px}
+.field label{font-size:.8rem;font-weight:700;color:var(--muted);display:flex;justify-content:space-between;gap:10px}
+.field .val{font-family:'IBM Plex Mono',monospace;color:var(--accent-ink)}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:4px;border-radius:4px;background:var(--line);outline:none}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:var(--accent);border:2px solid var(--card);box-shadow:0 0 0 1px var(--accent);cursor:pointer}
+input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:var(--accent);border:2px solid var(--card);box-shadow:0 0 0 1px var(--accent);cursor:pointer}
+
+.canvas-wrap{position:relative;width:100%;height:260px;border:1px solid var(--line);border-radius:12px;background:var(--card);overflow:hidden}
+.canvas-wrap canvas{position:absolute;inset:0;width:100%;height:100%}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:.78rem;color:var(--muted);margin-top:10px}
+.legend .sw{display:inline-flex;align-items:center;gap:6px}
+.legend .ln{width:16px;height:0;border-top:2.5px solid}
+.legend .ln.dash{border-top-style:dashed}
+.legend .sq{width:11px;height:11px;border-radius:2px;flex:none}
+.legend .dotsw{width:9px;height:9px;border-radius:50%;flex:none}
+
+.statrow{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin:18px 0}
+.stat{padding:16px 18px;border-radius:12px;background:var(--soft);text-align:center}
+.stat .k{font-size:.76rem;color:var(--muted)}
+.stat strong{display:block;font-size:1.9rem;font-family:'IBM Plex Mono',monospace;margin-top:4px}
+.stat.hot strong{color:var(--accent-ink)}
+.stat.cool strong{color:var(--teal-ink)}
+
+.compare{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:18px 0}
+.compare .col{border-radius:12px;padding:18px;border:1px solid var(--line)}
+.compare .col.bad{background:var(--accent-soft);border-color:var(--accent)}
+.compare .col.good{background:var(--teal-soft);border-color:var(--teal)}
+.compare h3{font-size:1rem;margin-bottom:8px}
+.compare .pct{font-family:'IBM Plex Mono',monospace;font-size:1.7rem;font-weight:700}
+.compare .col.bad .pct{color:var(--accent-ink)}
+.compare .col.good .pct{color:var(--teal-ink)}
+@media(max-width:640px){.compare{grid-template-columns:1fr}}
+
+.footer-note{margin-top:34px;color:var(--muted);font-size:.9rem}
+
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;max-width:900px;margin:0 auto;padding:14px 18px;background:color-mix(in srgb, var(--paper) 88%, transparent);backdrop-filter:blur(6px);border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:baseline;gap:8px;text-decoration:none;color:inherit;white-space:nowrap}
+.brand .mark{font-family:'Shippori Mincho',serif;font-size:1.05rem;font-weight:700}
+.brand .mark small{font-family:'IBM Plex Mono',monospace;font-weight:400;font-size:.62rem;letter-spacing:.12em;color:var(--muted);display:block;margin-top:2px}
+.crumbs{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.crumb{font-family:'Zen Kaku Gothic New',sans-serif;font-size:.72rem;letter-spacing:.03em;padding:5px 10px;border-radius:100px;border:1px solid var(--line);color:var(--muted);text-decoration:none;white-space:nowrap}
+.crumb[aria-current="page"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.back-link{display:inline-block;font-size:.82rem;color:var(--muted);text-decoration:none;margin-bottom:10px}
+.back-link:hover{color:var(--accent-ink)}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="index.html#/"><span class="mark">統計実験室<small>STATISTICS LAB</small></span></a>
+  <nav class="crumbs">
+    <a class="crumb" href="index.html#/">目次</a>
+    <a class="crumb" href="glossary.html">00 基礎用語</a>
+    <a class="crumb" href="index.html#/lln">01 大数の法則</a>
+    <a class="crumb" href="index.html#/clt">02 中心極限定理</a>
+    <a class="crumb" href="index.html#/ttest">03 t検定</a>
+    <a class="crumb" href="natural-wine.html">04 ランダム化と交絡</a>
+    <a class="crumb" href="time_randomization_wine_exercise.html">05 実験順序のランダム化</a>
+    <a class="crumb" href="optional_stopping.html" aria-current="page">06 有意になるまで繰り返す罠</a>
+  </nav>
+</header>
+<main>
+<a class="back-link" href="index.html#/">← 目次に戻る</a>
+
+<section class="top">
+<div class="eyebrow">06 · OPTIONAL STOPPING</div>
+<h1>その p &lt; 0.05 は、<br>本物だろうか？</h1>
+<p class="lead">化合物Xの効果を確かめる卒業研究を追体験する演習である。何度も実験がうまくいかず、最後の最後で有意差が出た——そんな場面で、本当は何が起きているのかを確かめる。</p>
+<div class="progress" id="progress"></div>
+</section>
+
+<section id="s1" class="step active">
+<div class="card">
+<div class="num">STEP 1 / 7</div>
+<h2>研究テーマ</h2>
+<p>ある学生は、化合物Xが培養細胞の増殖を抑えるかどうかを調べている。1ラウンドごとに、対照群6ウェル・処理群6ウェルを用意して培養し、増殖の程度を表す指標(対照群の平均が100前後になるよう設定した、任意単位のスコア)を測定して2群のt検定を行う。</p>
+<div class="note"><strong>仮説:</strong> 化合物Xは細胞の増殖を抑える(処理群の増殖スコアが対照群より低い)。<br><strong>判定基準:</strong> 有意水準 α = 0.05。p &lt; 0.05 なら「効果あり」と判定する。</div>
+<p>1ラウンドで有意差が出なければ、条件を少し見直して次のラウンドに進む——これを繰り返していく。</p>
+<div class="actions"><button class="btn" onclick="go('s2')">実験を始める</button></div>
+</div>
+</section>
+
+<section id="s2" class="step">
+<div class="card">
+<div class="num">STEP 2 / 7</div>
+<h2>ラウンドを重ねる</h2>
+<p>ラウンドを1つ進めるたびに、新しいウェルで実験をやり直し、その回だけのデータでt検定をかけ直す。</p>
+<p class="small">これは9回目でようやく有意になった、一つの例である。実際には1回目で「たまたま」有意になることもあれば(その確率は毎回5%)、何十回試しても有意にならないこともある。</p>
+<div class="sparkwrap">
+  <div class="cap">ここまでのp値の推移(破線 = 有意水準 0.05)</div>
+  <svg class="spark" id="spark" viewBox="0 0 640 140" preserveAspectRatio="none"></svg>
+</div>
+<div class="rounds" id="rounds"></div>
+<p class="small" id="roundStatus">まだ1回も実験していない。「次のラウンドを実施」を押して始めよう。</p>
+<div class="actions">
+  <button class="btn" id="nextRoundBtn" onclick="nextRound()">次のラウンドを実施</button>
+  <button class="btn secondary" id="toS3Btn" style="display:none" onclick="go('s3')">結果を見る</button>
+</div>
+</div>
+</section>
+
+<section id="s3" class="step">
+<div class="card">
+<div class="num">STEP 3 / 7</div>
+<h2>やった、有意差が出た！</h2>
+<p>8回続けて有意差が出ず、9回目のラウンドで、ついに——</p>
+<div class="reveal">
+  <p class="bigline">p = 0.0126。対照群 105.7 に対し、処理群は 87.6。約17%の減少である。</p>
+  <p>何度も上手くいかなかった実験が、最後の最後で報われた。化合物Xには、やはり増殖を抑える効果があったのだ——そう思いたくなる瞬間である。</p>
+</div>
+<p class="question">この p &lt; 0.05 は、化合物Xに本当に効果があることを意味するだろうか？</p>
+<div class="actions"><button class="btn" onclick="go('s4')">でも、本当にそうだろうか？</button></div>
+</div>
+</section>
+
+<section id="s4" class="step">
+<div class="card">
+<div class="num">STEP 4 / 7</div>
+<h2>実は、最初から効果はゼロだった</h2>
+<div class="reveal">
+  <p class="bigline">このシミュレーションでは、化合物Xの真の効果は最初からゼロに設定されていた。</p>
+  <p>対照群と処理群は、まったく同じ母集団から生成されている。9回目に出た「17%の減少」は、化合物Xの効果ではなく、偶然のばらつきにすぎない。</p>
+</div>
+<p>1回の検定で、本当は差がないのに「有意」と誤って判定してしまう確率は、有意水準どおり 5% のはずである。しかし、この学生は9回も検定を繰り返している。</p>
+<div class="formula">少なくとも1回「有意」になってしまう確率 ≈ 1 − (1 − 0.05)<sup>9</sup> ≈ 37%</div>
+<p class="small">5%のつもりが、実際には約37%——8回外れても、9回目に「たまたま」有意になる可能性は、決して小さくない。</p>
+<div class="actions"><button class="btn" onclick="go('s5')">本当にそうなるか、1000人で試す</button></div>
+</div>
+</section>
+
+<section id="s5" class="step">
+<div class="card">
+<div class="num">STEP 5 / 7</div>
+<h2>1000人の学生でシミュレーション</h2>
+<p>化合物Xに本当は効果がない(真の効果ゼロ)という設定のまま、1000人の学生に同じ手順を踏んでもらう。各学生は「有意になるまで、最大 M 回までラウンドを繰り返す」というルールで実験する。</p>
+<div class="simgrid">
+  <div class="field">
+    <label>粘る回数(最大ラウンド数)M<span class="val" id="mVal">9</span></label>
+    <input type="range" id="mSlider" min="1" max="30" step="1" value="9">
+  </div>
+  <button class="btn" id="simBtn" onclick="runSim()">1000人でシミュレーション</button>
+</div>
+<div class="canvas-wrap"><canvas id="simCanvas"></canvas></div>
+<div class="legend">
+  <span class="sw"><span class="sq" style="background:var(--accent)"></span>実測(棒):M回までに「有意」に到達した人の割合</span>
+  <span class="sw"><span class="dotsw" style="background:var(--teal)"></span><span>理論値(点) 1 − (1 − 0.05)<sup style="font-size:.9em">round</sup></span></span>
+  <span class="sw"><span class="ln dash" style="border-color:var(--muted)"></span>本来の有意水準 5%</span>
+</div>
+<div class="statrow">
+  <div class="stat hot"><div class="k">M = <span id="mEcho">9</span> 回まで粘った場合</div><strong id="simRate">—</strong><div class="k">1000人中「有意」に到達した割合</div></div>
+  <div class="stat"><div class="k">本来の有意水準</div><strong>5.0%</strong><div class="k">1回だけ検定した場合</div></div>
+</div>
+<p class="small">M を大きくする(粘り続ける)ほど、棒は右肩上がりに伸びていく。根気さえあれば、「有意」はほぼ手に入ってしまう。</p>
+<div class="actions"><button class="btn" onclick="go('s6')">では、どうすればよいか</button></div>
+</div>
+</section>
+
+<section id="s6" class="step">
+<div class="card">
+<div class="num">STEP 6 / 7</div>
+<h2>「有意になるまで繰り返す」と「正しい手順」</h2>
+<p>問題は検定そのものではなく、<b>結果を見ながら、実験を続けるかどうかを決めてしまうこと</b>にある。同じ検定でも、手順を変えるだけで誤判定の確率は大きく変わる。</p>
+<div class="compare">
+  <div class="col bad">
+    <h3>有意になるまで繰り返す</h3>
+    <p class="pct" id="cmpBad">37%</p>
+    <p class="small">結果を見て「もう1回」を繰り返す。本来5%のはずの誤判定が、大きく膨らむ。</p>
+  </div>
+  <div class="col good">
+    <h3>事前に決めた1回だけの検定</h3>
+    <p class="pct">5%</p>
+    <p class="small">サンプルサイズを実験前に決め、そのデータで一度だけ検定する。誤判定は設定どおり5%に保たれる。</p>
+  </div>
+</div>
+<p>どうしても実験の途中で結果を確認したい場合は、確認する回数をあらかじめ決め、有意水準を割り引く補正(<a class="tl" href="glossary.html#t-gsd">群逐次デザイン</a>、<a class="tl" href="glossary.html#t-alphaspend">αスペンディング</a>など)を使う方法がある。いずれも「見た回数」を計算に織り込む点が共通している。</p>
+<div class="actions"><button class="btn" onclick="go('s7')">まとめへ</button></div>
+</div>
+</section>
+
+<section id="s7" class="step">
+<div class="card">
+<div class="num">STEP 7 / 7</div>
+<h2>まとめ</h2>
+<p class="question">「何度も実験して、最後にようやく有意差が出た」——この経験そのものが、注意信号かもしれない。</p>
+<div class="reveal teal">
+  <h3 class="bigline">有意になるまで繰り返すことの危険性</h3>
+  <p>検定を繰り返しながら、有意になった時点で実験をやめる——この手順は、本当は効果がなくても「有意」という結果にたどり着く確率を、設定した有意水準よりずっと大きくしてしまう。</p>
+</div>
+<p class="small">これは指導する側も見落としやすい問題である。「粘れば報われた」という手応えは、努力の証であると同時に、統計的には警戒すべきサインでもある。実験を重ねること自体が悪いのではなく、<b>何回試したかを記録し、それを判定に反映させないこと</b>が問題を生む。対処法は、サンプルサイズを事前に決めること、すべての試行を報告すること、繰り返す場合は群逐次デザインなど正しい補正を使うことである。</p>
+<div class="actions"><button class="btn secondary" onclick="restart()">最初からやり直す</button></div>
+</div>
+</section>
+
+<p class="footer-note">本ページは検定の繰り返しによる誤判定の危険性を示す学習用シミュレーションであり、特定の研究・化合物を指すものではない。</p>
+</main>
+
+<script>
+'use strict';
+/* ---------- narrative story (fixed, seed=238, n=6/group, sd=12, mu=100) ---------- */
+const STORY = [
+  {r:1,p:0.4807,mCtrl:104.18,mTrt:99.78,diff:-4.40},
+  {r:2,p:0.8400,mCtrl:97.79, mTrt:99.23,diff:1.44},
+  {r:3,p:0.5333,mCtrl:107.51,mTrt:103.07,diff:-4.45},
+  {r:4,p:0.6647,mCtrl:102.60,mTrt:100.33,diff:-2.27},
+  {r:5,p:0.0903,mCtrl:91.48, mTrt:104.85,diff:13.37},
+  {r:6,p:0.1601,mCtrl:108.04,mTrt:96.63, diff:-11.42},
+  {r:7,p:0.5747,mCtrl:99.01, mTrt:103.38,diff:4.37},
+  {r:8,p:0.1652,mCtrl:102.67,mTrt:94.68, diff:-7.99},
+  {r:9,p:0.0126,mCtrl:105.72,mTrt:87.62, diff:-18.10},
+];
+
+let current = 0;
+const steps = [...document.querySelectorAll('.step')];
+function progress(){
+  const p = document.getElementById('progress');
+  p.innerHTML = '';
+  steps.forEach((_, i) => { const s = document.createElement('span'); if (i <= current) s.className = 'on'; p.appendChild(s); });
+}
+function go(id){
+  steps.forEach(s => s.classList.remove('active'));
+  current = steps.findIndex(s => s.id === id);
+  document.getElementById(id).classList.add('active');
+  progress();
+  window.scrollTo({top:0,behavior:'smooth'});
+  if(id==='s5' && !simDone) runSim();
+}
+function restart(){ location.reload(); }
+
+/* ---------- step 2: reveal rounds one by one ---------- */
+let revealed = 0;
+function fmtDiff(d){ return (d>0?'+':'') + d.toFixed(2); }
+function directionText(row){
+  if (row.p < 0.05) return `処理群が対照群より ${Math.abs(row.diff).toFixed(1)} 低い(抑制方向)`;
+  const dir = row.diff < 0 ? '低い(抑制方向)' : '高い(逆方向)';
+  return `処理群が対照群より ${Math.abs(row.diff).toFixed(1)} ${dir}`;
+}
+function nextRound(){
+  if (revealed >= STORY.length) return;
+  const row = STORY[revealed];
+  revealed++;
+  const list = document.getElementById('rounds');
+  const el = document.createElement('div');
+  el.className = 'roundcard' + (row.p < 0.05 ? ' sig' : '');
+  el.innerHTML = `
+    <div class="rn">#${row.r}</div>
+    <div class="rtext">p = <b>${row.p.toFixed(4)}</b>・${directionText(row)}</div>
+    <div class="badge ${row.p < 0.05 ? 'sig' : 'ns'}">${row.p < 0.05 ? '有意 !' : '有意でない'}</div>`;
+  list.appendChild(el);
+  drawSpark();
+  const statusEl = document.getElementById('roundStatus');
+  if (row.p < 0.05) {
+    statusEl.textContent = `${row.r}回目で p < 0.05 になった。`;
+    document.getElementById('nextRoundBtn').style.display = 'none';
+    document.getElementById('toS3Btn').style.display = '';
+  } else {
+    statusEl.textContent = `${row.r}回目は有意でなかった(p = ${row.p.toFixed(3)})。もう一度条件を見直して、次のラウンドへ。`;
+  }
+}
+function drawSpark(){
+  const svg = document.getElementById('spark');
+  const W = 640, H = 140, padL = 34, padR = 12, padT = 14, padB = 20;
+  const n = STORY.length;
+  const x = i => padL + (W - padL - padR) * (i / (n - 1));
+  const y = p => padT + (H - padT - padB) * (1 - Math.min(p, 1));
+  let s = '';
+  const yThresh = y(0.05);
+  s += `<line x1="${padL}" y1="${yThresh}" x2="${W-padR}" y2="${yThresh}" stroke="var(--muted)" stroke-width="1.5" stroke-dasharray="4 4"/>`;
+  s += `<text x="${W-padR}" y="${yThresh-6}" text-anchor="end" font-size="11" fill="var(--muted)" font-family="IBM Plex Mono, monospace">p = 0.05</text>`;
+  s += `<line x1="${padL}" y1="${padT}" x2="${padL}" y2="${H-padB}" stroke="var(--line)" stroke-width="1"/>`;
+  s += `<line x1="${padL}" y1="${H-padB}" x2="${W-padR}" y2="${H-padB}" stroke="var(--line)" stroke-width="1"/>`;
+  [0,0.25,0.5,0.75,1].forEach(v=>{
+    s += `<text x="${padL-6}" y="${y(v)+4}" text-anchor="end" font-size="10" fill="var(--muted)" font-family="IBM Plex Mono, monospace">${v.toFixed(2)}</text>`;
+  });
+  if (revealed > 0) {
+    for (let i = 0; i < revealed; i++) {
+      const sig = STORY[i].p < 0.05;
+      s += `<circle cx="${x(i).toFixed(1)}" cy="${y(STORY[i].p).toFixed(1)}" r="${sig?6:4}" fill="${sig?'var(--accent)':'var(--card)'}" stroke="${sig?'var(--accent)':'var(--muted)'}" stroke-width="2"/>`;
+      s += `<text x="${x(i).toFixed(1)}" y="${H-padB+14}" text-anchor="middle" font-size="10" fill="var(--muted)" font-family="IBM Plex Mono, monospace">${i+1}</text>`;
+    }
+  }
+  svg.innerHTML = s;
+}
+drawSpark();
+
+/* ---------- shared stats helpers ---------- */
+function seeded(seed){ let x = seed >>> 0; return () => { x = (1664525 * x + 1013904223) >>> 0; return x / 4294967296; }; }
+function makeNormal(rng){
+  let spare = null;
+  return (mean, sd) => {
+    if (spare !== null) { const v = spare; spare = null; return mean + sd * v; }
+    let u, v, s;
+    do { u = rng()*2-1; v = rng()*2-1; s = u*u+v*v; } while (s >= 1 || s === 0);
+    const mul = Math.sqrt(-2*Math.log(s)/s);
+    spare = v * mul;
+    return mean + sd * u * mul;
+  };
+}
+function mean(a){ return a.reduce((s,x)=>s+x,0)/a.length; }
+function variance(a){ const m=mean(a); return a.reduce((s,x)=>s+(x-m)*(x-m),0)/(a.length-1); }
+function lgamma(x){
+  const c=[0.99999999999980993,676.5203681218851,-1259.1392167224028,771.32342877765313,
+           -176.61502916214059,12.507343278686905,-0.13857109526572012,9.9843695780195716e-6,1.5056327351493116e-7];
+  if(x<0.5) return Math.log(Math.PI/Math.sin(Math.PI*x)) - lgamma(1-x);
+  x-=1; let a=c[0]; const t=x+7.5;
+  for(let i=1;i<9;i++) a+=c[i]/(x+i);
+  return 0.5*Math.log(2*Math.PI) + (x+0.5)*Math.log(t) - t + Math.log(a);
+}
+function betacf(x,a,b){
+  const MAXIT=200, EPS=3e-14, FPMIN=1e-300;
+  const qab=a+b, qap=a+1, qam=a-1;
+  let c=1, d=1-qab*x/qap;
+  if(Math.abs(d)<FPMIN) d=FPMIN;
+  d=1/d; let h=d;
+  for(let m=1;m<=MAXIT;m++){
+    const m2=2*m;
+    let aa=m*(b-m)*x/((qam+m2)*(a+m2));
+    d=1+aa*d; if(Math.abs(d)<FPMIN)d=FPMIN;
+    c=1+aa/c; if(Math.abs(c)<FPMIN)c=FPMIN;
+    d=1/d; h*=d*c;
+    aa=-(a+m)*(qab+m)*x/((a+m2)*(qap+m2));
+    d=1+aa*d; if(Math.abs(d)<FPMIN)d=FPMIN;
+    c=1+aa/c; if(Math.abs(c)<FPMIN)c=FPMIN;
+    d=1/d; const del=d*c; h*=del;
+    if(Math.abs(del-1)<EPS) break;
+  }
+  return h;
+}
+function betai(a,b,x){
+  if(x<=0) return 0; if(x>=1) return 1;
+  const bt=Math.exp(lgamma(a+b)-lgamma(a)-lgamma(b)+a*Math.log(x)+b*Math.log(1-x));
+  if(x < (a+1)/(a+b+2)) return bt*betacf(x,a,b)/a;
+  return 1-bt*betacf(1-x,b,a)/b;
+}
+function tCDF(t,df){ const x=df/(df+t*t); const p=0.5*betai(df/2,0.5,x); return t>0?1-p:p; }
+function tTwoTailedP(t,df){ return Math.min(1, 2*(1-tCDF(Math.abs(t),df))); }
+function pooledP(a,b){
+  // pooled (Student) t-test: exact here since both groups share one population, unlike Welch's approximation
+  const mA=mean(a), mB=mean(b), vA=variance(a), vB=variance(b), nA=a.length, nB=b.length;
+  const df=nA+nB-2;
+  const sp2=((nA-1)*vA+(nB-1)*vB)/df;
+  const se=Math.sqrt(sp2*(1/nA+1/nB));
+  const t=(mA-mB)/se;
+  return tTwoTailedP(t,df);
+}
+
+/* ---------- step 5: 1000-student simulation ---------- */
+const SIM = { R:1000, n:6, mu:100, sd:12, seed:20260929 };
+let simDone = false;
+
+function simulate(M){
+  const rng = seeded(SIM.seed);
+  const randn = makeNormal(rng);
+  const succeededAt = new Array(SIM.R).fill(-1);
+  for (let s = 0; s < SIM.R; s++) {
+    for (let r = 1; r <= M; r++) {
+      const ctrl = [], trt = [];
+      for (let i = 0; i < SIM.n; i++) { ctrl.push(randn(SIM.mu, SIM.sd)); trt.push(randn(SIM.mu, SIM.sd)); }
+      const p = pooledP(trt, ctrl);
+      if (p < 0.05) { succeededAt[s] = r; break; }
+    }
+  }
+  const cum = new Array(M + 1).fill(0);
+  for (let r = 1; r <= M; r++) {
+    let count = 0;
+    for (let s = 0; s < SIM.R; s++) if (succeededAt[s] !== -1 && succeededAt[s] <= r) count++;
+    cum[r] = count / SIM.R;
+  }
+  return cum;
+}
+
+function cssVar(name){ return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+function ctxFor(canvas){
+  const rect = canvas.getBoundingClientRect();
+  const dpr = window.devicePixelRatio || 1;
+  const w = Math.max(1, Math.round(rect.width)), h = Math.max(1, Math.round(rect.height));
+  canvas.width = Math.round(w*dpr); canvas.height = Math.round(h*dpr);
+  const ctx = canvas.getContext('2d');
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  ctx.clearRect(0,0,w,h);
+  return {ctx,w,h};
+}
+function drawSimChart(M, cum){
+  const canvas = document.getElementById('simCanvas');
+  if (!canvas.offsetParent) return;
+  const {ctx,w,h} = ctxFor(canvas);
+  const padL=40, padR=16, padT=14, padB=28;
+  const plotW = w - padL - padR, plotH = h - padT - padB;
+  const yDomain=[0,1];
+  const Y = v => padT + (1 - (v - yDomain[0])/(yDomain[1]-yDomain[0])) * plotH;
+  const barSlot = plotW / M;
+  const barGap = Math.min(6, barSlot*0.3);
+  const barW = Math.max(2, barSlot - barGap);
+  const centerX = r => padL + (r-0.5)*barSlot;
+
+  ctx.save();
+  ctx.strokeStyle = cssVar('--line'); ctx.lineWidth = 1;
+  ctx.fillStyle = cssVar('--muted'); ctx.font = '11px "IBM Plex Mono", monospace';
+  ctx.textAlign='right'; ctx.textBaseline='middle';
+  [0,0.25,0.5,0.75,1].forEach(v=>{
+    const y=Y(v);
+    ctx.beginPath(); ctx.moveTo(padL,y); ctx.lineTo(padL+plotW,y); ctx.stroke();
+    ctx.fillText((v*100).toFixed(0)+'%', padL-8, y);
+  });
+  ctx.strokeStyle = cssVar('--muted'); ctx.textAlign='center'; ctx.textBaseline='top';
+  const xTicks = M<=10 ? Array.from({length:M},(_,i)=>i+1) : [1,Math.round(M*0.25),Math.round(M*0.5),Math.round(M*0.75),M];
+  xTicks.forEach(v=>ctx.fillText(String(v), centerX(v), padT+plotH+8));
+  ctx.restore();
+
+  ctx.save();
+  for (let r=1;r<=M;r++){
+    const x0 = centerX(r) - barW/2;
+    const y1 = Y(cum[r]);
+    ctx.fillStyle = cssVar('--accent');
+    ctx.fillRect(x0, y1, barW, (padT+plotH) - y1);
+  }
+  ctx.restore();
+
+  ctx.save();
+  ctx.strokeStyle = cssVar('--muted'); ctx.setLineDash([4,4]); ctx.lineWidth=1.5;
+  const y05 = Y(0.05);
+  ctx.beginPath(); ctx.moveTo(padL,y05); ctx.lineTo(padL+plotW,y05); ctx.stroke();
+  ctx.restore();
+
+  ctx.save();
+  ctx.fillStyle = cssVar('--teal');
+  const dotR = Math.max(2, Math.min(4, barW/2 - 1));
+  for (let r=1;r<=M;r++){
+    const v=1-Math.pow(0.95,r);
+    const px=centerX(r), py=Y(v);
+    ctx.beginPath(); ctx.arc(px,py,dotR,0,Math.PI*2); ctx.fill();
+  }
+  ctx.restore();
+}
+
+function runSim(){
+  const M = parseInt(document.getElementById('mSlider').value, 10);
+  const cum = simulate(M);
+  drawSimChart(M, cum);
+  const rate = cum[M];
+  document.getElementById('simRate').textContent = (rate*100).toFixed(1) + '%';
+  document.getElementById('mEcho').textContent = M;
+  document.getElementById('cmpBad').textContent = (rate*100).toFixed(0) + '%';
+  simDone = true;
+}
+
+document.getElementById('mSlider').addEventListener('input', (e)=>{
+  document.getElementById('mVal').textContent = e.target.value;
+});
+document.getElementById('mSlider').addEventListener('change', runSim);
+window.addEventListener('resize', ()=>{ if(simDone) runSim(); });
+
+progress();
+</script>
+</body>
+</html>

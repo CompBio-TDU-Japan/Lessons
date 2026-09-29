@@ -274,6 +274,7 @@ canvas{ width:100%; display:block; border-radius:8px; background:var(--surface);
       <a class="crumb" data-route="/ttest" href="#/ttest">03 t検定</a>
       <a class="crumb" href="natural-wine.html">04 ランダム化と交絡</a>
       <a class="crumb" href="time_randomization_wine_exercise.html">05 実験順序のランダム化</a>
+      <a class="crumb" href="optional_stopping.html">06 有意になるまで繰り返す罠</a>
     </nav>
   </header>
 
@@ -762,6 +763,20 @@ const TOPICS = [
       <line x1="8" y1="46" x2="204" y2="46" stroke="var(--muted)" stroke-width="1.5"/>
       <path d="M198 41 L204 46 L198 51" stroke="var(--muted)" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
     </svg>`},
+  {id:'stopping', num:'06', tag:'OPTIONAL STOPPING', title:'有意になるまで繰り返す罠',
+   desc:'化合物Xの効果を確かめる卒業研究を追体験する。何度も非有意が続き、最後の最後で出た p<0.05——それは本物か、それとも繰り返し試したせいか、1000人分のシミュレーションで確かめる。',
+   href:'optional_stopping.html',
+   icon:`<svg viewBox="0 0 220 56" width="100%" height="56" fill="none">
+      <line x1="10" y1="38" x2="178" y2="38" stroke="var(--muted)" stroke-width="1.5" stroke-dasharray="3 4"/>
+      <circle cx="18" cy="38" r="5" fill="none" stroke="var(--muted)" stroke-width="2"/>
+      <circle cx="56" cy="38" r="5" fill="none" stroke="var(--muted)" stroke-width="2"/>
+      <circle cx="94" cy="38" r="5" fill="none" stroke="var(--muted)" stroke-width="2"/>
+      <circle cx="132" cy="38" r="5" fill="none" stroke="var(--muted)" stroke-width="2"/>
+      <circle cx="176" cy="28" r="10" fill="var(--accent-4)"/>
+      <path d="M171.5 28 L175 31.5 L182 22.5" stroke="#fff" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M206 16 A 13 13 0 1 1 203 9.5" stroke="var(--accent-3)" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+      <path d="M198 5 L203 9.5 L208 5.5" stroke="var(--accent-3)" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>`},
 ];
 
 function renderHome(){
@@ -782,7 +797,7 @@ function renderHome(){
   const soon=document.createElement('div');
   soon.className='card soon';
   soon.innerHTML=`
-    <span class="num mono">06</span>
+    <span class="num mono">07</span>
     <div class="icon"></div>
     <span class="tag">COMING SOON</span>
     <h3>次の実験を準備中</h3>
