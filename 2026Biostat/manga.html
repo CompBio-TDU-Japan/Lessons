@@ -1,0 +1,408 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>統計あるある漫画｜統計実験室</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;500;600;700&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+:root{
+  color-scheme: light;
+  --page:#f9f9f6;
+  --surface:#fcfcfa;
+  --surface-2:#f1efe6;
+  --ink:#141311;
+  --ink-2:#54514a;
+  --muted:#8b8880;
+  --border:rgba(20,19,17,0.11);
+  --accent:#2a78d6;
+  --accent-soft:#cde2fb;
+  --accent-2:#eb6834;
+  --accent-2-soft:#fbe0d1;
+  --shadow: 0 1px 2px rgba(20,19,17,0.06), 0 8px 24px -12px rgba(20,19,17,0.18);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme: dark;
+    --page:#0e0e0c;
+    --surface:#1a1a17;
+    --surface-2:#221f19;
+    --ink:#f5f3ee;
+    --ink-2:#c7c3b4;
+    --muted:#918d83;
+    --border:rgba(245,243,238,0.12);
+    --accent:#5b9bee;
+    --accent-soft:#1e3350;
+    --accent-2:#e8784a;
+    --accent-2-soft:#3d2519;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px -12px rgba(0,0,0,0.5);
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme: dark;
+  --page:#0e0e0c;
+  --surface:#1a1a17;
+  --surface-2:#221f19;
+  --ink:#f5f3ee;
+  --ink-2:#c7c3b4;
+  --muted:#918d83;
+  --border:rgba(245,243,238,0.12);
+  --accent:#5b9bee;
+  --accent-soft:#1e3350;
+  --accent-2:#e8784a;
+  --accent-2-soft:#3d2519;
+  --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px -12px rgba(0,0,0,0.5);
+}
+
+*{box-sizing:border-box;}
+body{
+  margin:0;
+  background:var(--page);
+  color:var(--ink);
+  font-family:'Zen Kaku Gothic New','Hiragino Sans',sans-serif;
+  padding-inline:20px;
+  line-height:1.75;
+}
+@media (prefers-reduced-motion: no-preference){ html{ scroll-behavior:smooth; } }
+
+h1,h2,h3{ font-family:'Shippori Mincho','Hiragino Mincho ProN',serif; font-weight:600; letter-spacing:.01em; text-wrap:balance; margin:0; }
+.mono{ font-family:'IBM Plex Mono',ui-monospace,monospace; font-variant-numeric:tabular-nums; }
+a{ color:inherit; }
+a:focus-visible, button:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
+
+.app{ max-width:980px; margin:0 auto; }
+
+.topbar{
+  position:sticky; top:env(safe-area-inset-top,0px); z-index:20;
+  display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;
+  padding-block:14px;
+  background:color-mix(in srgb, var(--page) 88%, transparent);
+  backdrop-filter:blur(6px);
+  border-bottom:1px solid var(--border);
+  margin-bottom:8px;
+}
+.brand{ display:flex; align-items:baseline; gap:8px; text-decoration:none; white-space:nowrap; }
+.brand .mark{ font-family:'Shippori Mincho',serif; font-size:1.05rem; font-weight:700; }
+.brand .mark small{ font-family:'IBM Plex Mono',monospace; font-weight:400; font-size:.62rem; letter-spacing:.12em; color:var(--muted); display:block; margin-top:2px; }
+.crumbs{ display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end; }
+.crumb{ font-size:.72rem; letter-spacing:.03em; padding:5px 10px; border-radius:100px; border:1px solid var(--border); color:var(--ink-2); text-decoration:none; white-space:nowrap; }
+.crumb[aria-current="page"]{ background:var(--ink); color:var(--page); border-color:var(--ink); }
+
+.page-head{ padding-block:28px 8px; }
+.back-link{ display:inline-block; font-size:.82rem; color:var(--ink-2); text-decoration:none; margin-bottom:18px; }
+.back-link:hover{ color:var(--accent); }
+.kicker{ font-family:'IBM Plex Mono',monospace; font-size:.72rem; letter-spacing:.14em; color:var(--accent-2); text-transform:uppercase; display:block; margin-bottom:10px; }
+.page-head h1{ font-size:clamp(1.6rem,4vw,2.2rem); }
+.page-lede{ margin-top:12px; max-width:64ch; color:var(--ink-2); }
+
+.panel{ background:var(--surface); border:1px solid var(--border); border-radius:12px; box-shadow:var(--shadow); }
+.note{ background:var(--surface-2); border-radius:12px; padding:16px 18px; margin:18px 0; font-size:.88rem; color:var(--ink-2); }
+
+.index{ display:flex; flex-wrap:wrap; gap:6px; padding:16px 18px; }
+.index a{ font-size:.78rem; padding:4px 10px; border-radius:100px; border:1px solid var(--border); background:var(--surface-2); color:var(--ink-2); text-decoration:none; }
+.index a:hover{ border-color:var(--accent-2); color:var(--accent-2); }
+
+section.block{ margin-top:44px; scroll-margin-top:80px; }
+.manga-head{ display:flex; align-items:baseline; gap:12px; margin-bottom:6px; }
+.manga-head .num{ font-size:.8rem; color:var(--accent-2); font-weight:700; }
+.manga-head h2{ font-size:1.28rem; }
+.manga-desc{ margin:8px 0 16px; max-width:70ch; color:var(--ink-2); font-size:.94rem; }
+.manga-desc a{ color:var(--accent); text-decoration:underline dotted; text-underline-offset:2px; }
+
+figure.mangafig{ margin:0; overflow:hidden; }
+figure.mangafig img{ display:block; width:100%; height:auto; background:var(--surface-2); }
+figure.mangafig figcaption{ display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; padding:10px 16px; font-size:.76rem; color:var(--muted); border-top:1px solid var(--border); }
+figure.mangafig figcaption a{ color:var(--accent); text-decoration:underline dotted; text-underline-offset:2px; white-space:nowrap; }
+
+.mangathumb{ position:relative; display:block; width:100%; padding:0; margin:0; border:0; background:none; cursor:zoom-in; text-align:left; }
+.mangathumb img{ display:block; width:100%; height:auto; background:var(--surface-2); }
+.mangathumb .expand{
+  position:absolute; left:50%; bottom:14px; transform:translateX(-50%);
+  background:color-mix(in srgb, var(--ink) 82%, transparent); color:var(--page);
+  font-size:.76rem; padding:7px 14px; border-radius:100px; white-space:nowrap; box-shadow:var(--shadow);
+}
+.mangathumb.expanded{ cursor:zoom-out; }
+.mangathumb:hover .expand{ background:var(--accent-2); }
+
+.related{ display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:12px; }
+.related a{ display:block; padding:14px 16px; text-decoration:none; }
+.related a:hover{ border-color:var(--accent-2); }
+.related b{ display:block; font-family:'Shippori Mincho',serif; font-size:1rem; margin-bottom:4px; }
+.related span{ font-size:.82rem; color:var(--ink-2); }
+footer.site{ margin-top:48px; padding-block:24px 40px; border-top:1px solid var(--border); color:var(--muted); font-size:.78rem; }
+</style>
+</head>
+<body>
+<div class="app">
+
+<header class="topbar">
+  <a class="brand" href="index.html#/"><span class="mark">統計実験室<small>STATISTICS LAB</small></span></a>
+  <nav class="crumbs">
+    <a class="crumb" href="index.html#/">目次</a>
+    <a class="crumb" href="glossary.html">00 基礎用語</a>
+    <a class="crumb" href="index.html#/lln">01 大数の法則</a>
+    <a class="crumb" href="index.html#/clt">02 中心極限定理</a>
+    <a class="crumb" href="index.html#/ttest">03 t検定</a>
+    <a class="crumb" href="natural-wine.html">04 ランダム化と交絡</a>
+    <a class="crumb" href="time_randomization_wine_exercise.html">05 実験順序のランダム化</a>
+    <a class="crumb" href="optional_stopping.html">06 有意になるまで繰り返す罠</a>
+    <a class="crumb" href="manga.html" aria-current="page">07 統計あるある漫画</a>
+  </nav>
+</header>
+
+<main>
+<div class="page-head">
+<a class="back-link" href="index.html#/">← 目次に戻る</a>
+<span class="kicker">07 · STATISTICS COMICS</span>
+<h1>その解析、実は「あるある」かもしれない</h1>
+<p class="page-lede">研究で結果が思うように出ないとき、つい手を伸ばしてしまう統計の落とし穴を、架空の学生たちのエピソードとして13本の漫画にまとめた。どれも「言われてみれば当たり前」の話だが、締切が迫っていたり、結果が出ずに焦っていたりするときほど陥りやすい。</p>
+</div>
+
+<section class="block">
+  <h2>目次</h2>
+  <div class="panel index">
+    <a href="#m1">01 条件を変えて有意差を探す</a>
+    <a href="#m2">02 解析方法のやり直し</a>
+    <a href="#m3">03 サンプルサイズの追加</a>
+    <a href="#m4">04 外れ値の除外①</a>
+    <a href="#m5">05 外れ値の除外②</a>
+    <a href="#m6">06 変数の恣意的な分類</a>
+    <a href="#m7">07 多重比較問題</a>
+    <a href="#m8">08 データの重複利用</a>
+    <a href="#m9">09 主要結果のすり替え</a>
+    <a href="#m10">10 サブグループの強調</a>
+    <a href="#m11">11 交絡因子</a>
+    <a href="#m12">12 疑似反復</a>
+    <a href="#m13">13 データの改ざん</a>
+  </div>
+</section>
+
+<section class="block" id="m1">
+  <div class="manga-head"><span class="num mono">01</span><h2>条件を変えて有意差を探す(p-hacking)</h2></div>
+  <p class="manga-desc">記憶力サプリの効果を検証する研究。最初の実験では有意差が出ず、課題の難易度や参加者の条件を少しずつ変えて実験をやり直すうちに、卒論提出の2日前でようやく p = 0.03 に到達する。事前に決めていなかった条件変更を繰り返すことは、たまたま有意になった結果を「見つけた」に過ぎない。</p>
+  <figure class="panel mangafig">
+    <button class="mangathumb" type="button" data-thumb="comics/thumbs/ChatGPT_20260929p-hacking_manga_thumb.jpg" data-full="comics/ChatGPT_20260929p-hacking_manga.png" aria-label="クリックして漫画全体を表示する(記憶力サプリ×記憶課題)">
+      <img src="comics/thumbs/ChatGPT_20260929p-hacking_manga_thumb.jpg" width="480" height="438"
+        alt="9コマ漫画。記憶力サプリの実験で有意差が出ず、課題の難易度や条件を何度も変えて再実験を繰り返し、卒論締切2日前にp=0.03の有意差を得て喜ぶが、これがp-hackingであると指摘される。">
+      <span class="expand">クリックして全体を表示 ↗</span>
+    </button>
+    <figcaption><span>記憶力サプリ×記憶課題／p-hackingの典型例</span><a href="comics/ChatGPT_20260929p-hacking_manga.png" target="_blank" rel="noopener">元画像を別タブで開く</a></figcaption>
+  </figure>
+</section>
+
+<section class="block" id="m2">
+  <div class="manga-head"><span class="num mono">02</span><h2>解析方法を変えて有意差を探す</h2></div>
+  <p class="manga-desc">体重減少プログラムの効果を確かめる研究。t検定で有意差が出ないと、ノンパラメトリック検定・ANCOVA・対数変換・外れ値の除外・サブグループ解析と、次々に解析方法を変えて試し、最終的に「BMI25以上」に限定した解析でだけ有意差(p = 0.03)を得る。事前に計画していない解析のやり直しは、01と同じ構造のp-hackingである。</p>
+  <figure class="panel mangafig">
+    <button class="mangathumb" type="button" data-thumb="comics/thumbs/ChatGPT_20260929retry_manga_thumb.jpg" data-full="comics/ChatGPT_20260929retry_manga.png" aria-label="クリックして漫画全体を表示する(体重減少プログラム)">
+      <img src="comics/thumbs/ChatGPT_20260929retry_manga_thumb.jpg" width="480" height="438"
+        alt="9コマ漫画。体重減少プログラムの研究でt検定に有意差がなく、ノンパラメトリック検定・ANCOVA・対数変換・外れ値除外・サブグループ解析と解析方法を次々に変え、BMI25以上に限定した解析でだけ有意差を得てしまう。">
+      <span class="expand">クリックして全体を表示 ↗</span>
+    </button>
+    <figcaption><span>体重減少プログラム／解析方法の「やり直し」もp-hacking</span><a href="comics/ChatGPT_20260929retry_manga.png" target="_blank" rel="noopener">元画像を別タブで開く</a></figcaption>
+  </figure>
+</section>
+
+<section class="block" id="m3">
+  <div class="manga-head"><span class="num mono">03</span><h2>有意になるまでサンプルサイズを増やす</h2></div>
+  <p class="manga-desc">運動プログラムが睡眠の質を改善するかを検証する研究。事前に決めた各群30人で有意差が出ないと、60人、100人、160人と参加者を追加しながら同じデータで検定を繰り返し、160人でようやく p = 0.04 に達する。事前に定めたサンプルサイズを守らず、有意になるまで解析を繰り返す「逐次解析」は、補正なしでは第一種の過誤を膨らませてしまう。</p>
+  <figure class="panel mangafig">
+    <button class="mangathumb" type="button" data-thumb="comics/thumbs/ChatGPT_20260929sample_size_manga_thumb.jpg" data-full="comics/ChatGPT_20260929sample_size_manga.png" aria-label="クリックして漫画全体を表示する(運動プログラム×睡眠の質)">
+      <img src="comics/thumbs/ChatGPT_20260929sample_size_manga_thumb.jpg" width="480" height="438"
+        alt="9コマ漫画。運動プログラムと睡眠の質の研究で、各群30人で有意差が出ないため60人、100人、160人と参加者を追加しながら解析を繰り返し、160人でp=0.04の有意差を得るが、逐次解析の問題を指摘される。">
+      <span class="expand">クリックして全体を表示 ↗</span>
+    </button>
+    <figcaption><span>運動プログラム×睡眠の質／逐次解析と補正の必要性</span><a href="comics/ChatGPT_20260929sample_size_manga.png" target="_blank" rel="noopener">元画像を別タブで開く</a></figcaption>
+  </figure>
+</section>
+
+<section class="block" id="m4">
+  <div class="manga-head"><span class="num mono">04</span><h2>都合の悪いデータを「外れ値」として除外する</h2></div>
+  <p class="manga-desc">体重減少プログラムの研究で、ほとんど体重が減っていない1名のデータを見つけ、「サプリも併用していたから」という理由で外れ値として除外すると有意差が出る。しかし除外の基準を事前に決めていなかったため、これもp-hackingの一種だと指摘される。</p>
+  <figure class="panel mangafig">
+    <button class="mangathumb" type="button" data-thumb="comics/thumbs/ChatGPT_20260929data_remove_manga_thumb.jpg" data-full="comics/ChatGPT_20260929data_remove_manga.png" aria-label="クリックして漫画全体を表示する(体重減少プログラムの外れ値除外)">
+      <img src="comics/thumbs/ChatGPT_20260929data_remove_manga_thumb.jpg" width="480" height="438"
+        alt="8コマ漫画。体重減少プログラムの研究で、ほとんど体重が減っていない参加者1名を外れ値として除外すると有意差が出るが、除外基準を事前に決めていなかったことが問題として指摘される。">
+      <span class="expand">クリックして全体を表示 ↗</span>
+    </button>
+    <figcaption><span>体重減少プログラム／除外基準を事前に決めていなかった例</span><a href="comics/ChatGPT_20260929data_remove_manga.png" target="_blank" rel="noopener">元画像を別タブで開く</a></figcaption>
+  </figure>
+</section>
+
+<section class="block" id="m5">
+  <div class="manga-head"><span class="num mono">05</span><h2>外れ値の除外基準を結果を見てから決める</h2></div>
+  <p class="manga-desc">記憶力サプリの研究で、−35点という極端な値を持つ1名を「測定ミスかもしれない」という理由で除外すると有意差が出る。除外基準を事前に定めず、結果を見てから都合よく決めることの危うさが、先生とのやり取りを通じて示される。</p>
+  <figure class="panel mangafig">
+    <button class="mangathumb" type="button" data-thumb="comics/thumbs/ChatGPT_20260929data_remove_outlier_manga_thumb.jpg" data-full="comics/ChatGPT_20260929data_remove_outlier_manga.png" aria-label="クリックして漫画全体を表示する(記憶力サプリの外れ値除外)">
+      <img src="comics/thumbs/ChatGPT_20260929data_remove_outlier_manga_thumb.jpg" width="480" height="438"
+        alt="8コマ漫画。記憶力サプリの研究で、極端に低い値(-35点)を持つ参加者を測定ミスとして除外すると有意差が出るが、事前に基準を決めていなかった点をp-hackingとして指摘される。">
+      <span class="expand">クリックして全体を表示 ↗</span>
+    </button>
+    <figcaption><span>記憶力サプリ／除外基準を事後に決めてしまう例</span><a href="comics/ChatGPT_20260929data_remove_outlier_manga.png" target="_blank" rel="noopener">元画像を別タブで開く</a></figcaption>
+  </figure>
+</section>
+
+<section class="block" id="m6">
+  <div class="manga-head"><span class="num mono">06</span><h2>連続変数を都合よく区切って分類する</h2></div>
+  <p class="manga-desc">運動プログラムと血圧の研究で、年齢を連続変数のまま解析すると有意差が出ないが、「65歳で区切る」など年齢の分割点をいろいろ試すうちに、特定の区切り方でだけ有意差が出ることに気づく。区切り方は事前に決めるか、連続変数のまま解析すべきだと指摘される。</p>
+  <figure class="panel mangafig">
+    <button class="mangathumb" type="button" data-thumb="comics/thumbs/ChatGPT_20260929classification_p-hacking_manga_thumb.jpg" data-full="comics/ChatGPT_20260929classification_p-hacking_manga.png" aria-label="クリックして漫画全体を表示する(運動プログラム×血圧)">
+      <img src="comics/thumbs/ChatGPT_20260929classification_p-hacking_manga_thumb.jpg" width="480" height="438"
+        alt="9コマ漫画。運動プログラムと血圧の研究で、年齢の区切り方(65歳など)をいろいろ試すうちに特定の区切り方でだけ有意差が出てしまい、連続変数を恣意的に分類することの危うさが指摘される。">
+      <span class="expand">クリックして全体を表示 ↗</span>
+    </button>
+    <figcaption><span>運動プログラム×血圧／年齢のカットオフを恣意的に選ぶ例</span><a href="comics/ChatGPT_20260929classification_p-hacking_manga.png" target="_blank" rel="noopener">元画像を別タブで開く</a></figcaption>
+  </figure>
+</section>
+
+<section class="block" id="m7">
+  <div class="manga-head"><span class="num mono">07</span><h2>3群以上を比較するときの多重比較問題</h2></div>
+  <p class="manga-desc">3つのダイエット法A・B・Cの効果を比較する研究。3通りのペア比較をそのまま個別の有意水準5%で行うと、たとえ真の差がなくても1回以上「有意」と判定してしまう確率(家族誤り率)は約14%まで上がる。Tukey法などの多重比較法で家族誤り率を制御する必要がある。</p>
+  <figure class="panel mangafig">
+    <button class="mangathumb" type="button" data-thumb="comics/thumbs/ChatGPT_20260929multiple_comparisons_manga_thumb.jpg" data-full="comics/ChatGPT_20260929multiple_comparisons_manga.png" aria-label="クリックして漫画全体を表示する(ダイエット法A/B/C)">
+      <img src="comics/thumbs/ChatGPT_20260929multiple_comparisons_manga_thumb.jpg" width="480" height="438"
+        alt="8コマ漫画。3つのダイエット法A・B・Cを比較する研究で、3通りのペア比較を個別に行うと家族誤り率が約14%に上がることを説明し、Tukey法による多重比較補正の必要性を示す。">
+      <span class="expand">クリックして全体を表示 ↗</span>
+    </button>
+    <figcaption><span>ダイエット法A/B/C／家族誤り率とTukey法</span><a href="comics/ChatGPT_20260929multiple_comparisons_manga.png" target="_blank" rel="noopener">元画像を別タブで開く</a></figcaption>
+  </figure>
+</section>
+
+<section class="block" id="m8">
+  <div class="manga-head"><span class="num mono">08</span><h2>同じデータで多数の項目を解析する(データの重複利用)</h2></div>
+  <p class="manga-desc">運動プログラムの研究で、主要な指標に有意差が出なかったため、体脂肪率・血圧・筋力など次々に追加の項目を解析し、有意差が出た項目だけを報告しようとする。20項目を解析すれば偶然でも1個程度は有意になりやすく、FDR補正をかけるとほとんどの有意差は消えてしまう。</p>
+  <figure class="panel mangafig">
+    <button class="mangathumb" type="button" data-thumb="comics/thumbs/ChatGPT_20260929data_multiple_use_manga_thumb.jpg" data-full="comics/ChatGPT_20260929data_multiple_use_manga.png" aria-label="クリックして漫画全体を表示する(運動プログラム×多項目解析)">
+      <img src="comics/thumbs/ChatGPT_20260929data_multiple_use_manga_thumb.jpg" width="480" height="438"
+        alt="9コマ漫画。運動プログラムの研究で主要な指標に有意差がなく、体脂肪率・血圧・筋力など多数の項目を追加で解析し、有意差が出た項目だけを報告しようとするが、FDR補正で有意差の多くが消えてしまう。">
+      <span class="expand">クリックして全体を表示 ↗</span>
+    </button>
+    <figcaption><span>運動プログラム／多数の項目を解析し都合の良いものだけ報告</span><a href="comics/ChatGPT_20260929data_multiple_use_manga.png" target="_blank" rel="noopener">元画像を別タブで開く</a></figcaption>
+  </figure>
+</section>
+
+<section class="block" id="m9">
+  <div class="manga-head"><span class="num mono">09</span><h2>副次的な項目を主要結果にすり替える</h2></div>
+  <p class="manga-desc">運動プログラムが体組成に与える効果を調べる研究。主要な評価項目(体重・体脂肪率)には有意差が出ず、たまたま総コレステロールにだけ有意差(p = 0.04)が出たため、それを主要な結果として報告しようとする。多重比較補正をかけるとこの有意差も消え、事前に決めた主要評価項目を守ることの大切さが示される。</p>
+  <figure class="panel mangafig">
+    <button class="mangathumb" type="button" data-thumb="comics/thumbs/ChatGPT_20260929subclass_focus_manga_thumb.jpg" data-full="comics/ChatGPT_20260929subclass_focus_manga.png" aria-label="クリックして漫画全体を表示する(運動プログラム×体組成)">
+      <img src="comics/thumbs/ChatGPT_20260929subclass_focus_manga_thumb.jpg" width="480" height="438"
+        alt="9コマ漫画。運動プログラムと体組成の研究で、主要評価項目に有意差がなく、たまたま有意だった総コレステロールを主要結果にすり替えようとするが、多重比較補正でその有意差も消える。">
+      <span class="expand">クリックして全体を表示 ↗</span>
+    </button>
+    <figcaption><span>運動プログラム×体組成／主要評価項目のすり替え</span><a href="comics/ChatGPT_20260929subclass_focus_manga.png" target="_blank" rel="noopener">元画像を別タブで開く</a></figcaption>
+  </figure>
+</section>
+
+<section class="block" id="m10">
+  <div class="manga-head"><span class="num mono">10</span><h2>都合の良いサブグループだけを強調する</h2></div>
+  <p class="manga-desc">運動プログラムの体重減少効果を検証するランダム化比較試験。全体では有意差が出ないが、年齢・性別・BMIなどさまざまな切り口でサブグループ解析を繰り返すと「40歳未満」でだけ有意差(p = 0.04)が見つかり、それだけを強調して発表しようとする。多くの切り口を試せば、偶然有意になるサブグループが見つかりやすいことが指摘される。</p>
+  <figure class="panel mangafig">
+    <button class="mangathumb" type="button" data-thumb="comics/thumbs/ChatGPT_20260929subgroup_analysis_manga_thumb.jpg" data-full="comics/ChatGPT_20260929subgroup_analysis_manga.png" aria-label="クリックして漫画全体を表示する(体重減少プログラムのRCT)">
+      <img src="comics/thumbs/ChatGPT_20260929subgroup_analysis_manga_thumb.jpg" width="480" height="438"
+        alt="8コマ漫画。体重減少プログラムのランダム化比較試験で全体には有意差がないが、年齢別など複数のサブグループ解析を繰り返し、40歳未満でだけ有意差が見つかった結果を強調して発表しようとする問題を描く。">
+      <span class="expand">クリックして全体を表示 ↗</span>
+    </button>
+    <figcaption><span>体重減少プログラム(RCT)／サブグループ解析の恣意的な強調</span><a href="comics/ChatGPT_20260929subgroup_analysis_manga.png" target="_blank" rel="noopener">元画像を別タブで開く</a></figcaption>
+  </figure>
+</section>
+
+<section class="block" id="m11">
+  <div class="manga-head"><span class="num mono">11</span><h2>交絡因子を無視した解析</h2></div>
+  <p class="manga-desc">コーヒー摂取と心疾患発症率の関係を調べる観察研究。未調整の解析ではコーヒーを飲む人の方が心疾患のリスクが低く見えるが、年齢と喫煙という交絡因子で調整すると、その関連はほぼ消える。交絡因子を無視すると、見せかけの関連を本物の効果と誤解してしまう。ランダム化と交絡の関係は<a href="natural-wine.html">04 ランダム化と交絡</a>でも詳しく扱っている。</p>
+  <figure class="panel mangafig">
+    <button class="mangathumb" type="button" data-thumb="comics/thumbs/ChatGPT_20260929Confounding_factors_manga_thumb.jpg" data-full="comics/ChatGPT_20260929Confounding_factors_manga.png" aria-label="クリックして漫画全体を表示する(コーヒー摂取×心疾患)">
+      <img src="comics/thumbs/ChatGPT_20260929Confounding_factors_manga_thumb.jpg" width="480" height="438"
+        alt="9コマ漫画。コーヒー摂取と心疾患発症率の観察研究で、未調整では負の関連が見えるが、年齢と喫煙という交絡因子で調整すると有意差が消え、交絡因子を無視することの危うさを示す。">
+      <span class="expand">クリックして全体を表示 ↗</span>
+    </button>
+    <figcaption><span>コーヒー摂取×心疾患／年齢・喫煙という交絡因子</span><a href="comics/ChatGPT_20260929Confounding_factors_manga.png" target="_blank" rel="noopener">元画像を別タブで開く</a></figcaption>
+  </figure>
+</section>
+
+<section class="block" id="m12">
+  <div class="manga-head"><span class="num mono">12</span><h2>参加者内の反復データを独立とみなす誤り(疑似反復)</h2></div>
+  <p class="manga-desc">記憶課題のトレーニング効果を調べる研究。1人あたり10試行のデータを、参加者ごとの平均ではなく試行ごとに独立したデータとして扱うと、見かけ上サンプルサイズが増えて有意差が出てしまう(疑似反復)。同一参加者内の試行は互いに独立ではないため、混合効果モデルなど階層構造を考慮した解析が必要になる。</p>
+  <figure class="panel mangafig">
+    <button class="mangathumb" type="button" data-thumb="comics/thumbs/ChatGPT_20260929separate_analysis_manga_thumb.jpg" data-full="comics/ChatGPT_20260929separate_analysis_manga.png" aria-label="クリックして漫画全体を表示する(記憶課題トレーニング)">
+      <img src="comics/thumbs/ChatGPT_20260929separate_analysis_manga_thumb.jpg" width="480" height="438"
+        alt="9コマ漫画。記憶課題のトレーニング効果の研究で、1人あたり10試行のデータを独立した反復データとして扱うと有意差が出るが、混合効果モデルで参加者内相関を考慮すると有意差は消え、疑似反復の問題が指摘される。">
+      <span class="expand">クリックして全体を表示 ↗</span>
+    </button>
+    <figcaption><span>記憶課題トレーニング／疑似反復と混合効果モデル</span><a href="comics/ChatGPT_20260929separate_analysis_manga.png" target="_blank" rel="noopener">元画像を別タブで開く</a></figcaption>
+  </figure>
+</section>
+
+<section class="block" id="m13">
+  <div class="manga-head"><span class="num mono">13</span><h2>データの改ざん(研究不正)</h2></div>
+  <p class="manga-desc">運動プログラムの研究で、締め切りが迫る中で有意差が出ず、測定値の一部を「機械エラー」として調整・除外し、有意差(p = 0.01)を作り出してしまう。これはp-hackingのような解析上のグレーゾーンではなく、データそのものを書き換える明確な研究不正であり、後に他の研究者の指摘で発覚し、論文撤回や信用の失墜、懲戒処分といった重大な結果につながる。</p>
+  <figure class="panel mangafig">
+    <button class="mangathumb" type="button" data-thumb="comics/thumbs/ChatGPT_20260929Tampering_manga_thumb.jpg" data-full="comics/ChatGPT_20260929Tampering_manga.png" aria-label="クリックして漫画全体を表示する(運動プログラムのデータ改ざん)">
+      <img src="comics/thumbs/ChatGPT_20260929Tampering_manga_thumb.jpg" width="480" height="438"
+        alt="9コマ漫画。運動プログラムの研究で締め切りのプレッシャーから測定値を機械エラーとして調整・除外してデータを改ざんし、有意差を作り出すが、後に他の研究者の指摘で発覚し、論文撤回など重大な結果につながる。">
+      <span class="expand">クリックして全体を表示 ↗</span>
+    </button>
+    <figcaption><span>運動プログラム／データ改ざんという明確な研究不正</span><a href="comics/ChatGPT_20260929Tampering_manga.png" target="_blank" rel="noopener">元画像を別タブで開く</a></figcaption>
+  </figure>
+</section>
+
+<div class="note">
+  13本の漫画はいずれも ChatGPT による生成画像である。登場する数値・p値・研究デザインは説明のための創作であり、実データに基づくものではない。ページの読み込みを軽くするため、最初は縮小版(サムネイル)のみを表示しており、画像をクリックすると元の解像度(約2〜2.5MB)を読み込んで全体を表示する。もう一度クリックするとサムネイルに戻る。
+</div>
+
+<section class="block">
+  <h2>関連する教材</h2>
+  <div class="related">
+    <a class="panel" href="glossary.html"><b>00 基礎用語</b><span>多重性の調整、中間解析、群逐次デザイン</span></a>
+    <a class="panel" href="index.html#/ttest"><b>03 t検定</b><span>差がない場合を1000回検定し、第一種の過誤を体験する</span></a>
+    <a class="panel" href="natural-wine.html"><b>04 ランダム化と交絡</b><span>交絡因子とランダム化の関係を物語形式で体験する</span></a>
+    <a class="panel" href="optional_stopping.html"><b>06 有意になるまで繰り返す罠</b><span>逐次的な検定の打ち切り(optional stopping)を扱う</span></a>
+  </div>
+</section>
+
+<footer class="site">講義補助教材として作成 · 漫画内の数値・研究デザインはすべて説明のための創作</footer>
+</main>
+</div>
+
+<script>
+'use strict';
+document.querySelectorAll('.mangathumb').forEach(btn=>{
+  const img = btn.querySelector('img');
+  const label = btn.querySelector('.expand');
+  const thumbSrc = btn.dataset.thumb;
+  const fullSrc = btn.dataset.full;
+  let expanded = false;
+  let fullLoaded = false;
+
+  btn.addEventListener('click', ()=>{
+    if(!expanded){
+      if(!fullLoaded){
+        label.textContent = '読み込み中…';
+        const pre = new Image();
+        pre.onload = ()=>{
+          img.src = fullSrc;
+          fullLoaded = true;
+          expanded = true;
+          btn.classList.add('expanded');
+          label.textContent = 'クリックでサムネイルに戻す';
+        };
+        pre.onerror = ()=>{ label.textContent = '読み込みに失敗しました'; };
+        pre.src = fullSrc;
+      } else {
+        img.src = fullSrc;
+        expanded = true;
+        btn.classList.add('expanded');
+        label.textContent = 'クリックでサムネイルに戻す';
+      }
+    } else {
+      img.src = thumbSrc;
+      expanded = false;
+      btn.classList.remove('expanded');
+      label.textContent = 'クリックして全体を表示 ↗';
+    }
+  });
+});
+</script>
+</body>
+</html>
