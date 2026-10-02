@@ -1,0 +1,526 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>統計問題集｜統計実験室</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;500;600;700&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+:root{
+  color-scheme: light;
+  --page:#f9f9f6;
+  --surface:#fcfcfa;
+  --surface-2:#f1efe6;
+  --ink:#141311;
+  --ink-2:#54514a;
+  --muted:#8b8880;
+  --grid-line:#e3e0d5;
+  --axis:#c7c3b4;
+  --border:rgba(20,19,17,0.11);
+  --accent:#2a78d6;
+  --accent-soft:#cde2fb;
+  --accent-2:#eb6834;
+  --accent-2-soft:#fbe0d1;
+  --shadow: 0 1px 2px rgba(20,19,17,0.06), 0 8px 24px -12px rgba(20,19,17,0.18);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme: dark;
+    --page:#0e0e0c;
+    --surface:#1a1a17;
+    --surface-2:#221f19;
+    --ink:#f5f3ee;
+    --ink-2:#c7c3b4;
+    --muted:#918d83;
+    --grid-line:#2d2c27;
+    --axis:#3c3a33;
+    --border:rgba(245,243,238,0.12);
+    --accent:#5b9bee;
+    --accent-soft:#1e3350;
+    --accent-2:#e8784a;
+    --accent-2-soft:#3d2519;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px -12px rgba(0,0,0,0.5);
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme: dark;
+  --page:#0e0e0c;
+  --surface:#1a1a17;
+  --surface-2:#221f19;
+  --ink:#f5f3ee;
+  --ink-2:#c7c3b4;
+  --muted:#918d83;
+  --grid-line:#2d2c27;
+  --axis:#3c3a33;
+  --border:rgba(245,243,238,0.12);
+  --accent:#5b9bee;
+  --accent-soft:#1e3350;
+  --accent-2:#e8784a;
+  --accent-2-soft:#3d2519;
+  --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px -12px rgba(0,0,0,0.5);
+}
+
+*{box-sizing:border-box;}
+body{
+  margin:0;
+  background:var(--page);
+  color:var(--ink);
+  font-family:'Zen Kaku Gothic New','Hiragino Sans',sans-serif;
+  padding-inline:20px;
+  line-height:1.75;
+}
+@media (prefers-reduced-motion: no-preference){ html{ scroll-behavior:smooth; } }
+
+h1,h2,h3{ font-family:'Shippori Mincho','Hiragino Mincho ProN',serif; font-weight:600; letter-spacing:.01em; text-wrap:balance; margin:0; }
+.mono{ font-family:'IBM Plex Mono',ui-monospace,monospace; font-variant-numeric:tabular-nums; }
+a{ color:inherit; }
+a:focus-visible, button:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
+button{ font-family:inherit; }
+sub,sup{ font-size:.75em; line-height:0; }
+
+.app{ max-width:980px; margin:0 auto; }
+
+.topbar{
+  position:sticky; top:env(safe-area-inset-top,0px); z-index:20;
+  display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;
+  padding-block:14px;
+  background:color-mix(in srgb, var(--page) 88%, transparent);
+  backdrop-filter:blur(6px);
+  border-bottom:1px solid var(--border);
+  margin-bottom:8px;
+}
+.brand{ display:flex; align-items:baseline; gap:8px; text-decoration:none; white-space:nowrap; }
+.brand .mark{ font-family:'Shippori Mincho',serif; font-size:1.05rem; font-weight:700; }
+.brand .mark small{ font-family:'IBM Plex Mono',monospace; font-weight:400; font-size:.62rem; letter-spacing:.12em; color:var(--muted); display:block; margin-top:2px; }
+.crumbs{ display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end; }
+.crumb{ font-size:.72rem; letter-spacing:.03em; padding:5px 10px; border-radius:100px; border:1px solid var(--border); color:var(--ink-2); text-decoration:none; white-space:nowrap; }
+.crumb[aria-current="page"]{ background:var(--ink); color:var(--page); border-color:var(--ink); }
+
+.page-head{ padding-block:28px 8px; }
+.back-link{ display:inline-block; font-size:.82rem; color:var(--ink-2); text-decoration:none; margin-bottom:18px; }
+.back-link:hover{ color:var(--accent); }
+.kicker{ font-family:'IBM Plex Mono',monospace; font-size:.72rem; letter-spacing:.14em; color:var(--accent); text-transform:uppercase; display:block; margin-bottom:10px; }
+.page-head h1{ font-size:clamp(1.6rem,4vw,2.2rem); }
+.page-lede{ margin-top:12px; max-width:64ch; color:var(--ink-2); }
+
+.panel{ background:var(--surface); border:1px solid var(--border); border-radius:12px; box-shadow:var(--shadow); }
+section.block{ margin-top:40px; scroll-margin-top:120px; }
+section.block > h2{ font-size:1.2rem; margin-bottom:6px; }
+section.block > .sub{ margin:0 0 16px; color:var(--ink-2); font-size:.9rem; max-width:68ch; }
+.tl{ color:var(--accent); text-decoration:none; border-bottom:1px dotted var(--accent); }
+
+/* score summary */
+.summary{ padding:16px 18px; display:flex; flex-wrap:wrap; align-items:center; gap:14px 24px; }
+.total{ display:flex; align-items:baseline; gap:8px; }
+.total b{ font-family:'IBM Plex Mono',monospace; font-size:1.6rem; font-weight:600; font-variant-numeric:tabular-nums; }
+.total span{ font-size:.8rem; color:var(--ink-2); }
+.index{ display:flex; flex-wrap:wrap; gap:6px; flex:1 1 320px; }
+.index a{ font-size:.76rem; padding:4px 10px; border-radius:100px; border:1px solid var(--border); background:var(--surface-2); color:var(--ink-2); text-decoration:none; white-space:nowrap; }
+.index a:hover{ border-color:var(--accent); color:var(--accent); }
+.index a .sc{ font-family:'IBM Plex Mono',monospace; margin-left:6px; color:var(--muted); }
+.index a.done{ background:var(--accent-soft); border-color:var(--accent); color:var(--ink); }
+.index a.done .sc{ color:var(--ink); }
+.btn{ appearance:none; border:1px solid var(--border); background:var(--surface-2); color:var(--ink-2); padding:8px 14px; border-radius:8px; font-size:.8rem; font-weight:700; cursor:pointer; }
+.btn:hover{ border-color:var(--accent); color:var(--accent); }
+
+/* questions */
+.sec-head{ display:flex; align-items:baseline; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:6px; }
+.sec-head h2{ font-size:1.2rem; }
+.sec-score{ font-family:'IBM Plex Mono',monospace; font-size:.8rem; color:var(--ink-2); font-variant-numeric:tabular-nums; }
+.qlist{ padding:0 22px; }
+.q{ padding:20px 0; }
+.q + .q{ border-top:1px solid var(--border); }
+.q .qn{ font-family:'IBM Plex Mono',monospace; font-size:.7rem; letter-spacing:.1em; color:var(--muted); display:block; margin-bottom:4px; }
+.q .qt{ margin:0 0 12px; font-size:.98rem; font-weight:500; max-width:70ch; }
+.choices{ display:grid; gap:8px; }
+.choice{
+  appearance:none; text-align:left; width:100%;
+  display:flex; gap:10px; align-items:flex-start;
+  padding:10px 14px; border-radius:10px;
+  border:1px solid var(--border); background:var(--surface-2); color:var(--ink);
+  font-size:.9rem; line-height:1.6; cursor:pointer;
+}
+.choice .k{ font-family:'IBM Plex Mono',monospace; font-size:.78rem; color:var(--muted); flex:0 0 auto; padding-top:1px; }
+.choice:not(:disabled):hover{ border-color:var(--accent); }
+.choice:disabled{ cursor:default; color:var(--ink-2); }
+.choice.correct{ background:var(--accent-soft); border-color:var(--accent); color:var(--ink); font-weight:700; }
+.choice.wrong{ background:var(--accent-2-soft); border-color:var(--accent-2); color:var(--ink); }
+.choice .mk{ margin-left:auto; flex:0 0 auto; font-size:.72rem; font-weight:700; white-space:nowrap; padding-left:8px; }
+.ex{ margin:12px 0 0; padding:12px 14px; border-radius:10px; border:1px solid var(--border); background:var(--surface); font-size:.88rem; color:var(--ink-2); max-width:74ch; }
+.ex b{ color:var(--ink); }
+.ex ul{ margin:6px 0 10px; padding-left:1.3em; }
+.ex li{ margin-bottom:3px; }
+@media (max-width:700px){ .qlist{ padding:0 16px; } }
+
+.locked{ margin-top:24px; padding:20px 22px; border-style:dashed; }
+.locked h2{ font-size:1.15rem; margin-bottom:8px; }
+.locked p{ margin:0 0 10px; font-size:.92rem; color:var(--ink-2); max-width:68ch; }
+.locked ul{ margin:0 0 12px; padding-left:1.2em; font-size:.92rem; }
+.locked .fine{ font-size:.78rem; color:var(--muted); margin:0; }
+
+footer.site{ margin-top:48px; padding-block:24px 40px; border-top:1px solid var(--border); color:var(--muted); font-size:.78rem; }
+</style>
+</head>
+<body>
+<div class="app">
+<header class="topbar">
+  <a class="brand" href="index.html#/"><span class="mark">統計実験室<small>STATISTICS LAB</small></span></a>
+  <nav class="crumbs">
+    <a class="crumb" href="index.html#/">目次</a>
+    <a class="crumb" href="glossary.html">00 基礎用語</a>
+    <a class="crumb" href="index.html#/lln">01 大数の法則</a>
+    <a class="crumb" href="index.html#/clt">02 中心極限定理</a>
+    <a class="crumb" href="index.html#/ttest">03 t検定</a>
+    <a class="crumb" href="natural-wine.html">04 ランダム化と交絡</a>
+    <a class="crumb" href="time_randomization_wine_exercise.html">05 実験順序のランダム化</a>
+    <a class="crumb" href="optional_stopping.html">06 有意になるまで繰り返す罠</a>
+    <a class="crumb" href="manga.html">07 統計あるある漫画</a>
+    <a class="crumb" href="quiz.html" aria-current="page">問題集</a>
+  </nav>
+</header>
+
+<div class="page-head">
+  <a class="back-link" href="index.html#/">← 目次に戻る</a>
+  <span class="kicker">QUIZ · Review Problems</span>
+  <h1>統計問題集</h1>
+  <p class="page-lede">教材00〜07で扱った内容を確かめる選択式の問題集です。選択肢を選ぶと、その場で正誤と解説が表示されます。選択肢の並び順は読み込むたびに変わります。間違えた問題は、各節の見出しにあるリンクから教材に戻って確認してください。</p>
+  <p class="page-lede">解答と正解数はこのブラウザに保存されます。ほかのページを見たり、このページを閉じたりしても消えません。消えるのは、「すべてやり直す」を押したときと、ブラウザのサイトデータを消去したときです。</p>
+</div>
+
+<div class="panel locked" id="locked" hidden>
+  <h2>まだ解錠されていません</h2>
+  <p>解錠条件: 全てのページについて最後まで熟読し、すべてのシミュレーションを実施すること。残っている教材は次のとおりです。</p>
+  <ul id="remaining"></ul>
+  <p class="fine">学習の記録はこのブラウザに保存されます。別の端末やブラウザ、プライベートウィンドウには引き継がれません。達成状況は<a class="tl" href="index.html#/">目次</a>で確認できます。</p>
+</div>
+
+<div class="panel summary" id="summary">
+  <div class="total"><b id="total">0 / 0</b><span>正解数 / 解答数(全 <span id="nq">0</span> 問)</span></div>
+  <nav class="index" id="index" aria-label="教材ごとの問題"></nav>
+  <button class="btn" id="reset" type="button">すべてやり直す</button>
+</div>
+
+<main id="quiz"></main>
+
+<footer class="site">講義補助教材として作成 · 問題中の数値・研究例は説明のための創作</footer>
+</div>
+
+<script>
+/* =========================================================================
+   問題データ
+   - 各教材 = 1セクション。id はアンカーに使う。
+   - c[0] が正解。表示時に選択肢をシャッフルする。
+   - 問題を足すときは qs に {q, c:[正解, 誤答, ...], ex} を追加するだけでよい。
+   - 問題文は、教材の画面を覚えていなくても解けるように、状況を文中で説明する。
+   - p値は「帰無仮説が正しいもとで、実際に得られた値より極端な値が得られる条件付き確率」
+     という定義に沿って書く。
+   - 解答は問題文から作ったキーで保存するので、問題文を書き換えるとその問題だけ未解答に戻る。
+   ========================================================================= */
+const SECTIONS = [
+  {id:'s00', num:'00', title:'基礎用語', href:'glossary.html', qs:[
+    {q:'観測値を5個ずつ取り出す操作を、2000回繰り返しました。「1つの標本に含まれる観測値の個数」を標本サイズ、「標本を取った回数」を標本数と呼ぶとき、正しいものはどれですか。',
+     c:['標本サイズは 5、標本数は 2000','標本サイズは 2000、標本数は 5','標本サイズは 10000、標本数は 2000','標本サイズは 5、標本数は 10000'],
+     ex:'1つの標本に含まれる観測値は5個なので標本サイズ n = 5、標本を取った回数は2000回なので標本数 r = 2000 です。文献によっては「標本数」を標本サイズの意味で使うことがあるので、どちらの意味かを確認する必要があります。'},
+    {q:'母標準偏差 σ = 12 の母集団から、標本サイズ n = 36 の標本を取ります。標本平均の標準誤差はいくつですか。',
+     c:['2','12','0.33','72'],
+     ex:'標本平均の標準誤差は SE = σ/√n = 12/√36 = 12/6 = 2 です。標準誤差は「標本を取り直したとき、標本平均が標本ごとにどれくらいばらつくか」を表します。'},
+    {q:'標本サイズ n を4倍にしたとき、母標準偏差 σ と、標本平均の標準誤差はどうなりますか。',
+     c:['母標準偏差 σ は変わらず、標準誤差は半分になる','母標準偏差 σ も標準誤差も半分になる','母標準偏差 σ は半分になり、標準誤差は変わらない','母標準偏差 σ は変わらず、標準誤差は4分の1になる'],
+     ex:'母標準偏差 σ は母集団が決める定数で、標本サイズ n を増やしても変わりません。標本平均の標準誤差は σ/√n なので、n を4倍にすると 1/√4 = 1/2 になります。なお、標本から計算する標本標準偏差 s も、n を増やして小さくなるわけではありません(σ の推定値として σ の近くに落ち着くだけです)。'},
+    {q:'母分散 σ² = 100 の母集団から標本サイズ n = 5 の標本を取り、偏差の二乗和を n で割る標本分散 S² を計算します。標本を何度も取り直して S² を計算したとき、S² の平均(期待値)はいくつですか。',
+     c:['80','100','125','20'],
+     ex:'E[S²] = (n−1)/n × σ² = 4/5 × 100 = 80 です。n で割ると、母分散を平均的に小さめに見積もります。偏差の二乗和を n−1 で割る不偏分散 s² なら、期待値は母分散と同じ 100 になります。'},
+    {q:'母分散を推定する不偏分散では、偏差の二乗和を n ではなく n−1 で割ります。その理由として最も適切なものはどれですか。',
+     c:['偏差の合計は必ず0になるので、独立に動ける偏差は n−1 個(自由度が n−1)だから','観測値のうち1個は外れ値として除くことになっているから','n で割ると計算結果が負になることがあるから','標本サイズが小さいときに標準誤差を大きく見せるための慣習だから'],
+     ex:'偏差 x<sub>i</sub> − x̄ をすべて足すと必ず0になるため、n−1 個が決まれば残りの1個は自動的に決まります。この自由度 n−1 で割ることで、期待値が母分散 σ² に一致します。'},
+    {q:'推定量の「不偏性」の説明として正しいものはどれですか。',
+     c:['標本を取り直して何度も推定したとき、推定量の平均が真の母数に一致する','1回の推定値が、真の母数に必ず近い値になる','標本サイズを大きくすると、推定量が真の母数に近づく','推定量の値が標本によって変わらない'],
+     ex:'不偏性は「平均的に当たる」性質(E[θ̂] = θ)で、1回の推定値の近さは保証しません。「標本サイズを大きくすると近づく」のは一致性という別の性質です。'},
+    {q:'「無作為抽出」と「無作為割り付け」の違いとして正しいものはどれですか。',
+     c:['無作為抽出は母集団から標本を選ぶ操作、無作為割り付けは集めた対象を処理群や実験順序に振り分ける操作','どちらも同じ操作の別名である','無作為抽出は処理群への振り分け、無作為割り付けは母集団からの選び出しを指す','無作為抽出は観察研究だけ、無作為割り付けはシミュレーションだけで使う用語である'],
+     ex:'無作為抽出は「誰を調べるか」を偏りなく決める操作、無作為割り付けは「集めた対象にどの処理を与えるか」を偏りなく決める操作です。教材04・05で扱うランダム化は、無作為割り付けの方です。'},
+  ]},
+  {id:'s01', num:'01', title:'大数の法則', href:'index.html#/lln', qs:[
+    {q:'大数の法則が述べている内容として正しいものはどれですか。',
+     c:['試行回数を増やすと、標本平均が母平均に近づいていく','試行回数を増やすと、次の1回の結果を当てやすくなる','試行回数を増やすと、個々の試行結果のばらつきが小さくなる','試行回数を増やすと、標本平均の分布が正規分布に近づく'],
+     ex:'近づいていくのは「平均」です。個々の結果は試行回数が増えても散らばったままで、次の1回が当てやすくなるわけではありません。「標本平均の分布が正規分布に近づく」という主張は中心極限定理です。'},
+    {q:'公正な6面体のサイコロ(1〜6の目が等しい確率で出る)を振り続けたとき、出た目の標本平均が近づいていく値はどれですか。',
+     c:['3.5','3','4','6'],
+     ex:'母平均(期待値)は (1+2+3+4+5+6)/6 = 3.5 です。3.5 という目は存在しませんが、出た目の平均はこの値に近づきます。'},
+    {q:'表と裏が等しい確率で出る公正なコインを投げて、5回続けて表が出ました。次の1回について正しい考え方はどれですか。',
+     c:['表が出る確率は変わらず 1/2 である','大数の法則により、裏が出やすくなっている','表が続いているので、表が出やすくなっている','6回目の結果は5回目までの平均で決まる'],
+     ex:'各試行は独立なので、過去の結果は次の1回の確率に影響しません。大数の法則は長い目で見た割合についての性質であり、過去の偏りを次の1回が「取り戻す」ことを意味しません(この誤解をギャンブラーの誤謬といいます)。'},
+    {q:'公正な6面体のサイコロを振り続け、1回振るたびに「1回目からその回までに出た目の平均」を計算し直します。振った回数 n を増やしていくとき、この平均の動きとして正しいものはどれですか。',
+     c:['最初の数十回は大きく動き、n が増えるにつれて動きが小さくなり、3.5 の近くで安定していく','n がいくつになっても、同じ幅で揺れ続ける','n が2倍になるたびに、3.5 からのずれは必ず半分になる','ある回数を超えると、3.5 と完全に一致して動かなくなる'],
+     ex:'n 回目までの平均のばらつきは σ/√n で小さくなります。最初は1回ごとの結果で大きく動きますが、n が増えるほど1回分の影響が小さくなり、母平均 3.5 の近くで安定します。ただし、ずれの小さくなり方は「典型的な大きさ」の話で、毎回必ず決まった割合で縮むわけではなく、完全に一致して止まることもありません。ずれの典型的な大きさを半分にするには、およそ4倍の回数が必要です。'},
+    {q:'大数の法則は、標本平均という推定量がもつ、ある性質を述べたものです。その性質はどれですか。',
+     c:['一致性(標本サイズを大きくすると、推定量が真の母数に近づく)','不偏性(標本を取り直して何度も推定したとき、推定量の平均が真の母数に一致する)','正規性(推定量の分布が正規分布に従う)','独立性(推定量の値が、ほかの標本の結果に影響されない)'],
+     ex:'大数の法則は「標本サイズ(試行回数)を大きくすると、標本平均が母平均に近づく」という内容で、これは標本平均の一致性です。標本平均は不偏性ももっていますが、不偏性は標本サイズを大きくしたときの話ではなく、「何度も推定したときの平均」の話です。'},
+  ]},
+  {id:'s02', num:'02', title:'中心極限定理', href:'index.html#/clt', qs:[
+    {q:'中心極限定理の内容として正しいものはどれですか。',
+     c:['母集団の分布の形によらず、標本サイズ n が大きくなると標本平均の分布は正規分布に近づく','標本サイズ n が大きくなると、母集団の分布そのものが正規分布に近づく','標本サイズ n が大きくなると、1つの標本の中の観測値の分布が正規分布に近づく','母集団が正規分布のときだけ、標本平均の分布は正規分布になる'],
+     ex:'正規分布に近づくのは「標本を取り直すたびに計算した標本平均の分布(標本分布)」です。母集団の形や、1つの標本の中の観測値の散らばり方が変わるわけではありません。'},
+    {q:'右に裾が長く歪んだ分布の母集団から、標本サイズ n の標本を取り出して標本平均を計算する、という操作を何千回も繰り返し、得られた標本平均のヒストグラムを描きます。n = 1 のとき、このヒストグラムはどのような形になりますか。',
+     c:['母集団と同じ、右に裾が長く歪んだ形','左右対称の正規分布の形','どの値も同じ高さの平らな形','1本の棒だけの形'],
+     ex:'n = 1 では、観測値1個がそのまま「標本平均」になります。平均を取っていないので、標本平均の分布は母集団の形そのものです。n を大きくしていくと、歪みが消えて正規分布に近づいていきます。'},
+    {q:'母平均 μ の母集団から、標本サイズ n の標本を取り出して標本平均を計算する、という操作を何千回も繰り返し、標本平均のヒストグラムを描きます。n を 5 から 30 に大きくすると、ヒストグラムはどう変わりますか。',
+     c:['中心は母平均 μ のまま、幅が狭くなる','中心は母平均 μ のまま、幅が広くなる','幅は変わらず、中心が右へ移動する','幅も中心も変わらず、高さだけが変わる'],
+     ex:'標本平均の標本分布の中心は母平均 μ、ばらつきの大きさは標準誤差 σ/√n です。n が大きいほど標準誤差が小さくなり、ヒストグラムは細く尖った形になります。'},
+    {q:'標本サイズ n = 5 の標本を取り出して標本平均を計算する、という操作を繰り返し、標本平均のヒストグラムを描きます。n = 5 は固定したまま、繰り返す回数(標本数 r)だけを 2000回から 20000回に増やすと、何が起こりますか。',
+     c:['ヒストグラムの形が滑らかになるが、標本平均の標準誤差は変わらない','標本平均の標準誤差が小さくなり、ヒストグラムが細くなる','母平均 μ が大きくなる','標本平均の分布が母集団の形に近づく'],
+     ex:'標本平均の標準誤差 σ/√n を決めるのは、1つの標本に含まれる観測値の個数(標本サイズ n)です。繰り返す回数 r を増やすと、標本分布の形をより正確に描けるだけで、分布の幅そのものは変わりません。'},
+    {q:'母標準偏差 σ の母集団から、標本サイズ n の標本を何千回も取り出し、そのたびに標本平均を計算しました。こうして集めた標本平均たちの標準偏差は、どの値に近くなりますか。',
+     c:['σ/√n','σ','σ/n','σ × √n'],
+     ex:'標本平均を多数集めたときの標準偏差は、理論上の標準誤差 σ/√n に近い値になります。標準誤差とは、標本平均の標本分布の標準偏差のことです。'},
+  ]},
+  {id:'s03', num:'03', title:'t検定', href:'index.html#/ttest', qs:[
+    {q:'2群の母平均が本当は等しい状況で、有意水準 α = 0.05 のt検定を1000回繰り返しました。「有意」と判定される回数はおよそ何回ですか。',
+     c:['約50回','約0回','約500回','約950回'],
+     ex:'本当は差がないのに「有意」と判定してしまう誤り(第一種の過誤)の確率は、有意水準 α と同じ5%です。1000回なら約50回になります。'},
+    {q:'帰無仮説が正しい状況(2群の母平均が等しい)で、同じt検定を何千回も繰り返しました。得られるp値はどのように分布しますか。',
+     c:['0から1の間にほぼ一様に分布する','1の近くに集中する','0の近くに集中する','0.5を中心とした山型になる'],
+     ex:'p値は、帰無仮説が正しいもとで、実際に得られた値より極端な値が得られる条件付き確率です。帰無仮説が正しいとき、p値は0から1の間にほぼ一様に分布します。そのため p < 0.05 となる割合が約5%になります。'},
+    {q:'2群の平均をt検定で比べます。母平均の差と母標準偏差 σ はそのままで、各群のサンプルサイズ n を大きくしました。何が起こりますか。',
+     c:['t値が大きくなりやすく、検出力が上がる','t値が小さくなりやすく、検出力が下がる','第一種の過誤の確率が大きくなる','母平均の差が大きくなる'],
+     ex:'n が大きいと標本平均の差の標準誤差が小さくなるので、同じ平均差でもt値は大きくなりやすくなります。検出力は「本当に差があるときに有意と判定できる確率」です。第一種の過誤の確率は有意水準 α で決まり、n では変わりません。'},
+    {q:'2群の平均をt検定で比べます。母平均の差とサンプルサイズはそのままで、母標準偏差 σ が大きくなると、差の検出しやすさはどう変わりますか。',
+     c:['検出しにくくなる','検出しやすくなる','変わらない','σ が大きいほど必ず有意になる'],
+     ex:'ばらつきが大きいと、標本平均の差の標準誤差が大きくなり、平均の差が「たまたまのばらつき」に埋もれやすくなります。'},
+    {q:'2群の平均をt検定で比べたところ、p = 0.03 でした。このp値の意味として正しいものはどれですか。',
+     c:['帰無仮説(2群の母平均に差がない)が正しいもとで、実際に得られた値より極端な値が得られる条件付き確率が 0.03 である','実際に得られたデータのもとで、帰無仮説が正しい確率が 0.03 である','実際に得られたデータのもとで、対立仮説が正しい確率が 0.97 である','2群の母平均の差の大きさが 3% である'],
+     ex:'p値は、帰無仮説が正しいもとで、実際に得られた値より極端な値が得られる条件付き確率です。条件になっているのは「帰無仮説が正しい」ことであり、「データが得られたもとで仮説が正しい確率」ではありません。条件の向きを取り違えないことが大切です。また、p値は差の大きさ(効果量)を表すものでもありません。'},
+  ]},
+  {id:'s04', num:'04', title:'ランダム化と交絡', href:'natural-wine.html', qs:[
+    {q:'ワインの試験醸造で、前半6バッチを18℃、後半6バッチを26℃で発酵させたところ、18℃の方が高評価でした。後から、前半には成熟したブドウが多く、後半には未成熟なブドウが多かったことがわかりました。この差を温度の効果と言い切れない理由はどれですか。',
+     c:['成熟度の違いと温度の違いが一緒に変わっていて、どちらの影響か区別できないから','バッチ数が偶数だったから','ブドウ品種を揃えていたから','官能評価は数値にできないから'],
+     ex:'処理条件(温度)と、結果に影響する別の要因(成熟度)が一緒に変わっていて、どちらの影響か区別できない状態が交絡です。'},
+    {q:'ブドウ品種・仕込み量・容器など、研究者が把握している条件をすべて揃えて、2つの発酵温度を比べました。この実験について正しいものはどれですか。',
+     c:['研究者が把握していない条件まで揃っているとは限らない','すべての条件が揃っているので公平な比較になる','条件を揃えたのでランダム化は不要である','条件を揃えるほど交絡は強くなる'],
+     ex:'揃えられるのは、存在を認識している条件だけです。記録していなかった要因(たとえばブドウの成熟度)が処理条件と一緒に変わっていれば、交絡が起こります。'},
+    {q:'実験で、対象をどの処理条件に割り付けるかをランダムに決める(ランダム化する)目的として正しいものはどれですか。',
+     c:['未知の因子が特定の処理条件と系統的に結びつくことを防ぐ','未知の因子そのものをなくす','未知の因子を両群で必ず完全に均等にする','標本サイズを大きくする'],
+     ex:'ランダム化は未知の因子を消す方法ではありません。未知の因子が存在していても、それが処理条件と系統的に結びつく構造を作らないための方法です。'},
+    {q:'12バッチのブドウを、2つの発酵温度にランダムに6バッチずつ割り付けました。成熟度のような未知の因子について、正しいものはどれですか。',
+     c:['偶然、一方の温度に偏ることは起こり得る','必ず両群で均等になる','偏りが出たら、均等になるまで割り付けをやり直すのが正しい手順である','小さな実験ではランダム化に意味はない'],
+     ex:'有限の標本では、偶然の偏りは起こり得ます。重要なのは、研究者の判断や実施順によって未知因子と処理条件が結びつく構造を作らないことです。偶然の偏りは系統的ではないので、検定で扱う「偶然のばらつき」の中に含めて評価できます。'},
+    {q:'実験計画でいう「交絡」の説明として最も適切なものはどれですか。',
+     c:['処理条件と別の要因が一緒に変わり、結果の差がどちらによるものか区別できないこと','測定のたびに値が偶然ばらつくこと','標本サイズが小さく、有意差が出ないこと','検定を繰り返すことで誤判定が増えること'],
+     ex:'偶然のばらつきは標本を増やせば小さくなりますが、交絡による偏りは標本を増やしても残ります。'},
+  ]},
+  {id:'s05', num:'05', title:'実験順序のランダム化', href:'time_randomization_wine_exercise.html', qs:[
+    {q:'醸造条件 A と B を6バッチずつ比べます。12バッチは一度に仕込めないので、朝から夕方にかけて1バッチずつ順に作業します。「Aを6回→Bを6回」の順に実施する計画の問題点はどれですか。',
+     c:['時間とともに変化する要因が、A/Bの違いと結びついてしまう','Aの回数とBの回数が同じになってしまう','実験に時間がかかりすぎる','平均を計算できなくなる'],
+     ex:'「A = 前半、B = 後半」になると、室温・器具の状態・作業者の疲労など、時間とともに変わる要因がすべてA/Bの違いと交絡します。'},
+    {q:'醸造条件 A と B の本当の効果には差がなく、品質スコアは実験者の知らない理由で、時間とともに少しずつ上がっていくとします。Aを前半6回、Bを後半6回の順で実施すると、結果はどう見えますか。',
+     c:['Bの平均の方が高くなり、Bの方が優れているように見える','本当の効果に差がないので、AとBの平均はほぼ同じになる','Aの平均の方が高くなり、Aの方が優れているように見える','時間の影響は偶然のばらつきとして打ち消し合うので、結果に影響しない'],
+     ex:'観測値は「A/Bの効果 + 時間とともに変化する未知の効果 + 偶然のばらつき」の合計です。Bがすべて後半にあると、時間による上昇分がそのままBの平均に乗り、処理の効果と区別できません。'},
+    {q:'12バッチの実験に、朝9時から16時までかかります。室温、器具の状態、作業者の疲労など、時間とともに変化して結果に影響しうる要因への対処として、最も適切な考え方はどれですか。',
+     c:['事前にすべて列挙できるとは限らないので、実験順序をランダム化する','実験前にすべて列挙し、1つずつ固定すれば十分である','原因となる要因を1つ特定できれば十分である','時間の影響は小さいので無視してよい'],
+     ex:'既知の要因なら固定・測定・ブロック化ができますが、存在を認識していない要因にはその方法を直接適用できません。実験順序のランダム化は、認識していない要因に対しても働きます。'},
+    {q:'結果に影響するとわかっている要因(既知の要因)への対処として、適切でないものはどれですか。',
+     c:['結果を見てから、その要因の影響が大きそうなデータを除外する','その要因を一定に固定する','その要因を測定して記録し、解析で考慮する','その要因の水準ごとにブロックを作り、ブロック内で処理を比べる'],
+     ex:'固定・測定・ブロック化は、いずれも実験の前に計画しておく正しい対処です。結果を見てからデータを除外すると、都合のよい結果を選ぶことになり、誤って「有意」と判定する確率が大きくなります(教材07で扱う落とし穴です)。除外の基準は、データを見る前に決めておく必要があります。'},
+    {q:'品質スコアが、実験者の知らない理由で時間とともに変化している状況で、A/Bの実験順序をランダムに決めました。ランダム化によって得られる効果として正しいものはどれですか。',
+     c:['AとBが時間軸上に散らばり、時間とともに変化する要因が一方の条件だけに有利に働くことを防げる','時間とともに変化する要因そのものがなくなる','測定の偶然のばらつきが小さくなる','未知の要因の影響が、AとBで必ず完全に等しくなる'],
+     ex:'ランダム化しても、時間とともに変化する要因は消えません。しかし、AとBが時間軸上に散らばるので、その要因が「A = 前半、B = 後半」のように一方の条件だけに系統的に乗ることを防げます。その結果、A/Bの平均の差を、処理の効果として解釈できるようになります。12バッチ程度では偶然の偏りが残ることはありますが、それは系統的な偏りではありません。'},
+  ]},
+  {id:'s06', num:'06', title:'有意になるまで繰り返す罠', href:'optional_stopping.html', qs:[
+    {q:'本当は効果がまったくない(帰無仮説が正しい)とき、有意水準5%の独立な検定を9回行いました。少なくとも1回「有意」になる確率はおよそいくつですか。',
+     c:['約37%','約5%','約45%','約9%'],
+     ex:'9回すべてで有意にならない確率は (1 − 0.05)<sup>9</sup> ≈ 0.63 なので、少なくとも1回有意になる確率は 1 − 0.63 ≈ 0.37 です。5%のつもりが約37%まで膨らみます。単純に 5% × 9 = 45% とはなりません。'},
+    {q:'ある学生が、化合物の効果を調べる実験を「有意差が出なければ、条件を少し見直してやり直す」という手順で繰り返しました。8回続けて有意差が出ず、9回目に p = 0.0126 となりました。この結果の扱いとして適切なものはどれですか。',
+     c:['9回検定したことを踏まえると、効果がなくても偶然こうなる可能性は小さくない','p値が0.05よりずっと小さいので、効果は確実である','8回の失敗は実験手技の問題なので、9回目だけを報告すればよい','9回目の検定は独立なので、それまでの回数は関係ない'],
+     ex:'p = 0.0126 は「帰無仮説が正しいもとで、その1回の実験でこれより極端な値が得られる条件付き確率」です。9回試して1回でも有意になる確率は、効果がなくても約37%あります。何回試したかを判定に反映させないことが問題を生みます。'},
+    {q:'「実験して検定し、有意でなければもう一度実験して検定する」ことを、有意になるまで繰り返す手順があります。この手順の問題の本質はどれですか。',
+     c:['結果を見ながら、実験を続けるかどうかを決めていること','t検定という手法そのもの','実験を2回以上行うこと','1回の実験のサンプルサイズが小さいこと'],
+     ex:'問題は検定そのものではありません。同じ検定でも、サンプルサイズを事前に決めて一度だけ検定すれば、誤って有意と判定する確率は設定どおり5%に保たれます。'},
+    {q:'群逐次デザインは、試験の途中で複数回検定を行い、有意になればその時点で試験を終了できる実験計画です。「有意になるまで繰り返す」やり方と決定的に違う点はどれですか。',
+     c:['確認する回数と各回の判定基準を、実験前に決めておく','途中で一度も結果を確認しない','各回の判定基準を0.05のまま使う','有意になっても必ず最後まで実験を続ける'],
+     ex:'群逐次デザインでは、途中で検定する時点(中間解析)と回数を事前に計画し、試験全体の有意水準が保たれるよう各回の基準を0.05より厳しくします。全体の有意水準を各回にどう配分するかを決めるのが、αスペンディング関数です。'},
+    {q:'検定を m 回行うとき、全体で誤って有意と判定する確率を有意水準 α 以下に抑える最も単純な方法が Bonferroni補正です。この補正ではどうしますか。',
+     c:['各検定の有意水準を α/m にする','各検定の有意水準を α × m にする','p値が最も小さい検定だけを報告する','検定の回数を1回に減らす'],
+     ex:'検定回数 m で有意水準を割るのが Bonferroni補正です。たとえば m = 5、α = 0.05 なら、各検定は 0.01 を基準に判定します。多重性の調整の考え方を理解する例としては、わかりやすい方法です。<br><br>ただし、この補正は厳しすぎる(保守的な)ことが知られています。検定の数が多いほど各検定の基準が極端に小さくなり、本当に差があっても検出できなくなる(検出力が大きく下がる)ため、実際の解析ではあまり勧められません。「1つでも誤って有意になる確率」を同じように抑えながら検出力の高い Holm法や、「有意とした結果のうち誤りの割合(偽発見率、FDR)」を制御する Benjamini–Hochberg法・Storey法などが使われます。'},
+    {q:'「有意になるまで実験を繰り返す」ことによる誤判定を防ぐ方法として、適切でないものはどれですか。',
+     c:['有意になった回の結果だけを報告する','サンプルサイズを実験の前に決める','行った試行をすべて報告する','途中で検定を繰り返す場合は、群逐次デザインなどの補正を使う'],
+     ex:'有意になった回だけを報告すると、何回試したかという情報が失われ、誤って有意と判定した確率を読み手が評価できなくなります。'},
+  ]},
+  {id:'s07', num:'07', title:'統計あるある漫画', href:'manga.html', qs:[
+    {q:'3つのダイエット法A・B・Cを、3通りのペア(AとB、AとC、BとC)ごとに有意水準5%で検定しました。本当は3つの方法にまったく差がない場合、少なくとも1つのペアが「有意」になる確率はおよそいくつですか。',
+     c:['約14%','約5%','約25%','約1.7%'],
+     ex:'3回の検定を独立とみなすと、1 − 0.95<sup>3</sup> ≈ 0.143 です。この「少なくとも1つ誤って有意になる確率」を家族誤り率(ファミリーワイズエラー率)と呼び、これを抑えるために Tukey法などの多重比較法を使います。'},
+    {q:'ある病気の検査は、感度・特異度がともに99%です。この病気の人は1万人に1人です。無作為に選ばれた人がこの検査を受けて陽性になったとき、その人が実際に病気である確率(陽性的中率)はおよそいくつですか。',
+     c:['約1%','約99%','約50%','約90%'],
+     ex:'<b>用語の定義</b><ul><li><b>有病率(基準率、ベースレート)</b>: 調べる集団のうち、実際に病気である人の割合。ここでは 1/10000。</li><li><b>感度</b>: 病気の人が、検査で陽性になる確率。ここでは 99%。</li><li><b>特異度</b>: 病気でない人が、検査で陰性になる確率。ここでは 99%。病気でない人が誤って陽性になる確率(偽陽性率)は 1 − 特異度 = 1%。</li><li><b>陽性的中率</b>: 検査で陽性になった人のうち、実際に病気である人の割合。</li></ul><b>計算</b>(100万人が検査を受けた場合)<ul><li>病気の人: 100万 × 1/10000 = 100人。このうち陽性になるのは 100 × 0.99 = 99人(真陽性)。</li><li>病気でない人: 100万 − 100 = 999,900人。このうち誤って陽性になるのは 999,900 × 0.01 = 9,999人(偽陽性)。</li><li>陽性になった人は合計 99 + 9,999 = 10,098人。</li><li>陽性的中率 = 99 ÷ 10,098 ≈ 0.0098、つまり約1%。</li></ul><b>なぜ99%にならないのか</b><br>感度と特異度は「病気かどうかがわかっているときに、検査結果がどうなるかの確率」です。陽性的中率は「検査結果がわかっているときに、病気である確率」です。条件の向きが逆なので、値は一致しません。病気がまれな場合、病気でない人が圧倒的に多いため、わずか1%の偽陽性でも、人数では真陽性の約100倍になります。<br><br>検査の精度だけを見て、病気の頻度(基準率)を考えに入れない誤りを「基準率の無視」といいます。同じ検査でも、症状のある人だけを検査するなど有病率の高い集団に使えば、陽性的中率は高くなります。この関係を式で表したものがベイズの定理です。'},
+    {q:'前回の試験で点数が下位だった学生20人のうち、くじで選んだ10人に特別指導をしたところ、次の試験でその10人の平均点が上がりました。「指導の効果があった」と結論する前に確認すべきことはどれですか。',
+     c:['指導を受けなかった残りの10人の平均点が、次の試験でどう変化したか','指導を受けた10人が、指導に満足しているか','前回の試験で上位だった学生の平均点が下がったか','指導を受けた10人のうち、点数が最も上がった学生は誰か'],
+     ex:'前回の点数が極端に低かった集団は、何もしなくても、次の測定では平均に近づきやすくなります(平均への回帰)。指導を受けなかった10人(対照群)も同じくらい点数が上がっていれば、上昇は指導の効果ではなく平均への回帰と考えられます。対照群と比べて初めて、指導の効果を評価できます。'},
+    {q:'治療薬AとBの成功率を患者全体で比べると、薬Aの方が高くなりました。ところが、軽症の患者だけ、重症の患者だけで比べると、どちらでも薬Bの方が高くなりました。この現象の名前と主な原因の組み合わせとして正しいものはどれですか。',
+     c:['シンプソンのパラドックス ― 薬Aには軽症患者が多く、薬Bには重症患者が多いなど、患者の構成が違っていた','生存バイアス ― 治療に失敗した患者が記録されていなかった','出版バイアス ― 有意な結果だけが報告された','平均への回帰 ― 重症患者が自然に回復した'],
+     ex:'重症度は成功率に影響し、しかも薬によって患者の重症度の構成が違っています(重症度が交絡因子になっています)。このとき、全体で比べた結論と、重症度で分けて比べた結論が逆転することがあります。'},
+    {q:'2群の平均を検定したところ、p = 0.12 で有意差が出ませんでした。サンプルサイズは小さく、データのばらつきは大きい状況です。この結果の読み方として適切なものはどれですか。',
+     c:['このデータだけでは、差があるともないとも判断できない','差がないことが証明された','p値が0.12なので、帰無仮説が正しい確率が12%である','サンプルを追加しながら、有意になるまで検定を続ければよい'],
+     ex:'p = 0.12 は、帰無仮説が正しいもとで、実際に得られた値より極端な値が得られる条件付き確率が 0.12 であることを表すだけです。「有意差なし」は「差がない」ことの証明ではありません。サンプルサイズが小さいと検出力が低く、本当に差があっても有意にならないことがよくあります。'},
+    {q:'10万人規模の試験で、2群の体重変化の差 0.1 kg が p < 0.001 でした。差の大きさを標準偏差を単位として表した効果量(Cohenのd)は 0.10 です。この結果の解釈として適切なものはどれですか。',
+     c:['統計的には有意だが、差はごく小さく、実質的な意味があるかは別に検討が必要である','p値がとても小さいので、効果はとても大きい','サンプルサイズが大きすぎるので、結果は無効である','効果量が小さいので、検定の結果は誤りである'],
+     ex:'サンプルサイズが非常に大きいと、わずかな差でも有意になります。p値は効果の大きさを表さないので、効果量や実質的な意味を合わせて確認します。Cohenのd = 0.10 は、一般に「小さい」とされる 0.2 よりもさらに小さい値です。'},
+    {q:'主要な指標で有意差が出なかったため、追加で20項目を検定し、有意になった1項目だけを報告しました。問題点はどれですか。',
+     c:['本当は差がなくても、20項目を検定すれば偶然1項目程度は有意になりやすい','20項目では少なすぎて、検出力が足りない','追加の項目を測定すること自体が研究不正にあたる','有意になった項目が1つだけでは論文にならない'],
+     ex:'有意水準5%で20項目を検定すると、本当は差がなくても、偶然だけで平均1項目が有意になります(20 × 0.05 = 1)。解析した項目をすべて報告し、FDRを制御する方法などで多重性を調整する必要があります。'},
+    {q:'探索的にいろいろな切り口で解析して見つけた有意な結果を、「最初からこの仮説を立てていた」かのように論文に書くことを何と呼びますか。',
+     c:['HARKing','出版バイアス','疑似反復','選択バイアス'],
+     ex:'Hypothesizing After the Results are Known(結果がわかってから仮説を立てる)の略です。探索的な解析であることを明示するか、仮説と解析計画を事前登録することで防ぎます。'},
+    {q:'参加者1人あたり10回の試行を行い、その10個の測定値を、10人分の独立したデータであるかのように検定しました。この誤りの名前と問題点として正しいものはどれですか。',
+     c:['疑似反復 ― 同じ参加者の試行は独立ではなく、見かけ上サンプルサイズが増えて有意になりやすい','出版バイアス ― 有意な試行だけが残ってしまう','平均への回帰 ― 試行を重ねると平均に近づいてしまう','基準率の無視 ― 試行の成功率を考慮していない'],
+     ex:'同じ参加者の測定値は互いに似ているので、独立な情報の数は試行の数ではなく、参加者の数に近くなります。参加者ごとに平均を取るか、混合効果モデルなど階層構造を考慮した解析を行います。'},
+    {q:'成功した起業家50人の共通点(留学経験がある、20代で起業した、など)を調べて、「成功の方程式」を見つけたと考えました。この分析に欠けているものはどれですか。',
+     c:['失敗した起業家のデータ','成功した起業家の追加データ','共通点の数','起業家の年収のデータ'],
+     ex:'失敗した起業家にも、同じ共通点があるかもしれません。成功した側と失敗した側を比べて初めて、その特徴が成功と関係するかどうかがわかります。観測できたデータ(生き残った側)だけで判断する誤りが生存バイアスです。'},
+  ]},
+];
+
+/* ---------------- 解答の保存 ----------------
+   解答は localStorage に {問題のキー: 選んだ選択肢の番号(c の添字)} として保存する。
+   他のページに移動したり、ページを閉じたりしても残る。
+   消えるのは「すべてやり直す」を押したときと、ブラウザのサイトデータを消去したときだけ。 */
+const QUIZ_KEY = 'statslab.quiz.v1';
+function qid(sec, item){
+  let h = 5381; const s = sec.id + item.q;
+  for(let i=0;i<s.length;i++) h = ((h<<5) + h + s.charCodeAt(i)) >>> 0;
+  return sec.id + '-' + h.toString(36);
+}
+function loadAnswers(){
+  let saved = {};
+  try{ saved = JSON.parse(localStorage.getItem(QUIZ_KEY)||'{}') || {}; }catch(e){}
+  const valid = {};   // 今ある問題・選択肢に対応する解答だけを残す
+  SECTIONS.forEach(sec => sec.qs.forEach(item => {
+    const v = saved[qid(sec, item)];
+    if(Number.isInteger(v) && v >= 0 && v < item.c.length) valid[qid(sec, item)] = v;
+  }));
+  return valid;
+}
+function saveAnswers(){
+  try{ localStorage.setItem(QUIZ_KEY, JSON.stringify(answers)); }catch(e){}
+}
+let answers = {};   // 問題のキー -> 選んだ選択肢の番号(0 が正解)
+
+/* ---------------- render ---------------- */
+const KEYS = ['A','B','C','D','E'];
+
+function shuffle(a){
+  const b = a.slice();
+  for(let i=b.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [b[i],b[j]]=[b[j],b[i]]; }
+  return b;
+}
+
+function render(){
+  const main = document.getElementById('quiz');
+  const index = document.getElementById('index');
+  main.innerHTML = ''; index.innerHTML = '';
+
+  SECTIONS.forEach(sec => {
+    const link = document.createElement('a');
+    link.href = '#' + sec.id; link.id = 'ix-' + sec.id;
+    link.innerHTML = `${sec.num} ${sec.title}<span class="sc"></span>`;
+    index.appendChild(link);
+
+    const el = document.createElement('section');
+    el.className = 'block'; el.id = sec.id;
+    el.innerHTML = `
+      <div class="sec-head">
+        <h2>${sec.num} ${sec.title}</h2>
+        <span class="sec-score" id="sc-${sec.id}"></span>
+      </div>
+      <p class="sub">教材: <a class="tl" href="${sec.href}">${sec.num} ${sec.title}</a></p>
+      <div class="panel qlist"></div>`;
+    const list = el.querySelector('.qlist');
+
+    sec.qs.forEach((item, qi) => {
+      const key = qid(sec, item);
+      const q = document.createElement('div');
+      q.className = 'q';
+      q.innerHTML = `<span class="qn">Q${qi+1}</span><p class="qt">${item.q}</p><div class="choices"></div>`;
+      const box = q.querySelector('.choices');
+      const order = shuffle(item.c.map((text, i) => ({text, i})));
+
+      /* 選んだ選択肢(c の添字)に応じて、正誤と解説を表示する */
+      const reveal = chosen => {
+        box.querySelectorAll('.choice').forEach((o, oi) => {
+          o.disabled = true;
+          if(order[oi].i === 0){ o.classList.add('correct'); o.insertAdjacentHTML('beforeend','<span class="mk">正解</span>'); }
+          else if(order[oi].i === chosen){ o.classList.add('wrong'); o.insertAdjacentHTML('beforeend','<span class="mk">あなたの解答</span>'); }
+        });
+        const ex = document.createElement('div');
+        ex.className = 'ex';
+        ex.innerHTML = `<b>${chosen === 0 ? '正解。' : '不正解。'}</b>${item.ex}`;
+        q.appendChild(ex);
+      };
+
+      order.forEach((ch, ci) => {
+        const b = document.createElement('button');
+        b.type = 'button'; b.className = 'choice';
+        b.innerHTML = `<span class="k">${KEYS[ci]}</span><span>${ch.text}</span>`;
+        b.addEventListener('click', () => {
+          answers[key] = ch.i;
+          saveAnswers();
+          reveal(ch.i);
+          updateScores();
+        });
+        box.appendChild(b);
+      });
+      if(answers[key] !== undefined) reveal(answers[key]);
+      list.appendChild(q);
+    });
+    main.appendChild(el);
+  });
+  updateScores();
+}
+
+function updateScores(){
+  let right = 0, answered = 0, all = 0;
+  SECTIONS.forEach(sec => {
+    let r = 0, a = 0;
+    sec.qs.forEach(item => {
+      const v = answers[qid(sec, item)];
+      if(v !== undefined){ a++; if(v === 0) r++; }
+    });
+    right += r; answered += a; all += sec.qs.length;
+    document.getElementById('sc-' + sec.id).textContent = `正解 ${r} / 解答 ${a} / 全 ${sec.qs.length} 問`;
+    const link = document.getElementById('ix-' + sec.id);
+    link.querySelector('.sc').textContent = a ? `${r}/${sec.qs.length}` : `${sec.qs.length}問`;
+    link.classList.toggle('done', a === sec.qs.length);
+  });
+  document.getElementById('total').textContent = `${right} / ${answered}`;
+  document.getElementById('nq').textContent = all;
+}
+
+document.getElementById('reset').addEventListener('click', () => {
+  if(!confirm('すべての解答と正解数を消して、最初からやり直します。よろしいですか?')) return;
+  answers = {};
+  try{ localStorage.removeItem(QUIZ_KEY); }catch(e){}
+  render();
+  window.scrollTo({top:0});
+});
+
+/* ---------------- 解錠の確認 ----------------
+   各教材が localStorage に残した学習済みの記録(index.html と同じキー)を見て、
+   00〜07 がすべて揃っているときだけ問題を表示する。 */
+function getProgress(){
+  try{ return JSON.parse(localStorage.getItem('statslab.progress.v1')||'{}') || {}; }catch(e){ return {}; }
+}
+const done = getProgress();
+const remaining = SECTIONS.filter(sec => !done[sec.num]);
+if(remaining.length === 0){
+  answers = loadAnswers();
+  render();
+}else{
+  document.getElementById('summary').hidden = true;
+  document.getElementById('locked').hidden = false;
+  document.getElementById('remaining').innerHTML = remaining.map(sec =>
+    `<li><a class="tl" href="${sec.href}">${sec.num} ${sec.title}</a></li>`).join('');
+}
+</script>
+</body>
+</html>
