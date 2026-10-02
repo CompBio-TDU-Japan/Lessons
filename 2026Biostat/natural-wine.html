@@ -2,6 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
 <title>ワイン造りで学ぶランダム化</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;500;600;700&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
@@ -38,6 +39,14 @@ main{max-width:820px;margin:auto;padding:40px 20px 80px}.top{margin-bottom:34px}
 .crumb[aria-current="page"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
 .back-link{display:inline-block;font-size:.82rem;color:var(--muted);text-decoration:none;margin-bottom:10px}
 .back-link:hover{color:var(--wine-ink)}
+
+/* 次の学びへ(教材の最後に置く、関連項目への案内) */
+.nextstudy{margin-top:24px;padding:18px 20px;border:1px solid color-mix(in srgb,currentColor 22%,transparent);border-radius:12px;font-size:.9rem;line-height:1.75;text-align:left}
+.nextstudy h3{font-size:1rem;margin:0 0 8px}
+.nextstudy p{margin:0 0 8px;font-size:.9rem}
+.nextstudy ul{margin:0;padding-left:1.2em}
+.nextstudy li{margin-bottom:4px}
+.nextstudy .en{font-family:'IBM Plex Mono',monospace;font-size:.78em;opacity:.75}
 </style></head>
 <body>
 <header class="topbar">
@@ -64,7 +73,17 @@ main{max-width:820px;margin:auto;padding:40px 20px 80px}.top{margin-bottom:34px}
 
 <div class="step" data-step="2"><div class="num">STEP 3 / 4</div><h2>実は、知らなかった違いがあった</h2><div class="reveal"><p class="bigline">使用したブドウの成熟度が、バッチによって違っていた。</p><p>研究者はこの違いを記録しておらず、実験中には認識していなかった。</p></div><div class="timeline" id="timeline"></div><div class="labels"><span>← 前半6バッチ：18℃ →</span><span>← 後半6バッチ：26℃ →</span></div><p>前半には成熟したブドウが多く、後半には未成熟なブドウが多かった。すると、観測された品質差が<strong>温度によるものなのか、成熟度によるものなのか区別できない</strong>。</p><div class="note"><strong>これが交絡である。</strong><br>「把握している条件を揃えた」ことと、「すべての条件が揃っている」ことは同じではない。</div><div class="actions"><button class="btn" onclick="next()">ランダム化してやり直す</button></div></div>
 
-<div class="step" data-step="3"><div class="num">STEP 4 / 4</div><h2>ブドウと温度をランダムに割り付ける</h2><p>今度は、どのブドウを18℃・26℃のどちらに割り付けるかをランダムに決めてから試験醸造した。</p><div class="balance"><div class="mini"><strong>18℃</strong><div id="bal18"></div></div><div class="mini"><strong>26℃</strong><div id="bal26"></div></div></div><div class="resultGrid"><div class="group"><div class="temp">18℃</div><div>品質平均</div><div class="avg" id="rand18">—</div></div><div class="group"><div class="temp">26℃</div><div>品質平均</div><div class="avg" id="rand26">—</div></div></div><div class="final"><div class="bigline">ランダム化は、知らない因子を「なくす」方法ではない。</div><p>未知の因子が存在していても、それが特定の処理条件と<strong>系統的に結びつくことを防ぐ</strong>ために行うのである。</p><p class="small">なお、12バッチ程度の有限標本では、ランダム化しても成熟度が完全に均等になるとは限らない。重要なのは、研究者の判断や実施順によって未知因子と処理条件が意図せず結びつく構造を作らないことである。</p></div><div class="actions"><button class="btn secondary" onclick="restart()">最初からもう一度</button></div></div>
+<div class="step" data-step="3"><div class="num">STEP 4 / 4</div><h2>ブドウと温度をランダムに割り付ける</h2><p>今度は、どのブドウを18℃・26℃のどちらに割り付けるかをランダムに決めてから試験醸造した。</p><div class="balance"><div class="mini"><strong>18℃</strong><div id="bal18"></div></div><div class="mini"><strong>26℃</strong><div id="bal26"></div></div></div><div class="resultGrid"><div class="group"><div class="temp">18℃</div><div>品質平均</div><div class="avg" id="rand18">—</div></div><div class="group"><div class="temp">26℃</div><div>品質平均</div><div class="avg" id="rand26">—</div></div></div><div class="final"><div class="bigline">ランダム化は、知らない因子を「なくす」方法ではない。</div><p>未知の因子が存在していても、それが特定の処理条件と<strong>系統的に結びつくことを防ぐ</strong>ために行うのである。</p><p class="small">なお、12バッチ程度の有限標本では、ランダム化しても成熟度が完全に均等になるとは限らない。重要なのは、研究者の判断や実施順によって未知因子と処理条件が意図せず結びつく構造を作らないことである。</p></div><aside class="nextstudy">
+  <h3>次の学びへ</h3>
+  <p>この教材で体験した内容は、次の項目につながっている。問題集には、これらを学んでから解ける問題も含まれる。項目名で検索するか、教科書の該当する章で確認するとよい。</p>
+  <ul>
+    <li><b>交絡と交絡因子</b> <span class="en">confounding, confounder</span> — 処理と結果の両方に関係する第三の要因である。</li>
+    <li><b>フィッシャーの三原則(反復・無作為化・局所管理)</b> <span class="en">Fisher's principles of experimental design</span> — 実験計画の基本原則で、ランダム化はその1つである。</li>
+    <li><b>ランダム化比較試験</b> <span class="en">randomized controlled trial, RCT</span> — ランダム割り付けを使って処理の効果を調べる研究デザインである。</li>
+    <li><b>観察研究における交絡の調整</b> <span class="en">stratification, regression adjustment, propensity score</span> — ランダム化できない研究で、層別解析や回帰、傾向スコアを使って交絡に対処する方法である。</li>
+  </ul>
+</aside>
+<div class="actions"><button class="btn secondary" onclick="restart()">最初からもう一度</button></div></div>
 </section>
 </main>
 <script>
@@ -80,7 +99,28 @@ function renderDots(id,vals){const el=document.getElementById(id);el.innerHTML='
 function init(){renderDots('dots18',first18);renderDots('dots26',first26);document.getElementById('avg18').textContent=avg(first18).toFixed(1);document.getElementById('avg26').textContent=avg(first26).toFixed(1);const tl=document.getElementById('timeline');const names=['未成熟','普通','成熟'];maturity.forEach((m,i)=>{let e=document.createElement('div');e.className='batch '+['unripe','mid','ripe'][m];e.innerHTML=`#${i+1}<br><b>${names[m]}</b>`;tl.appendChild(e)});randomized();progress()}
 function randomized(){let pool=[];maturity.forEach((m,i)=>pool.push({m,i,key:rng()}));pool.sort((a,b)=>a.key-b.key);let a=pool.slice(0,6),b=pool.slice(6);const names=['未成熟','普通','成熟'];function counts(x){return [0,1,2].map(m=>[names[m],x.filter(z=>z.m===m).length])}function show(id,x){document.getElementById(id).innerHTML=counts(x).map(([n,c])=>`<div class="minirow"><span>${n}</span><b>${c}バッチ</b></div>`).join('')}show('bal18',a);show('bal26',b);let sa=a.map(x=>score(x.m)),sb=b.map(x=>score(x.m));document.getElementById('rand18').textContent=avg(sa).toFixed(1);document.getElementById('rand26').textContent=avg(sb).toFixed(1)}
 function progress(){let p=document.getElementById('progress');p.innerHTML='';steps.forEach((_,i)=>{let s=document.createElement('span');if(i<=current)s.className='on';p.appendChild(s)})}
-function next(){steps[current].classList.remove('active');current=Math.min(current+1,steps.length-1);steps[current].classList.add('active');progress();window.scrollTo({top:0,behavior:'smooth'})}
+function next(){steps[current].classList.remove('active');current=Math.min(current+1,steps.length-1);steps[current].classList.add('active');progress();window.scrollTo({top:0,behavior:'smooth'});if(current===steps.length-1)markDone('04')}
+/* 学習済みの記録(index.html の問題集の解錠に使う) */
+function getProgress(){try{return JSON.parse(localStorage.getItem('statslab.progress.v1')||'{}')||{}}catch(e){return {}}}
+function markDone(id){try{const d=getProgress();if(!d[id]){d[id]=Date.now();localStorage.setItem('statslab.progress.v1',JSON.stringify(d))}}catch(e){}showProgress(id)}
+/* 学習状況の表示: トップバーの各教材に ✓ を付け、トップバーの右端にこの教材の状態(未達成/学習済み)を出す */
+function showProgress(own){
+  const d=getProgress();
+  if(!document.getElementById('lstat-css')){
+    const s=document.createElement('style');s.id='lstat-css';
+    s.textContent='.crumb[data-done]::after{content:" ✓"}#lstat{font-size:.72rem;letter-spacing:.03em;padding:5px 10px;border-radius:100px;border:1px dashed currentColor;white-space:nowrap;opacity:.8}#lstat.done{border-style:solid;opacity:1;font-weight:700}';
+    document.head.appendChild(s);
+  }
+  let all=true;
+  document.querySelectorAll('.crumb').forEach(c=>{const m=c.textContent.match(/^\s*(\d\d)\s/);if(!m)return;if(d[m[1]])c.setAttribute('data-done','');else all=false});
+  let p=document.getElementById('lstat');
+  if(!p){p=document.createElement('span');p.id='lstat';p.setAttribute('role','status');document.querySelector('.topbar .crumbs').appendChild(p)}
+  p.className=d[own]?'done':'';
+  p.textContent=d[own]?'この教材: 学習済み ✓':'この教材: 未達成';
+  /* トップバーの教材がすべて学習済みなら、問題集へのリンクを加える */
+  if(all&&!document.getElementById('crumb-quiz')){const a=document.createElement('a');a.id='crumb-quiz';a.className='crumb';a.href='quiz.html';a.textContent='問題集';p.parentNode.insertBefore(a,p)}
+}
+showProgress('04');
 function restart(){steps[current].classList.remove('active');current=0;steps[0].classList.add('active');progress();window.scrollTo({top:0,behavior:'smooth'})}
 init();
 </script></body></html>

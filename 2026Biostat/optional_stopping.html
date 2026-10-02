@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
 <title>そのp&lt;0.05は、本物だろうか？｜化合物Xの実験でみる「有意になるまで繰り返す」の罠</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;500;600;700&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
@@ -131,6 +132,14 @@ input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;bac
 .crumb[aria-current="page"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
 .back-link{display:inline-block;font-size:.82rem;color:var(--muted);text-decoration:none;margin-bottom:10px}
 .back-link:hover{color:var(--accent-ink)}
+
+/* 次の学びへ(教材の最後に置く、関連項目への案内) */
+.nextstudy{margin-top:24px;padding:18px 20px;border:1px solid color-mix(in srgb,currentColor 22%,transparent);border-radius:12px;font-size:.9rem;line-height:1.75;text-align:left}
+.nextstudy h3{font-size:1rem;margin:0 0 8px}
+.nextstudy p{margin:0 0 8px;font-size:.9rem}
+.nextstudy ul{margin:0;padding-left:1.2em}
+.nextstudy li{margin-bottom:4px}
+.nextstudy .en{font-family:'IBM Plex Mono',monospace;font-size:.78em;opacity:.75}
 </style>
 </head>
 <body>
@@ -276,6 +285,16 @@ input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;bac
   <p>検定を繰り返しながら、有意になった時点で実験をやめる——この手順は、本当は効果がなくても「有意」という結果にたどり着く確率を、設定した有意水準よりずっと大きくしてしまう。</p>
 </div>
 <p class="small">これは指導する側も見落としやすい問題である。「粘れば報われた」という手応えは、努力の証であると同時に、統計的には警戒すべきサインでもある。実験を重ねること自体が悪いのではなく、<b>何回試したかを記録し、それを判定に反映させないこと</b>が問題を生む。対処法は、サンプルサイズを事前に決めること、すべての試行を報告すること、繰り返す場合は群逐次デザインなど正しい補正を使うことである。</p>
+<aside class="nextstudy">
+  <h3>次の学びへ</h3>
+  <p>この教材で体験した内容は、次の項目につながっている。問題集には、これらを学んでから解ける問題も含まれる。項目名で検索するか、教科書の該当する章で確認するとよい。</p>
+  <ul>
+    <li><b>多重比較とファミリーワイズエラー率</b> <span class="en">multiple comparisons, family-wise error rate</span> — 検定を繰り返したときに、少なくとも1つ誤って有意になる確率である。</li>
+    <li><b>Bonferroni補正と偽発見率(FDR)</b> <span class="en">Bonferroni correction, false discovery rate, Benjamini–Hochberg</span> — 検定の回数に応じて判定基準を調整する方法である。</li>
+    <li><b>検出力分析とサンプルサイズ設計</b> <span class="en">power analysis, sample size calculation</span> — 実験の前に、必要なサンプルサイズを決める方法である。</li>
+    <li><b>p-hackingと事前登録</b> <span class="en">p-hacking, preregistration</span> — 解析の自由度が誤判定を増やす問題と、その対策である。</li>
+  </ul>
+</aside>
 <div class="actions"><button class="btn secondary" onclick="restart()">最初からやり直す</button></div>
 </div>
 </section>
@@ -312,7 +331,29 @@ function go(id){
   progress();
   window.scrollTo({top:0,behavior:'smooth'});
   if(id==='s5' && !simDone) runSim();
+  if(id==='s7') markDone('06');
 }
+/* 学習済みの記録(index.html の問題集の解錠に使う) */
+function getProgress(){try{return JSON.parse(localStorage.getItem('statslab.progress.v1')||'{}')||{}}catch(e){return {}}}
+function markDone(id){try{const d=getProgress();if(!d[id]){d[id]=Date.now();localStorage.setItem('statslab.progress.v1',JSON.stringify(d))}}catch(e){}showProgress(id)}
+/* 学習状況の表示: トップバーの各教材に ✓ を付け、トップバーの右端にこの教材の状態(未達成/学習済み)を出す */
+function showProgress(own){
+  const d=getProgress();
+  if(!document.getElementById('lstat-css')){
+    const s=document.createElement('style');s.id='lstat-css';
+    s.textContent='.crumb[data-done]::after{content:" ✓"}#lstat{font-size:.72rem;letter-spacing:.03em;padding:5px 10px;border-radius:100px;border:1px dashed currentColor;white-space:nowrap;opacity:.8}#lstat.done{border-style:solid;opacity:1;font-weight:700}';
+    document.head.appendChild(s);
+  }
+  let all=true;
+  document.querySelectorAll('.crumb').forEach(c=>{const m=c.textContent.match(/^\s*(\d\d)\s/);if(!m)return;if(d[m[1]])c.setAttribute('data-done','');else all=false});
+  let p=document.getElementById('lstat');
+  if(!p){p=document.createElement('span');p.id='lstat';p.setAttribute('role','status');document.querySelector('.topbar .crumbs').appendChild(p)}
+  p.className=d[own]?'done':'';
+  p.textContent=d[own]?'この教材: 学習済み ✓':'この教材: 未達成';
+  /* トップバーの教材がすべて学習済みなら、問題集へのリンクを加える */
+  if(all&&!document.getElementById('crumb-quiz')){const a=document.createElement('a');a.id='crumb-quiz';a.className='crumb';a.href='quiz.html';a.textContent='問題集';p.parentNode.insertBefore(a,p)}
+}
+showProgress('06');
 function restart(){ location.reload(); }
 
 /* ---------- step 2: reveal rounds one by one ---------- */

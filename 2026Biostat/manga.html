@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
 <title>統計あるある漫画｜統計実験室</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;500;600;700&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
@@ -131,6 +132,14 @@ figure.mangafig figcaption a{ color:var(--accent); text-decoration:underline dot
 .related b{ display:block; font-family:'Shippori Mincho',serif; font-size:1rem; margin-bottom:4px; }
 .related span{ font-size:.82rem; color:var(--ink-2); }
 footer.site{ margin-top:48px; padding-block:24px 40px; border-top:1px solid var(--border); color:var(--muted); font-size:.78rem; }
+
+/* 次の学びへ(教材の最後に置く、関連項目への案内) */
+.nextstudy{margin-top:24px;padding:18px 20px;border:1px solid color-mix(in srgb,currentColor 22%,transparent);border-radius:12px;font-size:.9rem;line-height:1.75;text-align:left}
+.nextstudy h3{font-size:1rem;margin:0 0 8px}
+.nextstudy p{margin:0 0 8px;font-size:.9rem}
+.nextstudy ul{margin:0;padding-left:1.2em}
+.nextstudy li{margin-bottom:4px}
+.nextstudy .en{font-family:'IBM Plex Mono',monospace;font-size:.78em;opacity:.75}
 </style>
 </head>
 <body>
@@ -520,6 +529,20 @@ footer.site{ margin-top:48px; padding-block:24px 40px; border-top:1px solid var(
 </div>
 
 <section class="block">
+  <h2>次の学びへ</h2>
+  <div class="nextstudy" style="margin-top:0">
+  <p>この教材で体験した内容は、次の項目につながっている。問題集には、これらを学んでから解ける問題も含まれる。項目名で検索するか、教科書の該当する章で確認するとよい。</p>
+  <ul>
+    <li><b>効果量と信頼区間</b> <span class="en">effect size, Cohen's d, confidence interval</span> — p値だけではわからない、差の大きさと推定の精度を表す。</li>
+    <li><b>ベイズの定理と陽性的中率</b> <span class="en">Bayes' theorem, positive predictive value, sensitivity, specificity</span> — 検査の精度と病気の頻度から、陽性のときに本当に病気である確率を計算する。</li>
+    <li><b>多重比較法</b> <span class="en">Tukey's HSD, Bonferroni correction, false discovery rate</span> — 複数の検定をまとめて扱うときの補正である。</li>
+    <li><b>混合効果モデル</b> <span class="en">mixed-effects model, pseudoreplication</span> — 同じ参加者の反復測定のように、独立でないデータを扱う方法である。</li>
+    <li><b>事前登録・メタアナリシス・再現性</b> <span class="en">preregistration, meta-analysis, replication crisis</span> — HARKingや出版バイアスに、研究の進め方として対処する仕組みである。</li>
+  </ul>
+  </div>
+</section>
+
+<section class="block">
   <h2>関連する教材</h2>
   <div class="related">
     <a class="panel" href="glossary.html"><b>00 基礎用語</b><span>多重性の調整、中間解析、群逐次デザイン</span></a>
@@ -571,6 +594,36 @@ document.querySelectorAll('.mangathumb').forEach(btn=>{
     }
   });
 });
+
+/* 学習済みの記録(index.html の問題集の解錠に使う)。ページ末尾の少し上まで読んだら記録する */
+function getProgress(){try{return JSON.parse(localStorage.getItem('statslab.progress.v1')||'{}')||{}}catch(e){return {}}}
+function markDone(id){try{const d=getProgress();if(!d[id]){d[id]=Date.now();localStorage.setItem('statslab.progress.v1',JSON.stringify(d))}}catch(e){}showProgress(id)}
+/* 学習状況の表示: トップバーの各教材に ✓ を付け、トップバーの右端にこの教材の状態(未達成/学習済み)を出す */
+function showProgress(own){
+  const d=getProgress();
+  if(!document.getElementById('lstat-css')){
+    const s=document.createElement('style');s.id='lstat-css';
+    s.textContent='.crumb[data-done]::after{content:" ✓"}#lstat{font-size:.72rem;letter-spacing:.03em;padding:5px 10px;border-radius:100px;border:1px dashed currentColor;white-space:nowrap;opacity:.8}#lstat.done{border-style:solid;opacity:1;font-weight:700}';
+    document.head.appendChild(s);
+  }
+  let all=true;
+  document.querySelectorAll('.crumb').forEach(c=>{const m=c.textContent.match(/^\s*(\d\d)\s/);if(!m)return;if(d[m[1]])c.setAttribute('data-done','');else all=false});
+  let p=document.getElementById('lstat');
+  if(!p){p=document.createElement('span');p.id='lstat';p.setAttribute('role','status');document.querySelector('.topbar .crumbs').appendChild(p)}
+  p.className=d[own]?'done':'';
+  p.textContent=d[own]?'この教材: 学習済み ✓':'この教材: 未達成';
+  /* トップバーの教材がすべて学習済みなら、問題集へのリンクを加える */
+  if(all&&!document.getElementById('crumb-quiz')){const a=document.createElement('a');a.id='crumb-quiz';a.className='crumb';a.href='quiz.html';a.textContent='問題集';p.parentNode.insertBefore(a,p)}
+}
+showProgress('07');
+function checkEnd(){
+  /* フッターが画面下端の200px手前まで来たら「読んだ」とみなす */
+  if(document.querySelector('footer.site').getBoundingClientRect().top < window.innerHeight + 200){
+    markDone('07');
+    window.removeEventListener('scroll', checkEnd);
+  }
+}
+window.addEventListener('scroll', checkEnd, {passive:true});
 </script>
 </body>
 </html>

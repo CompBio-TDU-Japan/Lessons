@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
 <title>統計実験室</title>
 <style>
 /* ============ Fonts ============ */
@@ -167,6 +168,22 @@ button{ font-family:inherit; }
 .card.soon{ opacity:.6; border-style:dashed; cursor:default; }
 .card.soon:hover{ transform:none; border-color:var(--border); }
 .card.soon .num{ color:var(--muted); }
+.card .done{ position:absolute; top:16px; right:16px; font-size:.66rem; font-weight:700; padding:1px 9px; border-radius:100px; background:var(--accent-soft); border:1px solid var(--accent); color:var(--ink); }
+.card.locked{ border-style:dashed; cursor:default; }
+.card.locked:hover{ transform:none; border-color:var(--border); }
+.card.locked .num{ color:var(--muted); }
+.card .cond{ list-style:none; margin:0; padding:0; font-size:.8rem; color:var(--ink-2); display:grid; gap:2px; }
+.card .cond li{ display:flex; gap:8px; }
+.card .cond li.ok{ color:var(--ink); }
+.card .cond .st{ font-family:'IBM Plex Mono',monospace; flex:0 0 1.2em; color:var(--muted); }
+.card .cond li.ok .st{ color:var(--accent); }
+.card .fine{ font-size:.74rem; color:var(--muted); }
+.card .cond a{ color:var(--accent); text-decoration:none; border-bottom:1px dotted var(--accent); }
+.card .cond .todo{ font-size:.66rem; font-weight:700; padding:0 7px; border-radius:100px; margin-left:6px; white-space:nowrap; background:var(--accent-2-soft); border:1px solid var(--accent-2); color:var(--ink); }
+.crumb[data-done]::after{ content:" ✓"; }
+#lstat{ font-size:.72rem; letter-spacing:.03em; padding:5px 10px; border-radius:100px; border:1px dashed currentColor; white-space:nowrap; opacity:.8; }
+#lstat[hidden]{ display:none; }
+#lstat.done{ border-style:solid; opacity:1; font-weight:700; }
 
 footer.site{ padding-block:24px 40px; border-top:1px solid var(--border); color:var(--muted); font-size:.78rem; display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; }
 
@@ -257,6 +274,14 @@ canvas{ width:100%; display:block; border-radius:8px; background:var(--surface);
 
 [hidden]{ display:none !important; }
 @media (prefers-reduced-motion: reduce){ *{ animation-duration:0.001ms !important; transition-duration:0.001ms !important; } }
+
+/* 次の学びへ(教材の最後に置く、関連項目への案内) */
+.nextstudy{margin-top:24px;padding:18px 20px;border:1px solid color-mix(in srgb,currentColor 22%,transparent);border-radius:12px;font-size:.9rem;line-height:1.75;text-align:left}
+.nextstudy h3{font-size:1rem;margin:0 0 8px}
+.nextstudy p{margin:0 0 8px;font-size:.9rem}
+.nextstudy ul{margin:0;padding-left:1.2em}
+.nextstudy li{margin-bottom:4px}
+.nextstudy .en{font-family:'IBM Plex Mono',monospace;font-size:.78em;opacity:.75}
 </style>
 </head>
 <body>
@@ -370,6 +395,16 @@ canvas{ width:100%; display:block; border-radius:8px; background:var(--surface);
           <li>母集団(サイコロ・コイン・一様分布)を切り替えても、同じ現象が起きることを確認してみてください。</li>
         </ul>
       </div>
+      <aside class="nextstudy">
+        <h3>次の学びへ</h3>
+        <p>この教材で体験した内容は、次の項目につながっています。問題集には、これらを学んでから解ける問題も含まれます。項目名で検索するか、教科書の該当する章で確認してください。</p>
+        <ul>
+          <li><b>確率変数の期待値と分散</b> <span class="en">expected value, variance</span> — 「母平均に近づく」と言うときの、母平均の定義です。</li>
+          <li><b>独立同分布</b> <span class="en">i.i.d.</span> — 大数の法則が成り立つための前提です。</li>
+          <li><b>大数の弱法則とチェビシェフの不等式</b> <span class="en">weak law of large numbers, Chebyshev's inequality</span> — 標本平均がなぜ母平均に近づくのかを、式で確かめられます。</li>
+          <li><b>ギャンブラーの誤謬</b> <span class="en">gambler's fallacy</span> — 「偏りは次の試行で取り戻される」という、大数の法則のよくある誤解です。</li>
+        </ul>
+      </aside>
     </section>
 
     <!-- ============ 02 CLT ============ -->
@@ -435,6 +470,16 @@ canvas{ width:100%; display:block; border-radius:8px; background:var(--surface);
           <li>ばらつきの幅(標準誤差 SE)は σ/√n で決まるため、nが大きいほどヒストグラムは細く尖っていきます。</li>
         </ul>
       </div>
+      <aside class="nextstudy">
+        <h3>次の学びへ</h3>
+        <p>この教材で体験した内容は、次の項目につながっています。問題集には、これらを学んでから解ける問題も含まれます。項目名で検索するか、教科書の該当する章で確認してください。</p>
+        <ul>
+          <li><b>正規分布と標準化</b> <span class="en">normal distribution, z-score</span> — 標本平均の分布を、1つの標準的な曲線に直して扱う方法です。</li>
+          <li><b>標本分布と標準誤差</b> <span class="en">sampling distribution, standard error</span> — ヒストグラムの幅 σ/√n が何を表すかを整理します。</li>
+          <li><b>信頼区間</b> <span class="en">confidence interval</span> — 中心極限定理を使って、母平均がありそうな範囲を求めます。</li>
+          <li><b>t分布</b> <span class="en">Student's t-distribution</span> — 母標準偏差 σ がわからず、標本から推定するときに使う分布です。</li>
+        </ul>
+      </aside>
     </section>
 
     <!-- ============ 03 t-test ============ -->
@@ -526,6 +571,16 @@ canvas{ width:100%; display:block; border-radius:8px; background:var(--surface);
           <li>下部のシミュレーションは、μA=μBに固定して1000回検定を行うことで「本当は差がないのに有意と判定されてしまう確率」が、ほぼ設定したα(例:5%)どおりになることを示します。p値そのものが一様分布に近い形になる点にも注目してください。</li>
         </ul>
       </div>
+      <aside class="nextstudy">
+        <h3>次の学びへ</h3>
+        <p>この教材で体験した内容は、次の項目につながっています。問題集には、これらを学んでから解ける問題も含まれます。項目名で検索するか、教科書の該当する章で確認してください。</p>
+        <ul>
+          <li><b>帰無仮説と対立仮説</b> <span class="en">null / alternative hypothesis</span> — 検定が何と何を比べているのかの枠組みです。</li>
+          <li><b>p値の定義とよくある誤解</b> <span class="en">p-value misinterpretation</span> — p値は「仮説が正しい確率」でも「効果の大きさ」でもありません。</li>
+          <li><b>第一種の過誤・第二種の過誤・検出力</b> <span class="en">Type I / Type II error, statistical power</span> — 誤判定の2つの種類と、差を見つけられる確率です。</li>
+          <li><b>Studentのt検定・Welchのt検定・対応のあるt検定</b> <span class="en">Student's / Welch's / paired t-test</span> — データの取り方と分散の仮定によって、使う検定が変わります。</li>
+        </ul>
+      </aside>
     </section>
   </main>
 </div>
@@ -793,13 +848,54 @@ const TOPICS = [
     </svg>`},
 ];
 
+/* ---------------- 学習済みの記録と問題集の解錠 ----------------
+   各教材は、下の条件を満たすと localStorage の PROGRESS_KEY に {教材番号: 時刻} を記録する。
+   00〜07 がすべて記録されると、カタログに問題集(quiz.html)へのカードが現れる。
+   判定: 00・07 = ページ末尾近くまでスクロール / 01〜03 = シミュレーションのボタンを1回以上押す / 04〜06 = 最後のステップに進む。
+   教材を追加したら TOPICS に加え、その教材側で markDone 相当の記録を行う。 */
+const PROGRESS_KEY='statslab.progress.v1';
+function getProgress(){
+  try{ return JSON.parse(localStorage.getItem(PROGRESS_KEY)||'{}') || {}; }catch(e){ return {}; }
+}
+function markDone(num){
+  try{
+    const d=getProgress();
+    if(d[num]) return;
+    d[num]=Date.now();
+    localStorage.setItem(PROGRESS_KEY, JSON.stringify(d));
+    renderHome();
+  }catch(e){}
+  showProgress();
+}
+/* 学習状況の表示: トップバーの各教材に ✓ を付け、01〜03 のページではトップバーの右端にその教材の状態を出す */
+const ROUTE_NUM={lln:'01', clt:'02', ttest:'03'};
+function showProgress(){
+  const d=getProgress();
+  let all=true;
+  document.querySelectorAll('.crumb').forEach(c=>{
+    const m=c.textContent.match(/^\s*(\d\d)\s/);
+    if(!m) return;
+    if(d[m[1]]) c.setAttribute('data-done',''); else all=false;
+  });
+  let p=document.getElementById('lstat');
+  if(!p){ p=document.createElement('span'); p.id='lstat'; p.setAttribute('role','status'); document.querySelector('.topbar .crumbs').appendChild(p); }
+  const own=ROUTE_NUM[currentRouteId()];
+  p.hidden=!own;
+  p.className=d[own]?'done':'';
+  p.textContent=d[own]?'この教材: 学習済み ✓':'この教材: 未達成';
+  /* トップバーの教材がすべて学習済みなら、問題集へのリンクを加える */
+  if(all&&!document.getElementById('crumb-quiz')){const a=document.createElement('a');a.id='crumb-quiz';a.className='crumb';a.href='quiz.html';a.textContent='問題集';p.parentNode.insertBefore(a,p)}
+}
+
 function renderHome(){
   const cards=document.getElementById('cards');
+  const done=getProgress();
   cards.innerHTML='';
   TOPICS.forEach(t=>{
     const a=document.createElement('a');
     a.className='card'; a.href = t.href || ('#/'+t.id);
     a.innerHTML=`
+      ${done[t.num] ? '<span class="done">学習済み</span>' : ''}
       <span class="num mono">${t.num}</span>
       <div class="icon">${t.icon}</div>
       <span class="tag">${t.tag}</span>
@@ -808,6 +904,34 @@ function renderHome(){
       <span class="go">体験する →</span>`;
     cards.appendChild(a);
   });
+
+  const nDone=TOPICS.filter(t=>done[t.num]).length;
+  const quiz=document.createElement(nDone===TOPICS.length ? 'a' : 'div');
+  if(nDone===TOPICS.length){
+    quiz.className='card'; quiz.href='quiz.html';
+    quiz.innerHTML=`
+      <span class="num mono">Q</span>
+      <div class="icon"></div>
+      <span class="tag">REVIEW PROBLEMS</span>
+      <h3>統計問題集</h3>
+      <p>教材00〜07の内容を確かめる選択式の問題集。選択肢を選ぶと、その場で正誤と解説が表示される。</p>
+      <span class="go">問題を解く →</span>`;
+  }else{
+    quiz.className='card locked';
+    quiz.innerHTML=`
+      <span class="num mono">Q</span>
+      <span class="tag">REVIEW PROBLEMS · LOCKED ${nDone}/${TOPICS.length}</span>
+      <h3>統計問題集</h3>
+      <p>解錠条件: 全てのページについて最後まで熟読し、すべてのシミュレーションを実施すること。条件を満たすと、ここに問題集へのリンクが現れます。</p>
+      <ul class="cond">${TOPICS.map(t=>`
+        <li class="${done[t.num]?'ok':''}"><span class="st">${done[t.num]?'✓':'·'}</span>${done[t.num]
+          ? `<span>${t.num} ${t.title}</span>`
+          : `<span><a href="${t.href || ('#/'+t.id)}">${t.num} ${t.title}</a><span class="todo">未達成</span></span>`}</li>`).join('')}
+      </ul>
+      <span class="fine">学習の記録はこのブラウザに保存されます。別の端末やブラウザ、プライベートウィンドウには引き継がれません。</span>`;
+  }
+  cards.appendChild(quiz);
+
   const soon=document.createElement('div');
   soon.className='card soon';
   soon.innerHTML=`
@@ -1368,6 +1492,7 @@ function showRoute(){
     const match = (route==='/' && id==='home') || route==='/'+id;
     if(match) c.setAttribute('aria-current','page'); else c.removeAttribute('aria-current');
   });
+  showProgress();
   window.scrollTo(0,0);
   requestAnimationFrame(()=>{
     if(id==='lln') lln_draw_chart();
@@ -1389,7 +1514,14 @@ function initAll(){
   initCLT();
   initTtest();
   showRoute();
+  /* 01〜03 は、利用者がシミュレーションのボタンを押したときに学習済みとする(初期表示の自動実行は数えない) */
+  const doneOn={ '01':['lln-add1','lln-add10','lln-add100','lln-play'], '02':['clt-run','clt-more'], '03':['tt-draw','tt-null-sim'] };
+  Object.keys(doneOn).forEach(num=>doneOn[num].forEach(id=>{
+    document.getElementById(id).addEventListener('click', ()=>markDone(num));
+  }));
 }
+/* 他の教材ページから「戻る」で帰ってきたときにも、学習済みの表示を更新する */
+window.addEventListener('pageshow', e=>{ if(e.persisted){ renderHome(); showProgress(); } });
 if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', initAll);
 else initAll();
 </script>

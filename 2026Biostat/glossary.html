@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
 <title>基礎用語解説｜統計実験室</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;500;600;700&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
@@ -197,6 +198,14 @@ td.f{ font-family:'IBM Plex Mono',monospace; font-size:.8rem; }
 .related b{ display:block; font-family:'Shippori Mincho',serif; font-size:1rem; margin-bottom:4px; }
 .related span{ font-size:.82rem; color:var(--ink-2); }
 footer.site{ margin-top:48px; padding-block:24px 40px; border-top:1px solid var(--border); color:var(--muted); font-size:.78rem; }
+
+/* 次の学びへ(教材の最後に置く、関連項目への案内) */
+.nextstudy{margin-top:24px;padding:18px 20px;border:1px solid color-mix(in srgb,currentColor 22%,transparent);border-radius:12px;font-size:.9rem;line-height:1.75;text-align:left}
+.nextstudy h3{font-size:1rem;margin:0 0 8px}
+.nextstudy p{margin:0 0 8px;font-size:.9rem}
+.nextstudy ul{margin:0;padding-left:1.2em}
+.nextstudy li{margin-bottom:4px}
+.nextstudy .en{font-family:'IBM Plex Mono',monospace;font-size:.78em;opacity:.75}
 </style>
 </head>
 <body>
@@ -648,6 +657,19 @@ footer.site{ margin-top:48px; padding-block:24px 40px; border-top:1px solid var(
 </section>
 
 <section class="block">
+  <h2>次の学びへ</h2>
+  <div class="nextstudy" style="margin-top:0">
+  <p>この教材で体験した内容は、次の項目につながっています。問題集には、これらを学んでから解ける問題も含まれます。項目名で検索するか、教科書の該当する章で確認してください。</p>
+  <ul>
+    <li><b>点推定と区間推定</b> <span class="en">point / interval estimation</span> — 推定値を1つの数で表す方法と、幅を付けて表す方法です。</li>
+    <li><b>信頼区間</b> <span class="en">confidence interval</span> — 標準誤差を使って、母数がありそうな範囲を示します。</li>
+    <li><b>平均二乗誤差(MSE)とバイアス・分散の分解</b> <span class="en">bias–variance decomposition</span> — 不偏性だけでは推定量の良し悪しが決まらない理由がわかります。</li>
+    <li><b>t分布とカイ二乗分布</b> <span class="en">t / chi-squared distribution</span> — 不偏分散や自由度が、検定や区間推定でどう使われるかにつながります。</li>
+  </ul>
+  </div>
+</section>
+
+<section class="block">
   <h2>これらの用語を使う教材</h2>
   <div class="related">
     <a class="panel" href="index.html#/lln"><b>01 大数の法則</b><span>確率、期待値(母平均)、標本平均、一致性</span></a>
@@ -760,6 +782,36 @@ function initDemo(){
   runDemo();
 }
 initDemo();
+
+/* 学習済みの記録(index.html の問題集の解錠に使う)。ページ末尾の少し上まで読んだら記録する */
+function getProgress(){try{return JSON.parse(localStorage.getItem('statslab.progress.v1')||'{}')||{}}catch(e){return {}}}
+function markDone(id){try{const d=getProgress();if(!d[id]){d[id]=Date.now();localStorage.setItem('statslab.progress.v1',JSON.stringify(d))}}catch(e){}showProgress(id)}
+/* 学習状況の表示: トップバーの各教材に ✓ を付け、トップバーの右端にこの教材の状態(未達成/学習済み)を出す */
+function showProgress(own){
+  const d=getProgress();
+  if(!document.getElementById('lstat-css')){
+    const s=document.createElement('style');s.id='lstat-css';
+    s.textContent='.crumb[data-done]::after{content:" ✓"}#lstat{font-size:.72rem;letter-spacing:.03em;padding:5px 10px;border-radius:100px;border:1px dashed currentColor;white-space:nowrap;opacity:.8}#lstat.done{border-style:solid;opacity:1;font-weight:700}';
+    document.head.appendChild(s);
+  }
+  let all=true;
+  document.querySelectorAll('.crumb').forEach(c=>{const m=c.textContent.match(/^\s*(\d\d)\s/);if(!m)return;if(d[m[1]])c.setAttribute('data-done','');else all=false});
+  let p=document.getElementById('lstat');
+  if(!p){p=document.createElement('span');p.id='lstat';p.setAttribute('role','status');document.querySelector('.topbar .crumbs').appendChild(p)}
+  p.className=d[own]?'done':'';
+  p.textContent=d[own]?'この教材: 学習済み ✓':'この教材: 未達成';
+  /* トップバーの教材がすべて学習済みなら、問題集へのリンクを加える */
+  if(all&&!document.getElementById('crumb-quiz')){const a=document.createElement('a');a.id='crumb-quiz';a.className='crumb';a.href='quiz.html';a.textContent='問題集';p.parentNode.insertBefore(a,p)}
+}
+showProgress('00');
+function checkEnd(){
+  /* フッターが画面下端の200px手前まで来たら「読んだ」とみなす */
+  if(document.querySelector('footer.site').getBoundingClientRect().top < window.innerHeight + 200){
+    markDone('00');
+    window.removeEventListener('scroll', checkEnd);
+  }
+}
+window.addEventListener('scroll', checkEnd, {passive:true});
 </script>
 </body>
 </html>

@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
 <title>見えていない条件を、どう揃える？｜ワイン醸造で学ぶ実験順序のランダム化</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;500;600;700&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
@@ -42,6 +43,14 @@ textarea{width:100%;min-height:90px;border:1px solid var(--line);border-radius:1
 .crumb[aria-current="page"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
 .back-link{display:inline-block;font-size:.82rem;color:var(--muted);text-decoration:none;margin-bottom:10px}
 .back-link:hover{color:var(--wine-ink)}
+
+/* 次の学びへ(教材の最後に置く、関連項目への案内) */
+.nextstudy{margin-top:24px;padding:18px 20px;border:1px solid color-mix(in srgb,currentColor 22%,transparent);border-radius:12px;font-size:.9rem;line-height:1.75;text-align:left}
+.nextstudy h3{font-size:1rem;margin:0 0 8px}
+.nextstudy p{margin:0 0 8px;font-size:.9rem}
+.nextstudy ul{margin:0;padding-left:1.2em}
+.nextstudy li{margin-bottom:4px}
+.nextstudy .en{font-family:'IBM Plex Mono',monospace;font-size:.78em;opacity:.75}
 </style>
 </head>
 <body>
@@ -149,13 +158,44 @@ textarea{width:100%;min-height:90px;border:1px solid var(--line);border-radius:1
 <p>既知の要因なら、固定したり、測定したり、ブロック化したりできる。しかし、そもそも存在を認識していない要因には、その方法を直接適用できない。</p>
 <div class="reveal"><h3>実験順序をランダム化する理由</h3><p><b>ランダム化は未知の要因を消す方法ではない。</b>未知の要因が時間とともに変化していても、それが特定の処理条件と系統的に結びつくことを防ぐための設計原理である。</p></div>
 <p class="small">なお、12バッチ程度の有限標本では、ランダム化しても偶然の偏りは起こり得る。ランダム化は「未知因子が必ず完全に均等になる」ことを保証するものではない。</p>
+<aside class="nextstudy">
+  <h3>次の学びへ</h3>
+  <p>この教材で体験した内容は、次の項目につながっている。問題集には、これらを学んでから解ける問題も含まれる。項目名で検索するか、教科書の該当する章で確認するとよい。</p>
+  <ul>
+    <li><b>局所管理(ブロック化)</b> <span class="en">blocking</span> — 既知の要因ごとにまとめて比較し、その影響を取り除く方法である。</li>
+    <li><b>乱塊法</b> <span class="en">randomized block design</span> — ブロック化とランダム化を組み合わせた実験計画である。</li>
+    <li><b>系統誤差と偶然誤差</b> <span class="en">systematic error, random error</span> — 時間とともに一方向にずれる誤差と、ばらつきとしての誤差の違いである。</li>
+    <li><b>ラテン方格法</b> <span class="en">Latin square design</span> — 順序と位置のように、2つの要因を同時に均等化する配置である。</li>
+  </ul>
+</aside>
 <div class="actions"><button onclick="location.reload()">最初からやり直す</button></div>
 </section>
 <p class="footer-note">本ページは実験計画法の学習用シミュレーションであり、実際のワイン醸造条件を推奨するものではない。</p>
 </main>
 <script>
 let plan=Array(12).fill(''); let plan2=Array(12).fill('');
-function go(id){document.getElementById(id).classList.remove('hidden');document.getElementById(id).scrollIntoView({behavior:'smooth',block:'start'})}
+function go(id){document.getElementById(id).classList.remove('hidden');document.getElementById(id).scrollIntoView({behavior:'smooth',block:'start'});if(id==='s8')markDone('05')}
+/* 学習済みの記録(index.html の問題集の解錠に使う) */
+function getProgress(){try{return JSON.parse(localStorage.getItem('statslab.progress.v1')||'{}')||{}}catch(e){return {}}}
+function markDone(id){try{const d=getProgress();if(!d[id]){d[id]=Date.now();localStorage.setItem('statslab.progress.v1',JSON.stringify(d))}}catch(e){}showProgress(id)}
+/* 学習状況の表示: トップバーの各教材に ✓ を付け、トップバーの右端にこの教材の状態(未達成/学習済み)を出す */
+function showProgress(own){
+  const d=getProgress();
+  if(!document.getElementById('lstat-css')){
+    const s=document.createElement('style');s.id='lstat-css';
+    s.textContent='.crumb[data-done]::after{content:" ✓"}#lstat{font-size:.72rem;letter-spacing:.03em;padding:5px 10px;border-radius:100px;border:1px dashed currentColor;white-space:nowrap;opacity:.8}#lstat.done{border-style:solid;opacity:1;font-weight:700}';
+    document.head.appendChild(s);
+  }
+  let all=true;
+  document.querySelectorAll('.crumb').forEach(c=>{const m=c.textContent.match(/^\s*(\d\d)\s/);if(!m)return;if(d[m[1]])c.setAttribute('data-done','');else all=false});
+  let p=document.getElementById('lstat');
+  if(!p){p=document.createElement('span');p.id='lstat';p.setAttribute('role','status');document.querySelector('.topbar .crumbs').appendChild(p)}
+  p.className=d[own]?'done':'';
+  p.textContent=d[own]?'この教材: 学習済み ✓':'この教材: 未達成';
+  /* トップバーの教材がすべて学習済みなら、問題集へのリンクを加える */
+  if(all&&!document.getElementById('crumb-quiz')){const a=document.createElement('a');a.id='crumb-quiz';a.className='crumb';a.href='quiz.html';a.textContent='問題集';p.parentNode.insertBefore(a,p)}
+}
+showProgress('05');
 function renderGrid(which=1){let p=which===1?plan:plan2, el=document.getElementById(which===1?'grid':'grid2');el.innerHTML='';p.forEach((v,i)=>{let d=document.createElement('div');d.className='batch '+(v||'empty');d.innerHTML=`<b>Batch ${i+1}</b><span class="cond">${v||'—'}</span>`;d.onclick=()=>{p[i]=v===''?'A':v==='A'?'B':'';renderGrid(which)};el.appendChild(d)});let a=p.filter(x=>x==='A').length,b=p.filter(x=>x==='B').length;document.getElementById(which===1?'count':'count2').textContent=`A: ${a}/6　B: ${b}/6`;document.getElementById(which===1?'runBtn':'rerunBtn').disabled=!(a===6&&b===6)}
 function presetGrouped(){plan=[...Array(6).fill('A'),...Array(6).fill('B')];renderGrid(1)}
 function randomizePlan(){let a=[...Array(6).fill('A'),...Array(6).fill('B')];for(let i=a.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}plan2=a;renderGrid(2)}
