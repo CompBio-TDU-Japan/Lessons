@@ -230,7 +230,7 @@ footer.site{ margin-top:48px; padding-block:24px 40px; border-top:1px solid var(
   <a class="back-link" href="index.html#/">← 目次に戻る</a>
   <span class="kicker">00 · Basic Terms</span>
   <h1>基礎用語解説</h1>
-  <p class="page-lede">確率、母集団、標本、標本サイズ、標本数、標本分散、不偏分散、標準偏差、標準誤差、不偏性。他の教材で何度も出てくる用語を、定義・式・例・混同しやすい点の順に整理しました。最初に関係図で全体をつかみ、気になる用語から読んでください。</p>
+  <p class="page-lede">確率、母集団、標本(サンプル)、標本サイズ(サンプルサイズ)、標本数(サンプル数)、標本分散、不偏分散、標準偏差、標準誤差、不偏性。他の教材で何度も出てくる用語を、定義・式・例・混同しやすい点の順に整理しました。最初に関係図で全体をつかみ、気になる用語から読んでください。</p>
 </div>
 
 <section class="block">
@@ -322,7 +322,7 @@ footer.site{ margin-top:48px; padding-block:24px 40px; border-top:1px solid var(
     <article class="term" id="t-sample">
       <div><h3>標本</h3><span class="en">sample</span><span class="sym">x<sub>1</sub>, …, x<sub>n</sub></span></div>
       <div class="body">
-        <p class="def"><strong>母集団から取り出した観測値の集まり。</strong></p>
+        <p class="def"><strong>母集団から取り出した観測値の集まり。</strong>「サンプル」ともいう。</p>
         <p>標本から母集団の性質を推測することを統計的推測という。標本が母集団を代表するには、取り出し方に偏りがないことが必要で、そのための方法が<a class="tl" href="#t-random">無作為抽出</a>。</p>
       </div>
     </article>
@@ -355,9 +355,9 @@ footer.site{ margin-top:48px; padding-block:24px 40px; border-top:1px solid var(
     <article class="term" id="t-r">
       <div><h3>標本数</h3><span class="en">number of samples</span><span class="sym">r</span></div>
       <div class="body">
-        <p class="def"><strong>標本を取った回数(標本の個数)。</strong></p>
-        <p><span class="lbl">例</span>n = 5 の標本を2000回取ったなら、標本サイズは 5、標本数は 2000。<a class="tl" href="index.html#/clt">02</a>の「繰り返し回数 r」がこれ。</p>
-        <p><span class="lbl warn">注意</span>標本数は標本サイズ n とはまったく別のもの。文献によっては「標本数」を標本サイズの意味で使うことがあるため、この教材では「標本サイズ = 観測値の個数」「標本数 = 標本を取った回数」と使い分ける。</p>
+        <p class="def"><strong>標本を取った回数(標本の個数)。</strong>「サンプル数」ともいう。</p>
+        <p><span class="lbl">例</span>n = 5 の標本を2000回取ったなら、標本サイズは 5、標本数は 2000。<a class="tl" href="index.html#/clt">02</a>の「標本数 r(繰り返し回数)」がこれ。</p>
+        <p><span class="lbl warn">注意</span>標本数は標本サイズ n とはまったく別のもの。文献によっては「標本数」や「サンプル数」を標本サイズの意味で使うことがあるため、この教材では「標本サイズ = 観測値の個数」「標本数 = 標本を取った回数」と使い分ける。</p>
         <p>現実の研究では、標本は通常1つだけ(標本数 = 1)。標本を何度も取り直すのは、シミュレーションや理論上の思考実験。</p>
       </div>
     </article>
@@ -491,7 +491,7 @@ footer.site{ margin-top:48px; padding-block:24px 40px; border-top:1px solid var(
         <p class="def"><strong>統計量の標本分布の標準偏差。</strong>その統計量が、標本ごとにどれくらいばらつくか(推定の精度)を表す。標本平均の標準誤差は次の式になる。</p>
         <div class="formula">SE(<i class="xb">x</i>) = σ / √n　　σ が未知のときは s で置き換えて　SE ≈ s / √n</div>
         <p><span class="lbl">例</span>σ = 10 のとき、n = 25 なら SE = 2、n = 100 なら SE = 1。n を4倍にすると SE は半分になる。</p>
-        <p><span class="lbl warn">注意</span>標準偏差は「観測値のばらつき」で、n を増やしても(母集団の σ は)変わらない。標準誤差は「平均のばらつき」で、n を増やすと √n に反比例して小さくなる。<a class="tl" href="index.html#/clt">02</a>の「理論 SE」と「実測 SD(標本平均)」は、この2つを比べている。</p>
+        <p><span class="lbl warn">注意</span>標準偏差は「観測値のばらつき」で、n を増やしても(母集団の σ は)変わらない。標準誤差は「平均のばらつき」で、n を増やすと √n に反比例して小さくなる。<a class="tl" href="index.html#/clt">02</a>の「標準誤差・理論値」と「標準誤差・実測」は、どちらも標準誤差(平均のばらつき)で、式 σ/√n の値と、実際に標本を取り直して求めた値を比べている。</p>
       </div>
     </article>
 
@@ -543,7 +543,7 @@ footer.site{ margin-top:48px; padding-block:24px 40px; border-top:1px solid var(
       <div><h3>多重性の調整</h3><span class="en">multiplicity adjustment</span></div>
       <div class="body">
         <p class="def"><strong>複数回の検定を行うとき、少なくとも1つが偶然「有意」になってしまう確率が有意水準より膨らむ現象を抑えるため、個々の検定の判定基準を厳しくすること。</strong>「多重比較の補正」ともいう。</p>
-        <p><span class="lbl">例</span>最も単純な方法はBonferroni補正で、検定回数 m で有意水準を割り(α/m)、各検定はその基準で判定する。個人的にはStorey法による補正を推奨する。詳細は<a href="https://www.jstage.jst.go.jp/article/jjb/29/2/29_2_125/_pdf">解説書</a>を参考にされたい。</p>
+        <p><span class="lbl">例</span>最も単純な方法はBonferroni補正で、検定回数 m で有意水準を割り(α/m)、各検定はその基準で判定する。これは定義のとおり「少なくとも1つが誤って有意になる確率(ファミリーワイズエラー率)」を抑える方法。これとは別に、抑える対象を「有意とした結果のうち誤りが占める割合(偽発見率、FDR)」に替えた Benjamini–Hochberg法や Storey法があり、検定の数が多いときに使われる。個人的にはStorey法による補正を推奨する。詳細は<a href="https://www.jstage.jst.go.jp/article/jjb/29/2/29_2_125/_pdf">解説書</a>を参考にされたい。</p>
         <p><span class="lbl warn">注意</span><a class="tl" href="optional_stopping.html">06</a>の「1000人でシミュレーション」は、多重性を調整せずに検定を繰り返した場合、誤判定の確率がどれだけ膨らむかを示したもの。<a class="tl" href="#t-gsd">群逐次デザイン</a>の<a class="tl" href="#t-alphaspend">αスペンディング</a>も、多重性調整の一種。</p>
       </div>
     </article>
@@ -560,7 +560,7 @@ footer.site{ margin-top:48px; padding-block:24px 40px; border-top:1px solid var(
       <div><h3>群逐次デザイン</h3><span class="en">group sequential design</span></div>
       <div class="body">
         <p class="def"><strong>データを一度に集めてから検定するのではなく、あらかじめ決めた複数の<a class="tl" href="#t-interim">中間解析</a>の時点ごとに検定を行い、有意になった時点で試験を終了できるようにした実験計画。</strong>各回の判定基準を、試験全体の有意水準が設定どおりに保たれるよう調整しておく。</p>
-        <p><span class="lbl">補足</span><a class="tl" href="optional_stopping.html">06</a>の「有意になるまで繰り返す」手順と結果だけ見ると似ているが、決定的に異なるのは、確認する回数と各回の判定基準を実験前に決めておく点。行き当たりばったりに繰り返すことはない。</p>
+        <p><span class="lbl">補足</span><a class="tl" href="optional_stopping.html">06</a>の「有意になるまで繰り返す」手順や、データを追加しながら有意になるまで検定する手順(<a class="tl" href="manga.html#m3">漫画03</a>)と結果だけ見ると似ているが、決定的に異なるのは、確認する回数と各回の判定基準を実験前に決めておく点。行き当たりばったりに繰り返すことはない。</p>
       </div>
     </article>
 
@@ -619,7 +619,7 @@ footer.site{ margin-top:48px; padding-block:24px 40px; border-top:1px solid var(
 
 <section class="block" id="demo">
   <h2>体験:不偏性と標準誤差を確かめる</h2>
-  <p class="sub">母集団を正規分布 N(母平均 μ = 50, 母標準偏差 σ = 10)、つまり母分散 σ² = 100 として、標本サイズ n の標本を r 回取ります。各標本から <i class="xb">x</i>、S²、s²、s を計算し、r 個の平均を真の値と比べます。</p>
+  <p class="sub">母集団を正規分布 N(母平均 μ = 50, 母標準偏差 σ = 10)、つまり母分散 σ² = 100 として、標本サイズ n の標本を r 回取ります。各標本から <i class="xb">x</i>、S²、s²、s を計算し、r 個の平均を真の値と比べます(最後の行だけは、r 個の <i class="xb">x</i> の標準偏差を σ/√n と比べます)。</p>
   <div class="panel demo">
     <div class="demo-controls">
       <div class="field">
@@ -634,24 +634,24 @@ footer.site{ margin-top:48px; padding-block:24px 40px; border-top:1px solid var(
     </div>
     <div class="tablewrap">
       <table>
-        <thead><tr><th>統計量</th><th class="n">実測(r 個から集計)</th><th class="n">理論上の平均</th><th>比べる真の値</th><th>実測 ÷ 真の値</th></tr></thead>
+        <thead><tr><th>統計量</th><th class="n">実測(r 個の平均)</th><th class="n">理論値(統計量の期待値)</th><th>比べる真の値</th><th>実測 ÷ 真の値</th></tr></thead>
         <tbody id="d-body"></tbody>
       </table>
     </div>
-    <p class="demo-note">棒の長さは「実測 ÷ 真の値」(右端は 1.20)。縦線が 1.00(真の値と一致)。オレンジの棒は偏りのある統計量。</p>
+    <p class="demo-note">棒の長さは「実測 ÷ 真の値」(右端は 1.20)。縦線が 1.00(真の値と一致)。オレンジの棒は偏りのある統計量。1.00 に近づくのは比であり、統計量の値そのものではない(たとえば標本平均の実測は 1 ではなく μ = 50 に近づく)。</p>
     <h3 class="calc-title">各行の計算(現在の n と r で計算)</h3>
-    <p class="demo-note">標本を r 回取り、標本 k(k = 1〜r)ごとに、標本平均 <i class="xb">x</i><sub>k</sub> = (x<sub>1</sub> + … + x<sub>n</sub>) / n と、偏差の二乗和 SS<sub>k</sub> = (x<sub>1</sub> − <i class="xb">x</i><sub>k</sub>)² + … + (x<sub>n</sub> − <i class="xb">x</i><sub>k</sub>)² を求めます。上の表の「実測」は、これを r 個分まとめた値です。「実測 ÷ 真の値」は実測を真の値で割った比で、1.00 なら一致を表します。</p>
+    <p class="demo-note">標本を r 回取り、標本 k(k = 1〜r)ごとに、標本平均 <i class="xb">x</i><sub>k</sub> = (x<sub>1</sub> + … + x<sub>n</sub>) / n と、偏差の二乗和 SS<sub>k</sub> = (x<sub>1</sub> − <i class="xb">x</i><sub>k</sub>)² + … + (x<sub>n</sub> − <i class="xb">x</i><sub>k</sub>)² を求めます。上の表の「実測」は、これを r 個分平均した値です(最後の行だけは r 個の標準偏差)。「実測 ÷ 真の値」は実測を真の値で割った比で、1.00 なら一致を表します。</p>
     <div class="tablewrap">
       <table>
-        <thead><tr><th>統計量</th><th>実測の計算</th><th>比べる真の値</th><th>理論上の平均と、理論上の比</th></tr></thead>
+        <thead><tr><th>統計量</th><th>実測の計算</th><th>比べる真の値</th><th>理論値(統計量の期待値)と、理論上の比</th></tr></thead>
         <tbody id="d-explain"></tbody>
       </table>
     </div>
     <ul class="readlist">
       <li>n で割る標本分散 S² は、真の値より小さくなる。比は (n−1)/n に近づく(n = 5 なら 0.80)。n−1 で割る不偏分散 s² は 1.00 付近になる。</li>
       <li>s は s² の平方根だが、1.00 より少し小さい。不偏分散が不偏でも、その平方根は不偏にならない。</li>
-      <li>標本平均の標準偏差(標準誤差)は σ/√n に一致する。n を 4 倍にすると半分になる。</li>
-      <li>r を 100 にすると実測値が揺れる。不偏性は「r を十分大きくしたとき平均が近づく」ことを意味している。</li>
+      <li>標準誤差(標本平均の標準偏差)は σ/√n に一致する。n を 4 倍にすると半分になる。</li>
+      <li>不偏性は「期待値が母数に一致する」という性質で、標本数 r によらず、どの標本サイズ n でも成り立つ。r を大きくするのは、r 個の平均を期待値に近づけて、それを確かめるため。r を 100 にすると実測値が揺れるのは、確かめ方が粗くなるからである。</li>
     </ul>
   </div>
 </section>
@@ -728,7 +728,7 @@ function runDemo(){
     {label:'標本分散 S²(n で割る)', obs:sS2n/r, theory:(n-1)/n*v2, truth:v2, tname:'母分散 σ²', chip:'偏りあり', cls:'warn', biased:true},
     {label:'不偏分散 s²(n−1 で割る)', obs:sS2/r, theory:v2, truth:v2, tname:'母分散 σ²', chip:'不偏', cls:'ok', biased:false},
     {label:'標本標準偏差 s', obs:sS/r, theory:c4(n)*sigma, truth:sigma, tname:'母標準偏差 σ', chip:'偏りあり', cls:'warn', biased:true},
-    {label:'<i class="xb">x</i> の標準偏差', obs:sdOfMeans, theory:se, truth:se, tname:'標準誤差 σ/√n', chip:'標準誤差', cls:'', biased:false}
+    {label:'標準誤差(<i class="xb">x</i> の標準偏差)', obs:sdOfMeans, theory:se, truth:se, tname:'標準誤差 σ/√n', chip:'標準誤差', cls:'', biased:false, obsNote:'r 個の標準偏差', theoryNote:'理論値 σ/√n'}
   ];
   const X = '<i class="xb">x</i>';
   const info = [
@@ -736,7 +736,7 @@ function runDemo(){
     {calc:'(SS<sub>1</sub>/n + SS<sub>2</sub>/n + … + SS<sub>r</sub>/n) / r', truthf:'母分散 σ²', theoryf:'E[S²] = (n−1)/n × σ²'},
     {calc:'(SS<sub>1</sub>/(n−1) + SS<sub>2</sub>/(n−1) + … + SS<sub>r</sub>/(n−1)) / r', truthf:'母分散 σ²', theoryf:'E[s²] = σ²'},
     {calc:'(√(SS<sub>1</sub>/(n−1)) + … + √(SS<sub>r</sub>/(n−1))) / r', truthf:'母標準偏差 σ', theoryf:'E[s] = c<sub>4</sub>(n) × σ　c<sub>4</sub>(n) = √(2/(n−1)) · Γ(n/2) / Γ((n−1)/2)'},
-    {calc:`r 個の ${X}<sub>k</sub> の標準偏差 = √( Σ(${X}<sub>k</sub> − 平均)² / (r−1) )　※平均ではなく標準偏差`, truthf:'標準誤差 σ/√n', theoryf:'SE = σ/√n'}
+    {calc:`r 個の ${X}<sub>k</sub> の標準偏差 = √( Σ(${X}<sub>k</sub> − 平均)² / (r−1) )　※平均ではなく標準偏差`, truthf:'標準誤差 σ/√n', theoryf:'SE = σ/√n　※期待値ではなく σ/√n そのもの'}
   ];
   document.getElementById('d-explain').innerHTML = rows.map((row,i)=>`<tr>
       <td>${row.label}</td>
@@ -745,15 +745,16 @@ function runDemo(){
       <td class="f">${info[i].theoryf}<br>= ${f2(row.theory)}<br>理論上の比 = ${f2(row.theory)} ÷ ${f2(row.truth)} = <b>${f2(row.theory/row.truth)}</b></td>
     </tr>`).join('');
   const max = 1.2;
+  const small = t => t ? `<br><span style="font-family:'Zen Kaku Gothic New',sans-serif;color:var(--muted);font-size:.72rem">${t}</span>` : '';
   document.getElementById('d-body').innerHTML = rows.map(row=>{
     const ratio = row.obs/row.truth;
     const w = Math.min(ratio/max,1)*100;
     const mark = (1/max)*100;
     return `<tr>
       <td>${row.label}<br><span class="chip ${row.cls}">${row.chip}</span></td>
-      <td class="n">${f2(row.obs)}</td>
-      <td class="n">${f2(row.theory)}</td>
-      <td class="n">${f2(row.truth)}<br><span style="font-family:'Zen Kaku Gothic New',sans-serif;color:var(--muted);font-size:.72rem">${row.tname}</span></td>
+      <td class="n">${f2(row.obs)}${small(row.obsNote)}</td>
+      <td class="n">${f2(row.theory)}${small(row.theoryNote)}</td>
+      <td class="n">${f2(row.truth)}${small(row.tname)}</td>
       <td><div class="ratio"><div class="track"><span class="fill ${row.biased?'biased':''}" style="width:${w.toFixed(1)}%"></span><span class="mark1" style="left:${mark.toFixed(2)}%"></span></div><span class="mono">${f2(ratio)}</span></div></td>
     </tr>`;
   }).join('');

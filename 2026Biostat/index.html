@@ -310,7 +310,7 @@ canvas{ width:100%; display:block; border-radius:8px; background:var(--surface);
       <div class="hero">
         <span class="eyebrow">生物統計学 補助教材</span>
         <h1>手を動かして、<br>統計の「感覚」をつかむ実験室。</h1>
-        <p class="lede">教科書の数式やスライドだけでは実感しにくい統計概念を、シミュレーションを自分で動かしながら確かめるための小さな教材集です。試行回数を増やす、母集団の形を変える、サンプルを引き直す——そのたびにグラフが動き、数字が更新されます。</p>
+        <p class="lede">教科書の数式やスライドだけでは実感しにくい統計概念を、シミュレーションを自分で動かしながら確かめるための小さな教材集です。試行回数を増やす、母集団の形を変える、標本(サンプル)を引き直す——そのたびにグラフが動き、数字が更新されます。</p>
         <div class="purpose">
           <b>この教材の趣旨。</b> 統計的な直感は「知識として読む」だけでは身につきにくく、「何度もランダムな結果を見て、そのばらつきと規則性を自分の目で確かめる」ことで初めて腑に落ちます。ここではスライダーやボタンを操作するたびに乱数シミュレーションが走り、理論値と実際の挙動を並べて確認できます。
         </div>
@@ -391,7 +391,8 @@ canvas{ width:100%; display:block; border-radius:8px; background:var(--surface);
         <p>薄い点1つ1つが「1回引いた結果」です。1回だけ見るとバラバラで予測できません。一方、濃い線は「1回目からn回目までの平均」を表しており、nが大きくなるにつれてオレンジの破線(母平均 μ)に近づいていくのがわかります。</p>
         <ul>
           <li>個々の試行結果(薄い点)は、nが増えても散らばったままです。大数の法則は「1回の結果が当てやすくなる」ことを意味しません。</li>
-          <li>収束するのはあくまで「平均」であり、しかも収束の速さは √n に比例して遅くなっていきます(最初の数十回は大きく動き、その後は徐々に安定します)。</li>
+          <li>収束するのはあくまで「平均」です。標本平均と母平均のずれの典型的な大きさは σ/√n(σ は母標準偏差)で、√n に反比例して小さくなります。ずれを半分にするには試行回数を4倍にする必要があり、n が大きいほど縮まり方は緩やかになります(最初の数十回は大きく動き、その後は徐々に安定します)。</li>
+          <li>ここでの試行回数 n は、<a href="glossary.html#t-n">00</a> の標本サイズ(サンプルサイズ)n にあたります。n 回の試行全体が1つの標本で、標本数 r は 1 です(標本は1つだけ)。</li>
           <li>母集団(サイコロ・コイン・一様分布)を切り替えても、同じ現象が起きることを確認してみてください。</li>
         </ul>
       </div>
@@ -413,7 +414,7 @@ canvas{ width:100%; display:block; border-radius:8px; background:var(--surface);
         <a class="back-link" href="#/">← 目次に戻る</a>
         <span class="kicker">02 · Central Limit Theorem</span>
         <h1>中心極限定理</h1>
-        <p class="page-lede">母集団の分布がどんな形(一様・偏った形・二峰性)であっても、そこから取り出した標本の「平均」を何度も計算して集めると、その分布はサンプルサイズ n が大きくなるにつれて正規分布に近づいていきます。</p>
+        <p class="page-lede">母集団の分布がどんな形(一様・偏った形・二峰性)であっても、そこから取り出した標本(サンプル)の「平均」を何度も計算して集めると、その分布(標本分布)は標本サイズ(サンプルサイズ)n が大きくなるにつれて正規分布に近づいていきます。</p>
       </div>
 
       <div class="lab-grid">
@@ -430,18 +431,18 @@ canvas{ width:100%; display:block; border-radius:8px; background:var(--surface);
           </div>
 
           <div class="btnrow">
-            <button class="btn primary" id="clt-run">▶ 2000回サンプリング</button>
+            <button class="btn primary" id="clt-run">▶ 標本を2000回取る</button>
             <button class="btn ghost" id="clt-reset">リセット</button>
           </div>
           <div class="btnrow">
-            <button class="btn" id="clt-more">+2000回追加</button>
+            <button class="btn" id="clt-more">+2000回(標本を追加)</button>
           </div>
 
           <div class="stat-grid">
-            <div class="stat"><div class="k">繰り返し回数 r</div><div class="v mono" id="clt-r">0</div></div>
+            <div class="stat"><div class="k">標本数 r(繰り返し回数)</div><div class="v mono" id="clt-r">0</div></div>
             <div class="stat"><div class="k">母平均 μ</div><div class="v mono" id="clt-mu">—</div></div>
-            <div class="stat"><div class="k">理論 SE (σ/√n)</div><div class="v mono" id="clt-se-theory">—</div></div>
-            <div class="stat"><div class="k">実測 SD(標本平均)</div><div class="v mono" id="clt-se-obs">—</div></div>
+            <div class="stat"><div class="k">標準誤差・理論値 (σ/√n)</div><div class="v mono" id="clt-se-theory">—</div></div>
+            <div class="stat"><div class="k">標準誤差・実測 (r 個の標本平均の標準偏差)</div><div class="v mono" id="clt-se-obs">—</div></div>
           </div>
         </aside>
 
@@ -451,11 +452,11 @@ canvas{ width:100%; display:block; border-radius:8px; background:var(--surface);
             <div class="canvas-wrap"><canvas id="clt-pop-canvas"></canvas></div>
           </div>
           <div class="chart-block">
-            <div class="title"><span>標本平均の分布(サンプリング分布)</span><span class="sub">n=<span id="clt-n-echo">5</span> の標本平均を集めたヒストグラム</span></div>
+            <div class="title"><span>標本平均の分布(標本分布)</span><span class="sub">n=<span id="clt-n-echo">5</span> の標本平均を集めたヒストグラム</span></div>
             <div class="canvas-wrap tall"><canvas id="clt-means-canvas"></canvas></div>
             <div class="legend">
               <span class="sw"><span class="dot" style="background:var(--accent)"></span>標本平均のヒストグラム</span>
-              <span class="sw"><span class="dot" style="background:var(--accent-2);border-radius:0;height:2px;width:10px;align-self:center"></span>理論上の正規分布 N(μ, σ/√n)</span>
+              <span class="sw"><span class="dot" style="background:var(--accent-2);border-radius:0;height:2px;width:10px;align-self:center"></span>理論上の正規分布 N(μ, σ²/n)(平均 μ、標準偏差 σ/√n)</span>
             </div>
           </div>
         </div>
@@ -468,6 +469,7 @@ canvas{ width:100%; display:block; border-radius:8px; background:var(--surface);
           <li>n=1のときは、標本平均の分布は母集団の形そのものになります(平均していないので)。</li>
           <li>nを5, 10, 30…と大きくしていくと、母集団がどんなに歪んだ形・二峰性の形であっても、標本平均の分布は徐々にオレンジの正規分布曲線に近づいていきます。</li>
           <li>ばらつきの幅(標準誤差 SE)は σ/√n で決まるため、nが大きいほどヒストグラムは細く尖っていきます。</li>
+          <li>標本数 r(サンプル数。標本を取った回数)を増やすとヒストグラムは滑らかになりますが、形そのものは変わりません。形を正規分布に近づけるのは標本サイズ n です。</li>
         </ul>
       </div>
       <aside class="nextstudy">
@@ -488,7 +490,7 @@ canvas{ width:100%; display:block; border-radius:8px; background:var(--surface);
         <a class="back-link" href="#/">← 目次に戻る</a>
         <span class="kicker">03 · Two-sample t-test</span>
         <h1>t検定</h1>
-        <p class="page-lede">2つのグループの平均に差があるように見えても、それが「本当の差」なのか「たまたまのばらつき」なのかは、サンプルサイズやばらつきの大きさを考慮しないと判断できません。t検定はその判断を数値化する道具です。</p>
+        <p class="page-lede">2つのグループの平均に差があるように見えても、それが「本当の差」なのか「たまたまのばらつき」なのかは、標本サイズ(サンプルサイズ)やばらつきの大きさを考慮しないと判断できません。t検定はその判断を数値化する道具です。</p>
       </div>
 
       <div class="lab-grid">
@@ -502,11 +504,11 @@ canvas{ width:100%; display:block; border-radius:8px; background:var(--surface);
             <input type="range" id="tt-muB" min="-5" max="20" step="0.5" value="12">
           </div>
           <div class="field">
-            <label>母集団の標準偏差 σ<span class="val mono" id="tt-sd-val">4.0</span></label>
+            <label>母標準偏差 σ<span class="val mono" id="tt-sd-val">4.0</span></label>
             <input type="range" id="tt-sd" min="0.5" max="10" step="0.5" value="4">
           </div>
           <div class="field">
-            <label>各群のサンプルサイズ n<span class="val mono" id="tt-n-val">15</span></label>
+            <label>各群の標本サイズ n<span class="val mono" id="tt-n-val">15</span></label>
             <input type="range" id="tt-n" min="3" max="100" step="1" value="15">
           </div>
           <div class="field">
@@ -515,7 +517,7 @@ canvas{ width:100%; display:block; border-radius:8px; background:var(--surface);
           </div>
 
           <div class="btnrow">
-            <button class="btn primary" id="tt-draw">↻ サンプルを取り直す</button>
+            <button class="btn primary" id="tt-draw">↻ 標本を取り直す</button>
           </div>
 
           <div class="stat-grid">
@@ -528,13 +530,13 @@ canvas{ width:100%; display:block; border-radius:8px; background:var(--surface);
 
           <div class="verdict" id="tt-verdict">
             <span class="chip">—</span>
-            <span id="tt-verdict-text">サンプルを取り直すと判定が表示されます。</span>
+            <span id="tt-verdict-text">標本を取り直すと判定が表示されます。</span>
           </div>
         </aside>
 
         <div class="panel display">
           <div class="chart-block">
-            <div class="title"><span>2群のサンプル分布</span><span class="sub">点 = 1個の観測値 / 太い縦線 = 群の平均</span></div>
+            <div class="title"><span>2群の標本(観測値)</span><span class="sub">点 = 1個の観測値 / 太い縦線 = 群の平均</span></div>
             <div class="canvas-wrap"><canvas id="tt-dots-canvas"></canvas></div>
             <div class="legend">
               <span class="sw"><span class="dot" style="background:var(--accent)"></span>群 A</span>
@@ -564,10 +566,11 @@ canvas{ width:100%; display:block; border-radius:8px; background:var(--surface);
 
       <div class="explainer">
         <h2>この画面の見方</h2>
-        <p>上の散布図は実際に引いたサンプルそのもの、下の曲線は「もし本当は差がなかったとしたら、t値はこのように散らばるはずだ」という理論分布(t分布)です。</p>
+        <p>上の散布図は実際に引いた標本(サンプル)そのもの、下の曲線は「もし本当は差がなかったとしたら、t値はこのように散らばるはずだ」という理論分布(t分布)です。</p>
         <ul>
           <li>観測されたt値(紫の縦線)がオレンジの棄却域に入っていれば、有意水準αのもとで「差がある」と判定されます。</li>
-          <li>n(サンプルサイズ)を大きくすると、同じ平均差でもt値は大きくなりやすく、検出力が上がります。σ(ばらつき)を大きくすると逆に差を検出しにくくなります。</li>
+          <li>この画面では、2群の分散が等しいことを仮定しない Welchのt検定(両側検定)を使っています。画面の「自由度 (Welch)」はその自由度です。<a href="optional_stopping.html">06</a> は、等分散を仮定する Studentのt検定で計算しています。</li>
+          <li>n(標本サイズ)を大きくすると、同じ平均差でもt値の絶対値は大きくなりやすく、検出力が上がります(初期設定のように A の平均が B より小さいと、t値は負の向きに大きくなります)。σ(ばらつき)を大きくすると逆に差を検出しにくくなります。</li>
           <li>下部のシミュレーションは、μA=μBに固定して1000回検定を行うことで「本当は差がないのに有意と判定されてしまう確率」が、ほぼ設定したα(例:5%)どおりになることを示します。p値そのものが一様分布に近い形になる点にも注目してください。</li>
         </ul>
       </div>
@@ -770,7 +773,7 @@ const TOPICS = [
       <path d="M18 44 C 60 30, 100 14, 210 11" stroke="var(--accent)" stroke-width="2.5" fill="none" stroke-linecap="round"/>
     </svg>`},
   {id:'clt', num:'02', tag:'CENTRAL LIMIT THEOREM', title:'中心極限定理',
-   desc:'どんな形の母集団でも、標本平均の分布はサンプルサイズを増やすと正規分布に近づく。',
+   desc:'どんな形の母集団でも、標本平均の分布は標本サイズを増やすと正規分布に近づく。',
    icon:`<svg viewBox="0 0 220 56" width="100%" height="56" fill="none">
       <rect x="10" y="34" width="16" height="14" fill="var(--muted)" opacity=".5"/>
       <rect x="30" y="20" width="16" height="28" fill="var(--muted)" opacity=".5"/>
@@ -819,7 +822,7 @@ const TOPICS = [
       <line x1="8" y1="46" x2="204" y2="46" stroke="var(--muted)" stroke-width="1.5"/>
       <path d="M198 41 L204 46 L198 51" stroke="var(--muted)" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
     </svg>`},
-  {id:'stopping', num:'06', tag:'OPTIONAL STOPPING', title:'有意になるまで繰り返す罠',
+  {id:'stopping', num:'06', tag:'REPEATED TESTING & SELECTIVE REPORTING', title:'有意になるまで繰り返す罠',
    desc:'化合物Xの効果を確かめる卒業研究を追体験する。何度も非有意が続き、最後の最後で出た p<0.05——それは本物か、それとも繰り返し試したせいか、1000人分のシミュレーションで確かめる。',
    href:'optional_stopping.html',
    icon:`<svg viewBox="0 0 220 56" width="100%" height="56" fill="none">
@@ -1303,7 +1306,7 @@ function tt_render(){
   verdict.querySelector('.chip').textContent = sig? '有意':'有意でない';
   document.getElementById('tt-verdict-text').textContent = sig
     ? `p = ${fmt(res.p,3)} < α = ${tt.alpha} なので、差は偶然のばらつきでは説明しにくいと判断します。`
-    : `p = ${fmt(res.p,3)} ≥ α = ${tt.alpha} なので、この差は偶然のばらつきの範囲内と判断します。`;
+    : `p = ${fmt(res.p,3)} ≥ α = ${tt.alpha} なので、差があるとは言えません(偶然のばらつきでも説明できる範囲です。差がないことを示したわけではありません)。`;
 
   tt_draw_dots(res);
   tt_draw_dist(res);

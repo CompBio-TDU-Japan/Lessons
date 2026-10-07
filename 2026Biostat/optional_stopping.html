@@ -161,7 +161,7 @@ input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;bac
 <a class="back-link" href="index.html#/">← 目次に戻る</a>
 
 <section class="top">
-<div class="eyebrow">06 · OPTIONAL STOPPING</div>
+<div class="eyebrow">06 · REPEATED TESTING × SELECTIVE REPORTING</div>
 <h1>その p &lt; 0.05 は、<br>本物だろうか？</h1>
 <p class="lead">化合物Xの効果を確かめる卒業研究を追体験する演習である。何度も実験がうまくいかず、最後の最後で有意差が出た——そんな場面で、本当は何が起きているのかを確かめる。</p>
 <div class="progress" id="progress"></div>
@@ -171,8 +171,8 @@ input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;bac
 <div class="card">
 <div class="num">STEP 1 / 7</div>
 <h2>研究テーマ</h2>
-<p>ある学生は、化合物Xが培養細胞の増殖を抑えるかどうかを調べている。1ラウンドごとに、対照群6ウェル・処理群6ウェルを用意して培養し、増殖の程度を表す指標(対照群の平均が100前後になるよう設定した、任意単位のスコア)を測定して2群のt検定を行う。</p>
-<div class="note"><strong>仮説:</strong> 化合物Xは細胞の増殖を抑える(処理群の増殖スコアが対照群より低い)。<br><strong>判定基準:</strong> 有意水準 α = 0.05。p &lt; 0.05 なら「効果あり」と判定する。</div>
+<p>ある学生は、化合物Xが培養細胞の増殖を抑えるかどうかを調べている。1ラウンドごとに、対照群6ウェル・処理群6ウェルを用意して培養し、増殖の程度を表す指標(対照群の平均が100前後になるよう設定した、任意単位のスコア)を測定して2群のt検定(等分散を仮定する Studentのt検定)を行う。</p>
+<div class="note"><strong>仮説:</strong> 化合物Xは細胞の増殖を抑える(処理群の増殖スコアが対照群より低い)。<br><strong>判定基準:</strong> 有意水準 α = 0.05 の両側検定。p &lt; 0.05 なら「効果あり」と判定する(両側検定なので、処理群の方が高いという逆向きの差でも有意と数える)。</div>
 <p>1ラウンドで有意差が出なければ、条件を少し見直して次のラウンドに進む——これを繰り返していく。</p>
 <div class="actions"><button class="btn" onclick="go('s2')">実験を始める</button></div>
 </div>
@@ -221,7 +221,7 @@ input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;bac
 </div>
 <p>1回の検定で、本当は差がないのに「有意」と誤って判定してしまう確率は、有意水準どおり 5% のはずである。しかし、この学生は9回も検定を繰り返している。</p>
 <div class="formula">少なくとも1回「有意」になってしまう確率 ≈ 1 − (1 − 0.05)<sup>9</sup> ≈ 37%</div>
-<p class="small">5%のつもりが、実際には約37%——8回外れても、9回目に「たまたま」有意になる可能性は、決して小さくない。</p>
+<p class="small">5%のつもりが、実際には約37%——9回試せば、そのどこかで1回「たまたま」有意になる可能性は、決して小さくない。</p>
 <div class="actions"><button class="btn" onclick="go('s5')">本当にそうなるか、1000人で試す</button></div>
 </div>
 </section>
@@ -267,10 +267,11 @@ input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;bac
   <div class="col good">
     <h3>事前に決めた1回だけの検定</h3>
     <p class="pct">5%</p>
-    <p class="small">サンプルサイズを実験前に決め、そのデータで一度だけ検定する。誤判定は設定どおり5%に保たれる。</p>
+    <p class="small">標本サイズ(サンプルサイズ)を実験前に決め、そのデータで一度だけ検定する。誤判定は設定どおり5%に保たれる。</p>
   </div>
 </div>
-<p>どうしても実験の途中で結果を確認したい場合は、確認する回数をあらかじめ決め、有意水準を割り引く補正(<a class="tl" href="glossary.html#t-gsd">群逐次デザイン</a>、<a class="tl" href="glossary.html#t-alphaspend">αスペンディング</a>など)を使う方法がある。いずれも「見た回数」を計算に織り込む点が共通している。</p>
+<p>この教材の学生は、毎回新しいウェルで実験をやり直し、その回のデータだけで検定していた。これは<b>独立な実験の繰り返しと、有意になった回だけの報告(選択的報告)</b>にあたる。対処は、実験の回数と標本サイズを事前に決め、行った試行をすべて報告することである。繰り返した検定をまとめて判定する場合は、<a class="tl" href="glossary.html#t-multiplicity">多重性の調整</a>を使う。</p>
+<p>これとは別に、<b>1つの実験でデータを追加しながら、途中で何度も検定する</b>場合がある(<a class="tl" href="manga.html#m3">漫画03</a>の場面。計画なしに行うものは optional stopping と呼ばれる)。この場合は検定どうしが独立でないので、STEP 4 の 1 − 0.95<sup>9</sup> の式はそのままでは当てはまらない。どうしても途中で結果を確認したいときは、確認する回数をあらかじめ決め、有意水準を割り引く補正(<a class="tl" href="glossary.html#t-gsd">群逐次デザイン</a>、<a class="tl" href="glossary.html#t-alphaspend">αスペンディング</a>など)を使う。どちらの場面でも、「見た回数」を計算に織り込む点が共通している。</p>
 <div class="actions"><button class="btn" onclick="go('s7')">まとめへ</button></div>
 </div>
 </section>
@@ -284,14 +285,14 @@ input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;bac
   <h3 class="bigline">有意になるまで繰り返すことの危険性</h3>
   <p>検定を繰り返しながら、有意になった時点で実験をやめる——この手順は、本当は効果がなくても「有意」という結果にたどり着く確率を、設定した有意水準よりずっと大きくしてしまう。</p>
 </div>
-<p class="small">これは指導する側も見落としやすい問題である。「粘れば報われた」という手応えは、努力の証であると同時に、統計的には警戒すべきサインでもある。実験を重ねること自体が悪いのではなく、<b>何回試したかを記録し、それを判定に反映させないこと</b>が問題を生む。対処法は、サンプルサイズを事前に決めること、すべての試行を報告すること、繰り返す場合は群逐次デザインなど正しい補正を使うことである。</p>
+<p class="small">これは指導する側も見落としやすい問題である。「粘れば報われた」という手応えは、努力の証であると同時に、統計的には警戒すべきサインでもある。実験を重ねること自体が悪いのではなく、<b>何回試したかを記録せず、判定にも反映させないこと</b>が問題を生む。対処法は、標本サイズを事前に決めること、すべての試行を報告すること、検定を繰り返す場合は回数を織り込む補正(多重性の調整。データを追加しながら途中で検定する場合は群逐次デザインなど)を使うことである。</p>
 <aside class="nextstudy">
   <h3>次の学びへ</h3>
   <p>この教材で体験した内容は、次の項目につながっている。問題集には、これらを学んでから解ける問題も含まれる。項目名で検索するか、教科書の該当する章で確認するとよい。</p>
   <ul>
     <li><b>多重比較とファミリーワイズエラー率</b> <span class="en">multiple comparisons, family-wise error rate</span> — 検定を繰り返したときに、少なくとも1つ誤って有意になる確率である。</li>
     <li><b>Bonferroni補正と偽発見率(FDR)</b> <span class="en">Bonferroni correction, false discovery rate, Benjamini–Hochberg</span> — 検定の回数に応じて判定基準を調整する方法である。</li>
-    <li><b>検出力分析とサンプルサイズ設計</b> <span class="en">power analysis, sample size calculation</span> — 実験の前に、必要なサンプルサイズを決める方法である。</li>
+    <li><b>検出力分析と標本サイズ設計</b> <span class="en">power analysis, sample size calculation</span> — 実験の前に、必要な標本サイズを決める方法である。</li>
     <li><b>p-hackingと事前登録</b> <span class="en">p-hacking, preregistration</span> — 解析の自由度が誤判定を増やす問題と、その対策である。</li>
   </ul>
 </aside>

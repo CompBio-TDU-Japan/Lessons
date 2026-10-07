@@ -173,12 +173,12 @@ footer.site{ margin-top:48px; padding-block:24px 40px; border-top:1px solid var(
   <div class="panel index">
     <a href="#m1">01 条件を変えて有意差を探す</a>
     <a href="#m2">02 解析方法のやり直し</a>
-    <a href="#m3">03 サンプルサイズの追加</a>
+    <a href="#m3">03 標本サイズの追加</a>
     <a href="#m4">04 外れ値の除外①</a>
     <a href="#m5">05 外れ値の除外②</a>
     <a href="#m6">06 変数の恣意的な分類</a>
     <a href="#m7">07 多重比較問題</a>
-    <a href="#m8">08 データの重複利用</a>
+    <a href="#m8">08 多数の項目と選択的報告</a>
     <a href="#m9">09 主要結果のすり替え</a>
     <a href="#m10">10 サブグループの強調</a>
     <a href="#m11">11 交絡因子</a>
@@ -226,15 +226,15 @@ footer.site{ margin-top:48px; padding-block:24px 40px; border-top:1px solid var(
 </section>
 
 <section class="block" id="m3">
-  <div class="manga-head"><span class="num mono">03</span><h2>有意になるまでサンプルサイズを増やす</h2></div>
-  <p class="manga-desc">運動プログラムが睡眠の質を改善するかを検証する研究。事前に決めた各群30人で有意差が出ないと、60人、100人、160人と参加者を追加しながら同じデータで検定を繰り返し、160人でようやく p = 0.04 に達する。事前に定めたサンプルサイズを守らず、有意になるまで解析を繰り返す「逐次解析」は、補正なしでは第一種の過誤を膨らませてしまう。</p>
+  <div class="manga-head"><span class="num mono">03</span><h2>有意になるまで標本サイズ(サンプルサイズ)を増やす</h2></div>
+  <p class="manga-desc">運動プログラムが睡眠の質を改善するかを検証する研究。事前に決めた各群30人で有意差が出ないと、60人、100人、160人と参加者を追加しながら、そのたびに検定を繰り返し、160人でようやく p = 0.04 に達する。事前に定めた標本サイズを守らず、計画していない途中での検定を繰り返すこと(optional stopping)は、補正なしでは第一種の過誤の確率を膨らませてしまう。途中で検定すること自体が問題なのではなく、回数と判定基準を事前に決めて補正する正規の手法(<a href="glossary.html#t-gsd">群逐次デザイン</a>など)もある。問題になるのは、計画も補正もなしに行う場合である。</p>
   <figure class="panel mangafig">
-    <button class="mangathumb" type="button" data-thumb="comics/thumbs/ChatGPT_20260929sample_size_manga_thumb.jpg" data-full="comics/ChatGPT_20260929sample_size_manga.png" aria-label="クリックして漫画全体を表示する(運動プログラム×睡眠の質)">
-      <img src="comics/thumbs/ChatGPT_20260929sample_size_manga_thumb.jpg" width="480" height="438"
-        alt="9コマ漫画。運動プログラムと睡眠の質の研究で、各群30人で有意差が出ないため60人、100人、160人と参加者を追加しながら解析を繰り返し、160人でp=0.04の有意差を得るが、逐次解析の問題を指摘される。">
+    <button class="mangathumb" type="button" data-thumb="comics/thumbs/ChatGPT_20260929sample_size_manga_edit_thumb.jpg" data-full="comics/ChatGPT_20260929sample_size_manga_edit.png" aria-label="クリックして漫画全体を表示する(運動プログラム×睡眠の質)">
+      <img src="comics/thumbs/ChatGPT_20260929sample_size_manga_edit_thumb.jpg" width="480" height="438"
+        alt="9コマ漫画。運動プログラムと睡眠の質の研究で、各群30人で有意差が出ないため60人、100人、160人と参加者を追加しながら解析を繰り返し、160人でp=0.04の有意差を得るが、計画していない検定の繰り返しの問題を指摘される。">
       <span class="expand">クリックして全体を表示 ↗</span>
     </button>
-    <figcaption><span>運動プログラム×睡眠の質／逐次解析と補正の必要性</span><a href="comics/ChatGPT_20260929sample_size_manga.png" target="_blank" rel="noopener">元画像を別タブで開く</a></figcaption>
+    <figcaption><span>運動プログラム×睡眠の質／計画外の検定の繰り返しと補正の必要性</span><a href="comics/ChatGPT_20260929sample_size_manga_edit.png" target="_blank" rel="noopener">元画像を別タブで開く</a></figcaption>
   </figure>
 </section>
 
@@ -279,27 +279,27 @@ footer.site{ margin-top:48px; padding-block:24px 40px; border-top:1px solid var(
 
 <section class="block" id="m7">
   <div class="manga-head"><span class="num mono">07</span><h2>3群以上を比較するときの多重比較問題</h2></div>
-  <p class="manga-desc">3つのダイエット法A・B・Cの効果を比較する研究。3通りのペア比較をそのまま個別の有意水準5%で行うと、たとえ真の差がなくても1回以上「有意」と判定してしまう確率(家族誤り率)は約14%まで上がる。Tukey法などの多重比較法で家族誤り率を制御する必要がある。</p>
+  <p class="manga-desc">3つのダイエット法A・B・Cの効果を比較する研究。3通りのペア比較をそのまま個別の有意水準5%で行うと、たとえ真の差がなくても1回以上「有意」と判定してしまう確率(ファミリーワイズエラー率)は、3回の検定を独立とみなすと約14%まで上がる。Tukey法などの多重比較法でファミリーワイズエラー率を制御する必要がある。</p>
   <figure class="panel mangafig">
-    <button class="mangathumb" type="button" data-thumb="comics/thumbs/ChatGPT_20260929multiple_comparisons_manga_thumb.jpg" data-full="comics/ChatGPT_20260929multiple_comparisons_manga.png" aria-label="クリックして漫画全体を表示する(ダイエット法A/B/C)">
-      <img src="comics/thumbs/ChatGPT_20260929multiple_comparisons_manga_thumb.jpg" width="480" height="438"
-        alt="8コマ漫画。3つのダイエット法A・B・Cを比較する研究で、3通りのペア比較を個別に行うと家族誤り率が約14%に上がることを説明し、Tukey法による多重比較補正の必要性を示す。">
+    <button class="mangathumb" type="button" data-thumb="comics/thumbs/ChatGPT_20260929multiple_comparisons_manga_edit_thumb.jpg" data-full="comics/ChatGPT_20260929multiple_comparisons_manga_edit.png" aria-label="クリックして漫画全体を表示する(ダイエット法A/B/C)">
+      <img src="comics/thumbs/ChatGPT_20260929multiple_comparisons_manga_edit_thumb.jpg" width="480" height="438"
+        alt="8コマ漫画。3つのダイエット法A・B・Cを比較する研究で、3通りのペア比較を個別に行うとファミリーワイズエラー率が約14%に上がることを説明し、Tukey法による多重比較補正の必要性を示す。">
       <span class="expand">クリックして全体を表示 ↗</span>
     </button>
-    <figcaption><span>ダイエット法A/B/C／家族誤り率とTukey法</span><a href="comics/ChatGPT_20260929multiple_comparisons_manga.png" target="_blank" rel="noopener">元画像を別タブで開く</a></figcaption>
+    <figcaption><span>ダイエット法A/B/C／ファミリーワイズエラー率とTukey法</span><a href="comics/ChatGPT_20260929multiple_comparisons_manga_edit.png" target="_blank" rel="noopener">元画像を別タブで開く</a></figcaption>
   </figure>
 </section>
 
 <section class="block" id="m8">
-  <div class="manga-head"><span class="num mono">08</span><h2>同じデータで多数の項目を解析する(データの重複利用)</h2></div>
-  <p class="manga-desc">運動プログラムの研究で、主要な指標に有意差が出なかったため、体脂肪率・血圧・筋力など次々に追加の項目を解析し、有意差が出た項目だけを報告しようとする。20項目を解析すれば偶然でも1個程度は有意になりやすく、FDR補正をかけるとほとんどの有意差は消えてしまう。</p>
+  <div class="manga-head"><span class="num mono">08</span><h2>多数の評価項目を検定し、有意なものだけを報告する</h2></div>
+  <p class="manga-desc">運動プログラムの研究で、主要な指標(体重)の解析に加えて、体脂肪率・血圧・筋力など次々に追加の項目を解析し、有意差が出た項目だけを報告しようとする(多重比較と選択的報告の問題)。20項目を解析すれば偶然でも1個程度は有意になりやすく、FDR補正をかけるとほとんどの有意差は消えてしまう。</p>
   <figure class="panel mangafig">
-    <button class="mangathumb" type="button" data-thumb="comics/thumbs/ChatGPT_20260929data_multiple_use_manga_thumb.jpg" data-full="comics/ChatGPT_20260929data_multiple_use_manga.png" aria-label="クリックして漫画全体を表示する(運動プログラム×多項目解析)">
-      <img src="comics/thumbs/ChatGPT_20260929data_multiple_use_manga_thumb.jpg" width="480" height="438"
-        alt="9コマ漫画。運動プログラムの研究で主要な指標に有意差がなく、体脂肪率・血圧・筋力など多数の項目を追加で解析し、有意差が出た項目だけを報告しようとするが、FDR補正で有意差の多くが消えてしまう。">
+    <button class="mangathumb" type="button" data-thumb="comics/thumbs/ChatGPT_20260929data_multiple_use_manga_edit_thumb.jpg" data-full="comics/ChatGPT_20260929data_multiple_use_manga_edit.png" aria-label="クリックして漫画全体を表示する(運動プログラム×多項目解析)">
+      <img src="comics/thumbs/ChatGPT_20260929data_multiple_use_manga_edit_thumb.jpg" width="480" height="438"
+        alt="9コマ漫画。運動プログラムの研究で、主要な指標に加えて体脂肪率・血圧・筋力など多数の項目を追加で解析し、有意差が出た項目だけを報告しようとするが、FDR補正で有意差の多くが消えてしまう。">
       <span class="expand">クリックして全体を表示 ↗</span>
     </button>
-    <figcaption><span>運動プログラム／多数の項目を解析し都合の良いものだけ報告</span><a href="comics/ChatGPT_20260929data_multiple_use_manga.png" target="_blank" rel="noopener">元画像を別タブで開く</a></figcaption>
+    <figcaption><span>運動プログラム／多数の項目を解析し都合の良いものだけ報告</span><a href="comics/ChatGPT_20260929data_multiple_use_manga_edit.png" target="_blank" rel="noopener">元画像を別タブで開く</a></figcaption>
   </figure>
 </section>
 
@@ -344,7 +344,7 @@ footer.site{ margin-top:48px; padding-block:24px 40px; border-top:1px solid var(
 
 <section class="block" id="m12">
   <div class="manga-head"><span class="num mono">12</span><h2>参加者内の反復データを独立とみなす誤り(疑似反復)</h2></div>
-  <p class="manga-desc">記憶課題のトレーニング効果を調べる研究。1人あたり10試行のデータを、参加者ごとの平均ではなく試行ごとに独立したデータとして扱うと、見かけ上サンプルサイズが増えて有意差が出てしまう(疑似反復)。同一参加者内の試行は互いに独立ではないため、混合効果モデルなど階層構造を考慮した解析が必要になる。</p>
+  <p class="manga-desc">記憶課題のトレーニング効果を調べる研究。1人あたり10試行のデータを、参加者ごとの平均ではなく試行ごとに独立したデータとして扱うと、見かけ上標本サイズが増えて有意差が出てしまう(疑似反復)。同一参加者内の試行は互いに独立ではないため、混合効果モデルなど階層構造を考慮した解析が必要になる。</p>
   <figure class="panel mangafig">
     <button class="mangathumb" type="button" data-thumb="comics/thumbs/ChatGPT_20260929separate_analysis_manga_thumb.jpg" data-full="comics/ChatGPT_20260929separate_analysis_manga.png" aria-label="クリックして漫画全体を表示する(記憶課題トレーニング)">
       <img src="comics/thumbs/ChatGPT_20260929separate_analysis_manga_thumb.jpg" width="480" height="438"
@@ -474,7 +474,7 @@ footer.site{ margin-top:48px; padding-block:24px 40px; border-top:1px solid var(
 
 <section class="block" id="m22">
   <div class="manga-head"><span class="num mono">22</span><h2>再現性の危機</h2></div>
-  <p class="manga-desc">新しい肥料で植物がよく育つという画期的な発見(p = 0.008)が話題になるが、別の3つの研究室では効果が再現しない。サンプルサイズ・研究デザインの違い・出版バイアスなど考えられる理由を一つずつ検討し、複数の研究を統合するメタアナリシスでは最初の研究室の結果がたまたま大きく出ていただけだったことが分かる。1つの研究だけで結論を出さず追試を重ねることの大切さを示す。</p>
+  <p class="manga-desc">新しい肥料で植物がよく育つという画期的な発見(p = 0.008)が話題になるが、別の3つの研究室では効果が再現しない。標本サイズ・研究デザインの違い・出版バイアスなど考えられる理由を一つずつ検討し、複数の研究を統合するメタアナリシスでは最初の研究室の結果がたまたま大きく出ていただけだったことが分かる。1つの研究だけで結論を出さず追試を重ねることの大切さを示す。</p>
   <figure class="panel mangafig">
     <button class="mangathumb" type="button" data-thumb="comics/thumbs/ChatGPT_20261001Reproducibility_manga_thumb.jpg" data-full="comics/ChatGPT_20261001Reproducibility_manga.png" aria-label="クリックして漫画全体を表示する(新しい肥料の研究と再現性)">
       <img src="comics/thumbs/ChatGPT_20261001Reproducibility_manga_thumb.jpg" width="480" height="438"
@@ -487,11 +487,11 @@ footer.site{ margin-top:48px; padding-block:24px 40px; border-top:1px solid var(
 
 <section class="block" id="m23">
   <div class="manga-head"><span class="num mono">23</span><h2>検出力不足の研究</h2></div>
-  <p class="manga-desc">各群5人という小さなサンプルサイズで回復薬A・Bを何度も比較すると結果がバラバラになり、たまたま大きな差が出た1回だけが「新発見」として注目されてしまう。真の効果が小さい場合、少人数の研究では検出力(効果を検出できる確率)が低く、ほとんどの研究では有意差が出ないことをヒストグラムで示し、十分なサンプルサイズを事前に計画することの大切さを説く。</p>
+  <p class="manga-desc">各群5人という小さな標本サイズで回復薬A・Bを何度も比較すると結果がバラバラになり、たまたま大きな差が出た1回だけが「新発見」として注目されてしまう。真の効果が小さい場合、少人数の研究では検出力(効果を検出できる確率)が低く、ほとんどの研究では有意差が出ないことをヒストグラムで示し、十分な標本サイズを事前に計画することの大切さを説く。</p>
   <figure class="panel mangafig">
     <button class="mangathumb" type="button" data-thumb="comics/thumbs/ChatGPT_20261001Underpowered_Study_manga_thumb.jpg" data-full="comics/ChatGPT_20261001Underpowered_Study_manga.png" aria-label="クリックして漫画全体を表示する(回復薬の比較と検出力不足)">
       <img src="comics/thumbs/ChatGPT_20261001Underpowered_Study_manga_thumb.jpg" width="480" height="438"
-        alt="9コマ漫画。各群5人という小さな研究を何度も行うと結果がバラバラで、たまたま大きな差が出た1回だけが注目されてしまうが、サンプルサイズを増やすと検出力が上がり結果が安定することを示す。">
+        alt="9コマ漫画。各群5人という小さな研究を何度も行うと結果がバラバラで、たまたま大きな差が出た1回だけが注目されてしまうが、標本サイズを増やすと検出力が上がり結果が安定することを示す。">
       <span class="expand">クリックして全体を表示 ↗</span>
     </button>
     <figcaption><span>回復薬A/Bの比較(RPG風)／少人数の研究と検出力不足</span><a href="comics/ChatGPT_20261001Underpowered_Study_manga.png" target="_blank" rel="noopener">元画像を別タブで開く</a></figcaption>
@@ -500,7 +500,7 @@ footer.site{ margin-top:48px; padding-block:24px 40px; border-top:1px solid var(
 
 <section class="block" id="m24">
   <div class="manga-head"><span class="num mono">24</span><h2>「有意差なし」を「差がない」と誤読する</h2></div>
-  <p class="manga-desc">宇宙人と地球人の納豆の満足度を比較してp = 0.12(有意差なし)という結果から「差はない」と結論づけそうになるが、データのばらつきが大きく信頼区間も広いため、実際には差があるのかないのか、このデータだけでは判断できない。サンプルサイズが小さいと検出力が低く、有意差が出ないことは「差がない」ことの証明にはならない点を示す。</p>
+  <p class="manga-desc">宇宙人と地球人の納豆の満足度を比較してp = 0.12(有意差なし)という結果から「差はない」と結論づけそうになるが、データのばらつきが大きく信頼区間も広いため、実際には差があるのかないのか、このデータだけでは判断できない。標本サイズが小さいと検出力が低く、有意差が出ないことは「差がない」ことの証明にはならない点を示す。</p>
   <figure class="panel mangafig">
     <button class="mangathumb" type="button" data-thumb="comics/thumbs/ChatGPT_20261001alien_natto_significance_manga_thumb.jpg" data-full="comics/ChatGPT_20261001alien_natto_significance_manga.png" aria-label="クリックして漫画全体を表示する(宇宙人の納豆満足度調査)">
       <img src="comics/thumbs/ChatGPT_20261001alien_natto_significance_manga_thumb.jpg" width="480" height="438"
@@ -513,11 +513,11 @@ footer.site{ margin-top:48px; padding-block:24px 40px; border-top:1px solid var(
 
 <section class="block" id="m25">
   <div class="manga-head"><span class="num mono">25</span><h2>統計的有意と実質的な意味の違い</h2></div>
-  <p class="manga-desc">猫カフェの新しいクッキーを10万人規模で試験し、体重変化の差0.1kgがp &lt; 0.001で統計的に有意だと分かって喜ぶが、Cohenのdを計算すると効果量は0.10ととても小さく、個人レベルではほとんど区別がつかない。サンプルサイズが非常に大きいとわずかな差でも有意になってしまうため、p値だけでなく効果量や実質的な意味を確認することの大切さを示す。</p>
+  <p class="manga-desc">猫カフェの新しいクッキーを10万人規模で試験し、体重変化の差0.1kgがp &lt; 0.001で統計的に有意だと分かって喜ぶが、Cohenのdを計算すると効果量は0.10ととても小さく、個人レベルではほとんど区別がつかない。標本サイズが非常に大きいとわずかな差でも有意になってしまうため、p値だけでなく効果量や実質的な意味を確認することの大切さを示す。</p>
   <figure class="panel mangafig">
     <button class="mangathumb" type="button" data-thumb="comics/thumbs/ChatGPT_20261001cat_cafe_diet_cohen_manga_thumb.jpg" data-full="comics/ChatGPT_20261001cat_cafe_diet_cohen_manga.png" aria-label="クリックして漫画全体を表示する(猫カフェのクッキーと効果量)">
       <img src="comics/thumbs/ChatGPT_20261001cat_cafe_diet_cohen_manga_thumb.jpg" width="480" height="438"
-        alt="9コマ漫画。10万人規模の試験で新しいクッキーの体重減少効果がp<0.001で統計的に有意だが、Cohenのdは0.10ととても小さく、大規模サンプルでは僅かな差でも有意になるため効果量の確認が重要であることを示す。">
+        alt="9コマ漫画。10万人規模の試験で新しいクッキーの体重減少効果がp<0.001で統計的に有意だが、Cohenのdは0.10ととても小さく、大規模な標本では僅かな差でも有意になるため効果量の確認が重要であることを示す。">
       <span class="expand">クリックして全体を表示 ↗</span>
     </button>
     <figcaption><span>猫カフェの新クッキー×効果量／統計的有意 ≠ 実質的に意味のある差</span><a href="comics/ChatGPT_20261001cat_cafe_diet_cohen_manga.png" target="_blank" rel="noopener">元画像を別タブで開く</a></figcaption>
@@ -548,7 +548,7 @@ footer.site{ margin-top:48px; padding-block:24px 40px; border-top:1px solid var(
     <a class="panel" href="glossary.html"><b>00 基礎用語</b><span>多重性の調整、中間解析、群逐次デザイン</span></a>
     <a class="panel" href="index.html#/ttest"><b>03 t検定</b><span>差がない場合を1000回検定し、第一種の過誤を体験する</span></a>
     <a class="panel" href="natural-wine.html"><b>04 ランダム化と交絡</b><span>交絡因子とランダム化の関係を物語形式で体験する</span></a>
-    <a class="panel" href="optional_stopping.html"><b>06 有意になるまで繰り返す罠</b><span>逐次的な検定の打ち切り(optional stopping)を扱う</span></a>
+    <a class="panel" href="optional_stopping.html"><b>06 有意になるまで繰り返す罠</b><span>実験と検定の繰り返しと、有意になった回だけの報告(選択的報告)を扱う</span></a>
   </div>
 </section>
 
